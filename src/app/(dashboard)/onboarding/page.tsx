@@ -6,16 +6,18 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import SlidePanel from "@/components/layout/SlidePanel";
 import FloatingField from "@/components/layout/FloatingField";
+import FormDialog from "@/components/ui/FormDialog";
 import { masterAccounts, MasterAccount, sampleTenantDetail } from "@/data/mock";
+import { TextField, MenuItem, Button, Stack, Alert, Chip, IconButton } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
+import SearchIcon from "@mui/icons-material/Search";
+import InputAdornment from "@mui/material/InputAdornment";
 
 type Screen = "s1" | "s2" | "s2e" | "s3" | "s4" | "s4e" | "s5" | "s6" | "s7" | "s8";
 
-const customerGroupColors: Record<string, string> = {
-  "ขายส่ง": "bg-purple-50 text-purple-700",
-  "ขายปลีก": "bg-green-50 text-green-800",
-  "ทั่วไป": "bg-orange-50 text-orange-700",
-  "VIP": "bg-blue-50 text-blue-700",
-};
+// customerGroupColors moved to MUI Chip sx inline
 
 const allModules = sampleTenantDetail.modules;
 
@@ -23,6 +25,7 @@ export default function OnboardingPage() {
   const router = useRouter();
   const [screen, setScreen] = useState<Screen>("s1");
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [addAccountOpen, setAddAccountOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedAccount, setSelectedAccount] = useState<MasterAccount>(masterAccounts[0]);
   const [showToast, setShowToast] = useState(false);
@@ -149,27 +152,30 @@ export default function OnboardingPage() {
       <div className="flex-1 px-5 pb-5">
         {/* Toolbar */}
         <div className="flex items-center gap-2.5 mb-3 flex-wrap">
-          <button className="px-3 py-2 bg-white border border-erp-border rounded-md text-xs hover:bg-gray-50 flex items-center gap-1.5 transition-colors">
-            &#128228; ส่งออกรายงาน
-          </button>
+          <Button variant="outlined" size="small" startIcon={<FileUploadOutlinedIcon />} sx={{ fontSize: 12 }}>
+            ส่งออกรายงาน
+          </Button>
           <div className="flex-1" />
-          <input
-            type="text"
+          <TextField
+            size="small"
             placeholder="ค้นหารายชื่อลูกค้า..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="px-3 py-2 border-[1.5px] border-erp-border rounded-md text-xs w-60 focus:outline-none focus:border-sa-primary"
+            sx={{ width: 240, "& .MuiInputBase-input": { fontSize: 12 } }}
+            InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ fontSize: 18, color: "#999" }} /></InputAdornment> }}
           />
-          <button
+          <Button
+            variant="contained"
+            size="small"
             onClick={() => {
               setAccountForm({ company: "", firstName: "", lastName: "", position: "", customerGroup: "ทั่วไป", email: "", phone: "", tenantQuota: "3" });
               setEmailError(false);
-              go("s2");
+              setAddAccountOpen(true);
             }}
-            className="px-4 py-2 bg-sa-primary hover:bg-sa-hover text-white text-xs rounded-md font-semibold transition-colors"
+            sx={{ bgcolor: "#FF6B00", "&:hover": { bgcolor: "#E65C00" }, fontWeight: 600, fontSize: 12 }}
           >
             + เพิ่มลูกค้า
-          </button>
+          </Button>
         </div>
 
         {/* Table */}
@@ -205,9 +211,17 @@ export default function OnboardingPage() {
                     <div className="text-[11px] text-erp-muted">{a.position}</div>
                   </td>
                   <td className="px-3.5 py-3">
-                    <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium ${customerGroupColors[a.customerGroup] || "bg-gray-100 text-gray-600"}`}>
-                      {a.customerGroup}
-                    </span>
+                    <Chip
+                      label={a.customerGroup}
+                      size="small"
+                      sx={{
+                        fontSize: 11, fontWeight: 500, "& .MuiChip-label": { px: 1 },
+                        ...(a.customerGroup === "ขายส่ง" ? { bgcolor: "#F3E8FF", color: "#6B21A8" } :
+                            a.customerGroup === "ขายปลีก" ? { bgcolor: "#ECFDF5", color: "#166534" } :
+                            a.customerGroup === "VIP" ? { bgcolor: "#EFF6FF", color: "#1E40AF" } :
+                            { bgcolor: "#FFF7ED", color: "#C2410C" })
+                      }}
+                    />
                   </td>
                   <td className="px-3.5 py-3 text-xs text-gray-500">{a.email}</td>
                   <td className="px-3.5 py-3 text-xs">{a.phone}</td>
@@ -217,37 +231,30 @@ export default function OnboardingPage() {
                     <span className="text-erp-muted">/{a.tenantQuota}</span>
                   </td>
                   <td className="px-3.5 py-3">
-                    {a.status === "เปิดใช้งาน" ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-green-50 text-green-600">
-                        <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                        เปิดใช้งาน
-                      </span>
-                    ) : a.status === "รอยืนยัน Email" ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-orange-50 text-orange-600">
-                        <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                        รอยืนยัน Email
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-500">
-                        <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                        ปิดใช้งาน
-                      </span>
-                    )}
+                    <Chip
+                      label={a.status}
+                      size="small"
+                      variant="outlined"
+                      color={a.status === "เปิดใช้งาน" ? "success" : a.status === "รอยืนยัน Email" ? "error" : "default"}
+                      sx={{ fontSize: 11, fontWeight: 600, "& .MuiChip-label": { px: 1 } }}
+                    />
                   </td>
                   <td className="px-3.5 py-3">
-                    <div className="flex items-center gap-1.5">
-                      <button
+                    <div className="flex items-center gap-0.5">
+                      <IconButton
+                        size="small"
                         onClick={(e) => { e.stopPropagation(); setSelectedAccount(a); setDetailTab("general"); go("s5"); }}
-                        className="w-7 h-7 rounded border border-erp-border bg-white flex items-center justify-center text-erp-muted hover:border-sa-primary hover:text-sa-primary text-xs transition-colors"
+                        sx={{ color: "#999", "&:hover": { color: "#FF6B00" } }}
                       >
-                        &#9998;
-                      </button>
-                      <button
+                        <EditIcon sx={{ fontSize: 16 }} />
+                      </IconButton>
+                      <IconButton
+                        size="small"
                         onClick={(e) => e.stopPropagation()}
-                        className="w-7 h-7 rounded border border-erp-border bg-white flex items-center justify-center text-erp-muted hover:border-sa-primary hover:text-sa-primary text-xs transition-colors"
+                        sx={{ color: "#999", "&:hover": { color: "#FF6B00" } }}
                       >
-                        &#8942;
-                      </button>
+                        <MoreVertIcon sx={{ fontSize: 16 }} />
+                      </IconButton>
                     </div>
                   </td>
                 </tr>
@@ -270,6 +277,108 @@ export default function OnboardingPage() {
       <div className="px-5 py-2.5 text-[11px] text-gray-400 border-t border-erp-border bg-white text-center">
         &copy; 2569, Made with &#10084; by ERP Jigsaw
       </div>
+
+      {/* === Add Account Modal (FormDialog from Showcase) === */}
+      <FormDialog
+        open={addAccountOpen}
+        onClose={() => setAddAccountOpen(false)}
+        title="สร้าง Master Account"
+        maxWidth="sm"
+        fullWidth
+        footer={
+          <>
+            <Button onClick={() => setAddAccountOpen(false)}>ยกเลิก</Button>
+            <Button
+              variant="contained"
+              sx={{ bgcolor: "#FF6B00", "&:hover": { bgcolor: "#E65C00" } }}
+              onClick={() => { setAddAccountOpen(false); go("s3"); }}
+            >
+              บันทึก
+            </Button>
+          </>
+        }
+      >
+        <Stack spacing={2.5} sx={{ mt: 1 }}>
+          <TextField
+            label="ชื่อบริษัท / ห้างร้าน"
+            size="small"
+            fullWidth
+            value={accountForm.company}
+            onChange={(e) => setAccountForm({ ...accountForm, company: e.target.value })}
+          />
+          <Stack direction="row" spacing={2}>
+            <TextField
+              label="ชื่อ"
+              size="small"
+              fullWidth
+              required
+              value={accountForm.firstName}
+              onChange={(e) => setAccountForm({ ...accountForm, firstName: e.target.value })}
+            />
+            <TextField
+              label="นามสกุล"
+              size="small"
+              fullWidth
+              required
+              value={accountForm.lastName}
+              onChange={(e) => setAccountForm({ ...accountForm, lastName: e.target.value })}
+            />
+          </Stack>
+          <TextField
+            label="ตำแหน่ง"
+            size="small"
+            fullWidth
+            required
+            value={accountForm.position}
+            onChange={(e) => setAccountForm({ ...accountForm, position: e.target.value })}
+          />
+          <TextField
+            label="กลุ่มลูกค้า"
+            size="small"
+            fullWidth
+            required
+            select
+            value={accountForm.customerGroup}
+            onChange={(e) => setAccountForm({ ...accountForm, customerGroup: e.target.value })}
+          >
+            <MenuItem value="ทั่วไป">ทั่วไป</MenuItem>
+            <MenuItem value="ขายส่ง">ขายส่ง</MenuItem>
+            <MenuItem value="ขายปลีก">ขายปลีก</MenuItem>
+            <MenuItem value="VIP">VIP</MenuItem>
+            <MenuItem value="Founding Partner">Founding Partner</MenuItem>
+          </TextField>
+          <TextField
+            label="อีเมล (Master Email)"
+            size="small"
+            fullWidth
+            required
+            value={accountForm.email}
+            onChange={(e) => setAccountForm({ ...accountForm, email: e.target.value })}
+          />
+          <TextField
+            label="เบอร์โทรศัพท์"
+            size="small"
+            fullWidth
+            required
+            value={accountForm.phone}
+            onChange={(e) => setAccountForm({ ...accountForm, phone: e.target.value })}
+            InputProps={{ startAdornment: <span style={{ marginRight: 8, fontSize: 13, color: "#999", whiteSpace: "nowrap" }}>+66</span> }}
+          />
+          <TextField
+            label="จำนวนธุรกิจ (Tenant Quota)"
+            size="small"
+            fullWidth
+            required
+            type="number"
+            value={accountForm.tenantQuota}
+            onChange={(e) => setAccountForm({ ...accountForm, tenantQuota: e.target.value })}
+            helperText="จำนวน Tenant สูงสุดที่สร้างได้ภายใต้ Account นี้"
+          />
+          <Alert severity="info" variant="outlined" sx={{ fontSize: 12 }}>
+            ระบบจะส่ง Email ยืนยันตัวตนให้ผู้ติดต่อทันที
+          </Alert>
+        </Stack>
+      </FormDialog>
     </div>
   );
 
