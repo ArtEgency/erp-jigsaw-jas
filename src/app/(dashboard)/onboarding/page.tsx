@@ -8,7 +8,7 @@ import SlidePanel from "@/components/layout/SlidePanel";
 import FloatingField from "@/components/layout/FloatingField";
 import FormDialog from "@/components/ui/FormDialog";
 import { masterAccounts, MasterAccount, sampleTenantDetail } from "@/data/mock";
-import { TextField, MenuItem, Button, Stack, Alert, Chip, IconButton, LinearProgress, Typography, Box, Tabs, Tab, Radio, RadioGroup, FormControlLabel } from "@mui/material";
+import { TextField, MenuItem, Button, Stack, Alert, Chip, IconButton, LinearProgress, Typography, Box, Tabs, Tab, Radio, RadioGroup, FormControlLabel, ToggleButtonGroup, ToggleButton } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
 import EditIcon from "@mui/icons-material/Edit";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -935,25 +935,22 @@ export default function OnboardingPage() {
                 <span className="w-1.5 h-1.5 rounded-full bg-sa-primary" />
                 Deployment Tier
               </p>
-              <div className="grid grid-cols-3 gap-2">
+              <ToggleButtonGroup
+                value={tenantForm.tier}
+                exclusive
+                onChange={(_, v) => v && setTenantForm({ ...tenantForm, tier: v })}
+                sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 1 }}
+              >
                 {(["Cloud", "Dedicated", "On-premise"] as const).map((tier) => {
                   const subs = { Cloud: "Shared · Huawei", Dedicated: "Private · Huawei", "On-premise": "Server ลูกค้า" };
                   return (
-                    <button
-                      key={tier}
-                      onClick={() => setTenantForm({ ...tenantForm, tier })}
-                      className={`border rounded-md p-2.5 text-left transition-colors ${
-                        tenantForm.tier === tier
-                          ? "border-sa-primary bg-[#FF6B00]/10"
-                          : "border-erp-border bg-white hover:border-sa-primary"
-                      }`}
-                    >
-                      <div className="text-xs font-semibold">{tier}</div>
-                      <div className="text-[10px] text-erp-muted mt-0.5">{subs[tier]}</div>
-                    </button>
+                    <ToggleButton key={tier} value={tier} sx={{ textTransform: "none", flexDirection: "column", alignItems: "flex-start", p: 1.5, "&.Mui-selected": { bgcolor: "#FF6B00/10", borderColor: "#FF6B00" } }}>
+                      <Typography variant="caption" sx={{ fontWeight: 700 }}>{tier}</Typography>
+                      <Typography variant="caption" sx={{ color: "#999", fontSize: 10 }}>{subs[tier]}</Typography>
+                    </ToggleButton>
                   );
                 })}
-              </div>
+              </ToggleButtonGroup>
             </div>
 
             {/* Resource Quota */}
@@ -1001,21 +998,15 @@ export default function OnboardingPage() {
                   value={tenantForm.backupFreq}
                   onChange={(e) => setTenantForm({ ...tenantForm, backupFreq: e.target.value })}
                 />
-                <div className="flex border border-erp-border rounded-md overflow-hidden">
-                  {(["ชั่วโมง", "วัน"] as const).map((u) => (
-                    <button
-                      key={u}
-                      onClick={() => setTenantForm({ ...tenantForm, backupUnit: u })}
-                      className={`px-3 py-1.5 text-[11px] transition-colors ${
-                        tenantForm.backupUnit === u
-                          ? "bg-sa-primary text-white"
-                          : "bg-white text-erp-muted hover:bg-gray-50"
-                      }`}
-                    >
-                      {u}
-                    </button>
-                  ))}
-                </div>
+                <ToggleButtonGroup
+                  value={tenantForm.backupUnit}
+                  exclusive
+                  onChange={(_, v) => v && setTenantForm({ ...tenantForm, backupUnit: v })}
+                  size="small"
+                >
+                  <ToggleButton value="ชั่วโมง" sx={{ textTransform: "none", fontSize: 11, px: 2 }}>ชั่วโมง</ToggleButton>
+                  <ToggleButton value="วัน" sx={{ textTransform: "none", fontSize: 11, px: 2 }}>วัน</ToggleButton>
+                </ToggleButtonGroup>
               </div>
             </div>
 
@@ -1071,23 +1062,17 @@ export default function OnboardingPage() {
                 <FloatingField label="วันเริ่มสัญญา" value={tenantForm.contractStart} onChange={(v) => setTenantForm({ ...tenantForm, contractStart: v })} variant="sa" required />
                 <FloatingField label="วันหมดสัญญา" value={tenantForm.contractEnd} onChange={(v) => setTenantForm({ ...tenantForm, contractEnd: v })} variant="sa" required />
               </div>
-              <div className="mt-3">
-                <p className="text-[11px] text-erp-muted mb-1.5 font-medium">Auto-renewal</p>
-                <div className="flex gap-5">
-                  <label className="flex items-center gap-2 cursor-pointer text-sm">
-                    <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${tenantForm.autoRenewal ? "border-sa-primary" : "border-erp-border"}`}>
-                      {tenantForm.autoRenewal && <span className="w-2 h-2 rounded-full bg-sa-primary" />}
-                    </span>
-                    ต่ออายุอัตโนมัติ
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer text-sm">
-                    <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${!tenantForm.autoRenewal ? "border-sa-primary" : "border-erp-border"}`}>
-                      {!tenantForm.autoRenewal && <span className="w-2 h-2 rounded-full bg-sa-primary" />}
-                    </span>
-                    ไม่ต่ออายุอัตโนมัติ
-                  </label>
-                </div>
-              </div>
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="caption" sx={{ color: "#777", fontWeight: 500, mb: 0.5, display: "block" }}>Auto-renewal</Typography>
+                <RadioGroup
+                  row
+                  value={tenantForm.autoRenewal ? "yes" : "no"}
+                  onChange={(e) => setTenantForm({ ...tenantForm, autoRenewal: e.target.value === "yes" })}
+                >
+                  <FormControlLabel value="yes" control={<Radio size="small" sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }} />} label={<Typography variant="body2">ต่ออายุอัตโนมัติ</Typography>} />
+                  <FormControlLabel value="no" control={<Radio size="small" sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }} />} label={<Typography variant="body2">ไม่ต่ออายุอัตโนมัติ</Typography>} />
+                </RadioGroup>
+              </Box>
               <div className="flex gap-1.5 p-2 bg-green-50 rounded-md text-[11px] text-green-700 mt-3 border border-green-200">
                 &#10003; เมื่อกดบันทึก ระบบจะสร้างสัญญาที่ 1 อัตโนมัติ และส่ง Welcome Email ให้ TA
               </div>
