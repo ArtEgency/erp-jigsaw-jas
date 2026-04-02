@@ -8,12 +8,15 @@ import SlidePanel from "@/components/layout/SlidePanel";
 import FloatingField from "@/components/layout/FloatingField";
 import FormDialog from "@/components/ui/FormDialog";
 import { masterAccounts, MasterAccount, sampleTenantDetail } from "@/data/mock";
-import { TextField, MenuItem, Button, Stack, Alert, Chip, IconButton } from "@mui/material";
+import { TextField, MenuItem, Button, Stack, Alert, Chip, IconButton, LinearProgress, Typography, Box } from "@mui/material";
+import InputAdornment from "@mui/material/InputAdornment";
 import EditIcon from "@mui/icons-material/Edit";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import SearchIcon from "@mui/icons-material/Search";
-import InputAdornment from "@mui/material/InputAdornment";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 type Screen = "s1" | "s2" | "s2e" | "s3" | "s4" | "s4e" | "s5" | "s6" | "s7" | "s8";
 
@@ -581,72 +584,77 @@ export default function OnboardingPage() {
             </span>
           </div>
 
-          {/* Password field */}
-          <div className="mb-2">
-            <p className="text-[11px] text-erp-muted mb-1 font-medium">รหัสผ่านใหม่ <span className="text-erp-error">*</span></p>
-            <div className="relative">
-              <input
-                type={showPw ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className={`w-full px-3 py-2.5 pr-10 border-[1.5px] rounded-md text-sm outline-none transition-colors ${
-                  pwStrength === 4 ? "border-green-500" : "border-erp-border"
-                } focus:border-brand-primary`}
-              />
-              <button
-                onClick={() => setShowPw(!showPw)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"
-              >
-                {showPw ? "&#128584;" : "&#128065;"}
-              </button>
-            </div>
-          </div>
+          {/* Password field (MUI) */}
+          <TextField
+            label="รหัสผ่านใหม่"
+            size="small"
+            fullWidth
+            required
+            type={showPw ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            color={pwStrength === 4 ? "success" : "primary"}
+            sx={{ mb: 1 }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton size="small" onClick={() => setShowPw(!showPw)} edge="end">
+                    {showPw ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
 
-          {/* Strength bar */}
-          <div className="flex gap-1 h-1 mb-1">
-            {[0, 1, 2, 3].map((i) => (
-              <div key={i} className={`flex-1 rounded-sm ${i < pwStrength ? "bg-green-500" : "bg-erp-border"}`} />
-            ))}
-          </div>
-          {pwStrength === 4 && <p className="text-[10px] font-semibold text-green-600 mb-2">รหัสผ่านแข็งแกร่ง</p>}
+          {/* Strength bar (MUI LinearProgress) */}
+          <LinearProgress
+            variant="determinate"
+            value={pwStrength * 25}
+            color={pwStrength >= 3 ? "success" : pwStrength >= 2 ? "warning" : "error"}
+            sx={{ height: 4, borderRadius: 2, mb: 0.5 }}
+          />
+          {pwStrength === 4 && <Typography variant="caption" sx={{ color: "success.main", fontWeight: 600, display: "block", mb: 1 }}>รหัสผ่านแข็งแกร่ง</Typography>}
 
           {/* Rules */}
-          <div className="bg-gray-50 rounded-md p-2.5 mb-3">
+          <Box sx={{ bgcolor: "#F9F9F9", borderRadius: 1, p: 1.5, mb: 2 }}>
             {pwChecks.map((r, i) => (
-              <div key={i} className={`flex items-center gap-1.5 text-[11px] mb-0.5 last:mb-0 ${r.ok ? "text-green-600" : "text-erp-muted"}`}>
-                <span className={`w-3 h-3 rounded-full flex items-center justify-center text-[8px] shrink-0 ${r.ok ? "bg-green-50 text-green-600" : "bg-erp-border text-transparent"}`}>
-                  &#10003;
-                </span>
-                {r.label}
-              </div>
+              <Box key={i} sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.3, color: r.ok ? "success.main" : "#999" }}>
+                {r.ok ? <CheckCircleIcon sx={{ fontSize: 14 }} /> : <Box sx={{ width: 14, height: 14, borderRadius: "50%", bgcolor: "#E0E0E0" }} />}
+                <Typography variant="caption">{r.label}</Typography>
+              </Box>
             ))}
-          </div>
+          </Box>
 
-          {/* Confirm password */}
-          <p className="text-[11px] text-erp-muted mb-1 font-medium">ยืนยันรหัสผ่าน <span className="text-erp-error">*</span></p>
-          <div className="relative mb-4">
-            <input
-              type={showConfirmPw ? "text" : "password"}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className={`w-full px-3 py-2.5 pr-10 border-[1.5px] rounded-md text-sm outline-none transition-colors ${
-                confirmPassword && confirmPassword === password ? "border-green-500" : "border-erp-border"
-              } focus:border-brand-primary`}
-            />
-            <button
-              onClick={() => setShowConfirmPw(!showConfirmPw)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"
-            >
-              {showConfirmPw ? "&#128584;" : "&#128065;"}
-            </button>
-          </div>
+          {/* Confirm password (MUI) */}
+          <TextField
+            label="ยืนยันรหัสผ่าน"
+            size="small"
+            fullWidth
+            required
+            type={showConfirmPw ? "text" : "password"}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            color={confirmPassword && confirmPassword === password ? "success" : "primary"}
+            sx={{ mb: 2 }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton size="small" onClick={() => setShowConfirmPw(!showConfirmPw)} edge="end">
+                    {showConfirmPw ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
 
-          <button
+          <Button
+            fullWidth
+            variant="contained"
             onClick={() => go("s5")}
-            className="w-full py-3 bg-brand-primary hover:bg-brand-hover text-white rounded-md text-sm font-bold transition-colors"
+            sx={{ bgcolor: "#565DFF", "&:hover": { bgcolor: "#4349E0" }, py: 1.2, fontWeight: 700, textTransform: "none" }}
           >
             ตั้งรหัสผ่านและเริ่มใช้งาน
-          </button>
+          </Button>
         </div>
       </div>
     </div>

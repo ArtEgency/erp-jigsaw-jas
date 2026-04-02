@@ -3,21 +3,35 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import {
+  TextField, Button, Alert, Checkbox, FormControlLabel,
+  IconButton, InputAdornment, Typography, Box, Stack,
+} from "@mui/material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { useAuth } from "@/lib/auth";
+import { useLocale } from "@/lib/locale";
 
-export default function SuperAdminLogin() {
+export default function JASLoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
+  const { t } = useLocale();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(true);
   const [error, setError] = useState("");
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) {
-      setError("กรุณากรอกข้อมูลให้ครบ");
+      setError(t("auth.fillRequired"));
       return;
     }
-    router.push("/onboarding");
+    const success = await login(email, password);
+    if (success) {
+      router.push("/onboarding");
+    }
   };
 
   return (
@@ -34,26 +48,14 @@ export default function SuperAdminLogin() {
         <div className="relative z-10 text-center">
           <div className="text-8xl font-bold text-white/10 tracking-widest mb-4">ERP</div>
           <p className="text-[#FF6B00]/60 text-sm tracking-[0.3em] uppercase">Enterprise Resource Planning</p>
-          <div className="absolute -top-20 -left-20 w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-2xl">
-            👥
-          </div>
-          <div className="absolute -top-10 right-0 w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-xl">
-            ⚙️
-          </div>
-          <div className="absolute -bottom-16 -left-10 w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-xl">
-            ☁️
-          </div>
-          <div className="absolute -bottom-10 right-10 w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-lg">
-            🔍
-          </div>
         </div>
       </div>
 
       {/* Right: Login Form */}
-      <div className="flex-1 flex flex-col items-center justify-center bg-white px-8">
-        <div className="w-full max-w-[380px]">
+      <Box className="flex-1 flex flex-col items-center justify-center bg-white px-8">
+        <Box sx={{ width: "100%", maxWidth: 380 }}>
           {/* Logo */}
-          <div className="text-center mb-8">
+          <Box sx={{ textAlign: "center", mb: 4 }}>
             <Image
               src="/logo-jigsaw.png"
               alt="JIGSAW"
@@ -62,80 +64,95 @@ export default function SuperAdminLogin() {
               className="mx-auto mb-4"
               priority
             />
-            <p className="text-sa-primary text-sm font-medium">ยินดีต้อนรับผู้ดูแลระบบ</p>
-            <p className="text-sa-primary/70 text-sm">JIGSAW Backoffice</p>
-          </div>
+            <Typography variant="body2" sx={{ color: "#FF6B00", fontWeight: 500 }}>
+              {t("auth.welcome")}
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#FF6B00", opacity: 0.7 }}>
+              JIGSAW Backoffice
+            </Typography>
+          </Box>
 
-          {/* Form */}
-          <h2 className="text-center text-lg font-bold text-erp-text mb-6">เข้าสู่ระบบ</h2>
+          {/* Title */}
+          <Typography variant="h6" sx={{ textAlign: "center", fontWeight: 700, mb: 3 }}>
+            {t("auth.login")}
+          </Typography>
 
+          {/* Error */}
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-erp-error/30 rounded-lg text-erp-error text-sm text-center">
+            <Alert severity="error" sx={{ mb: 2, fontSize: 13 }}>
               {error}
-            </div>
+            </Alert>
           )}
 
-          {/* Email */}
-          <div className="mb-4">
-            <div className="field-group sa">
-              <input
-                type="text"
-                value={email}
-                onChange={(e) => { setEmail(e.target.value); setError(""); }}
-              />
-              <label>อีเมล/เบอร์โทรศัพท์/รหัสพนักงาน</label>
-            </div>
-          </div>
-
-          {/* Password */}
-          <div className="mb-4">
-            <div className="field-group sa relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => { setPassword(e.target.value); setError(""); }}
-                onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-              />
-              <label>รหัสผ่าน</label>
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-erp-muted hover:text-erp-text text-lg"
-              >
-                {showPassword ? "🙈" : "👁"}
-              </button>
-            </div>
-          </div>
+          {/* Form */}
+          <Stack spacing={2}>
+            <TextField
+              label={t("auth.email")}
+              size="small"
+              fullWidth
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); setError(""); }}
+            />
+            <TextField
+              label={t("auth.password")}
+              size="small"
+              fullWidth
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => { setPassword(e.target.value); setError(""); }}
+              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton size="small" onClick={() => setShowPassword(!showPassword)} edge="end">
+                      {showPassword ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Stack>
 
           {/* Remember + Forgot */}
-          <div className="flex items-center justify-between mb-6">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={remember}
-                onChange={(e) => setRemember(e.target.checked)}
-                className="w-4 h-4 rounded border-erp-border text-sa-primary focus:ring-sa-primary accent-sa-primary"
-              />
-              <span className="text-sm text-erp-muted">จำรหัสผ่าน</span>
-            </label>
-            <button className="text-sm text-sa-primary hover:underline">ลืมรหัสผ่าน ?</button>
-          </div>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", my: 2 }}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={remember}
+                  onChange={(e) => setRemember(e.target.checked)}
+                  size="small"
+                  sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }}
+                />
+              }
+              label={<Typography variant="body2" sx={{ color: "#777" }}>{t("auth.remember")}</Typography>}
+            />
+            <Button variant="text" size="small" sx={{ color: "#FF6B00", textTransform: "none", fontSize: 13 }}>
+              {t("auth.forgot")}
+            </Button>
+          </Box>
 
           {/* Login Button */}
-          <button
+          <Button
+            fullWidth
+            variant="contained"
             onClick={handleLogin}
-            className="w-full py-3 bg-sa-primary hover:bg-sa-hover text-white rounded-lg font-semibold transition-colors text-sm"
+            sx={{
+              bgcolor: "#FF6B00", "&:hover": { bgcolor: "#E65C00" },
+              py: 1.2, fontWeight: 600, fontSize: 14, textTransform: "none",
+            }}
           >
-            เข้าสู่ระบบ
-          </button>
+            {t("auth.login")}
+          </Button>
 
           {/* Footer */}
-          <p className="text-center text-xs text-erp-muted mt-6">
-            หากพบปัญหาการเข้าสู่ระบบ{" "}
-            <button className="text-sa-primary hover:underline">กรุณาติดต่อผู้ดูแลระบบ</button>
-          </p>
-        </div>
-      </div>
+          <Typography variant="caption" sx={{ display: "block", textAlign: "center", mt: 3, color: "#999" }}>
+            {t("auth.helpText")}{" "}
+            <Button variant="text" size="small" sx={{ color: "#FF6B00", textTransform: "none", fontSize: 11, p: 0, minWidth: 0 }}>
+              {t("auth.contactAdmin")}
+            </Button>
+          </Typography>
+        </Box>
+      </Box>
     </div>
   );
 }
