@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/Toast";
 import MuiThemeProvider from "@/lib/MuiThemeProvider";
+import { AuthProvider } from "@/lib/auth";
+import { LocaleProvider } from "@/lib/locale";
 
 export const metadata: Metadata = {
   title: "Jigsaw Admin (JAS)",
@@ -17,7 +19,11 @@ export default function RootLayout({
     <html lang="th">
       <body className="antialiased">
         <MuiThemeProvider>
-          <ToastProvider>{children}</ToastProvider>
+          <LocaleProvider>
+            <AuthProvider>
+              <ToastProvider>{children}</ToastProvider>
+            </AuthProvider>
+          </LocaleProvider>
         </MuiThemeProvider>
       </body>
     </html>
