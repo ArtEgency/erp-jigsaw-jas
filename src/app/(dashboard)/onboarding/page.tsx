@@ -136,22 +136,11 @@ export default function OnboardingPage() {
   );
 
   // ─── SCREEN META ───
-  const ScreenMetaBar = ({ id, title, actor }: { id: string; title: string; actor: "sa" | "ta" }) => (
-    <div className="bg-[#1e1e2e] px-4 py-2 flex items-center gap-2.5 flex-wrap shrink-0">
-      <span className="text-[10px] font-mono text-blue-300 bg-[#1e3a5f] px-2 py-0.5 rounded">{id}</span>
-      <span className="text-xs font-medium text-white flex-1">{title}</span>
-      <span className={`text-[10px] px-2 py-0.5 rounded-lg ${
-        actor === "sa" ? "bg-[#1e3a5f] text-blue-300" : "bg-[#3d2800] text-yellow-300"
-      }`}>
-        {actor === "sa" ? "Super Admin" : "Tenant Admin"}
-      </span>
-    </div>
-  );
+  // ScreenMetaBar removed — was dev-only screen label
 
   // ═══════════════════ S1: MASTER ACCOUNT LIST ═══════════════════
   const renderS1 = () => (
     <div className="flex flex-col flex-1">
-      <ScreenMetaBar id="S-01-01" title="Master Account List — Data List" actor="sa" />
       {renderTopBarSA()}
       <Breadcrumb items={[{ label: "ลูกค้า" }, { label: "รายชื่อลูกค้า" }]} />
       <div className="px-5 pt-3 pb-2">
@@ -287,7 +276,6 @@ export default function OnboardingPage() {
   // ═══════════════════ S2: CREATE ACCOUNT PANEL ═══════════════════
   const renderS2 = () => (
     <div className="flex flex-col flex-1">
-      <ScreenMetaBar id="S-01-02" title="ฟอร์มสร้าง Master Account — Slide Panel (Filled State)" actor="sa" />
       {renderTopBarSA()}
       <Breadcrumb items={[{ label: "Master Accounts", onClick: () => go("s1") }, { label: "สร้างใหม่" }]} />
       <div className="px-5 pt-3 pb-2">
@@ -363,7 +351,6 @@ export default function OnboardingPage() {
   // ═══════════════════ S2e: ERROR STATE ═══════════════════
   const renderS2e = () => (
     <div className="flex flex-col flex-1">
-      <ScreenMetaBar id="S-01-02e" title="Error — Email ซ้ำในระบบ · ปุ่ม disabled" actor="sa" />
       {renderTopBarSA()}
       <Breadcrumb items={[{ label: "Master Accounts", onClick: () => go("s1") }, { label: "สร้างใหม่" }]} />
       <div className="px-5 pt-3 pb-2">
@@ -418,7 +405,6 @@ export default function OnboardingPage() {
   // ═══════════════════ S3: VERIFY EMAIL ═══════════════════
   const renderS3 = () => (
     <div className="flex flex-col flex-1">
-      <ScreenMetaBar id="S-01-03" title="Verify Email — ส่งให้ Tenant Admin ทันทีหลัง Save" actor="ta" />
       <TopBarTA info="Email Client — somchai@siamgroup.co.th" />
       <div className="flex-1 pt-4 bg-[#f0ede6]">
         <div className="flex items-start justify-center p-5">
@@ -470,7 +456,6 @@ export default function OnboardingPage() {
   // ═══════════════════ S4: SET PASSWORD ═══════════════════
   const renderS4 = () => (
     <div className="flex flex-col flex-1">
-      <ScreenMetaBar id="S-01-04" title="ตั้ง Password ครั้งแรก — Token Valid · Filled State" actor="ta" />
       <TopBarTA info="verify.jigsawerp.com" />
       <div className="flex-1 bg-erp-bg flex items-center justify-center p-6">
         <div className="bg-white rounded-xl border border-erp-border p-7 w-full max-w-[400px] shadow-lg">
@@ -561,7 +546,6 @@ export default function OnboardingPage() {
   // ═══════════════════ S4e: TOKEN EXPIRED ═══════════════════
   const renderS4e = () => (
     <div className="flex flex-col flex-1">
-      <ScreenMetaBar id="S-01-04e" title="Token หมดอายุ — Error Screen" actor="ta" />
       <TopBarTA info="verify.jigsawerp.com" />
       <div className="flex-1 bg-red-50/50 flex items-center justify-center p-6">
         <div className="bg-white rounded-xl border border-red-200 p-7 w-full max-w-[400px] shadow-lg">
@@ -587,7 +571,6 @@ export default function OnboardingPage() {
   // ═══════════════════ S5: ACCOUNT DETAIL ═══════════════════
   const renderS5 = () => (
     <div className="flex flex-col flex-1">
-      <ScreenMetaBar id="S-01-05" title={`Account Detail — Tab: ข้อมูลทั่วไป + Tenants (${selectedAccount.tenantUsed}/${selectedAccount.tenantQuota})`} actor="sa" />
       {renderTopBarSA()}
       <Breadcrumb items={[
         { label: "Master Accounts", onClick: () => go("s1") },
@@ -780,7 +763,6 @@ export default function OnboardingPage() {
   // ═══════════════════ S6: CREATE TENANT FORM ═══════════════════
   const renderS6 = () => (
     <div className="flex flex-col flex-1">
-      <ScreenMetaBar id="S-01-06" title="ฟอร์มสร้าง Tenant — ข้อมูลนิติบุคคล + Package (Slide Panel)" actor="sa" />
       {renderTopBarSA()}
       <Breadcrumb items={[
         { label: "Master Accounts", onClick: () => go("s1") },
@@ -1021,7 +1003,6 @@ export default function OnboardingPage() {
   // ═══════════════════ S7: WELCOME EMAIL ═══════════════════
   const renderS7 = () => (
     <div className="flex flex-col flex-1">
-      <ScreenMetaBar id="S-01-07" title="Welcome Email — ส่งให้ TA หลัง Provision สำเร็จ" actor="ta" />
       <TopBarTA info="Email Client — somchai@siamgroup.co.th" />
       <div className="flex-1 pt-4 bg-[#f0ede6]">
         <div className="flex items-start justify-center p-5">
@@ -1075,7 +1056,6 @@ export default function OnboardingPage() {
   // ═══════════════════ S8: TENANT LIST (POST-CREATE) ═══════════════════
   const renderS8 = () => (
     <div className="flex flex-col flex-1">
-      <ScreenMetaBar id="S-01-08" title="Account Detail — Tenant List หลังสร้างสำเร็จ (F-01 Done)" actor="sa" />
       {renderTopBarSA()}
       {/* Success toast */}
       {showToast && (
@@ -1182,19 +1162,45 @@ export default function OnboardingPage() {
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
               </svg>
             </div>
-            {/* Other nav icons */}
-            {["&#8962;", "&#9201;", "&#128203;", "&#128230;", "&#128101;", "&#127991;", "&#128202;"].map((icon, i) => (
+            {/* Component Showcase link */}
+            <div
+              className="w-11 h-10 flex items-center justify-center rounded-md cursor-pointer text-sm transition-colors text-gray-500 hover:bg-[#3a3a3a] hover:text-white"
+              title="Component Showcase"
+              onClick={() => router.push("/component-showcase")}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+            </div>
+            {/* Nav icons (SVG) */}
+            {[
+              { title: "Home", svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
+              { title: "Recent", svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
+              { title: "Clipboard", svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg> },
+              { title: "Mail", svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg> },
+              { title: "Users", svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, active: true },
+              { title: "Tags", svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> },
+              { title: "Charts", svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> },
+            ].map((item, i) => (
               <div
                 key={i}
-                className="w-11 h-10 flex items-center justify-center rounded-md cursor-pointer text-sm transition-colors text-gray-500 hover:bg-[#3a3a3a] hover:text-white"
-                dangerouslySetInnerHTML={{ __html: icon }}
-              />
+                className={`w-11 h-10 flex items-center justify-center rounded-md cursor-pointer text-sm transition-colors ${
+                  item.active ? "bg-[#FF6B00]/15 text-sa-primary" : "text-gray-500 hover:bg-[#3a3a3a] hover:text-white"
+                }`}
+                title={item.title}
+              >
+                {item.svg}
+              </div>
             ))}
           </div>
           <div className="flex-1" />
           <div className="mb-2 flex flex-col gap-0.5">
-            <div className="w-11 h-10 flex items-center justify-center rounded-md cursor-pointer text-sm text-gray-500 hover:bg-[#3a3a3a] hover:text-white">&#9881;</div>
-            <div className="w-11 h-10 flex items-center justify-center rounded-md cursor-pointer text-sm text-gray-500 hover:bg-[#3a3a3a] hover:text-white">&bull;&bull;&bull;</div>
+            <div className="w-11 h-10 flex items-center justify-center rounded-md cursor-pointer text-sm text-gray-500 hover:bg-[#3a3a3a] hover:text-white" title="Settings">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </div>
+            <div className="w-11 h-10 flex items-center justify-center rounded-md cursor-pointer text-sm text-gray-500 hover:bg-[#3a3a3a] hover:text-white" title="More">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+            </div>
           </div>
         </div>
 
