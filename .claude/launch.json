@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "erp-jigsaw-dev",
+      "runtimeExecutable": "/bin/bash",
+      "runtimeArgs": ["/Users/artt/CoWork/erp-jigsaw/.claude/start-dev.sh"],
+      "cwd": "/Users/artt/CoWork/erp-jigsaw",
+      "autoPort": true
+    }
+  ]
+}
