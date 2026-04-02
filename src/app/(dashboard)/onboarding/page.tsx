@@ -8,12 +8,11 @@ import SlidePanel from "@/components/layout/SlidePanel";
 import FloatingField from "@/components/layout/FloatingField";
 import FormDialog from "@/components/ui/FormDialog";
 import { masterAccounts, MasterAccount, sampleTenantDetail } from "@/data/mock";
-import { TextField, MenuItem, Button, Stack, Alert, Chip, IconButton, LinearProgress, Typography, Box, Tabs, Tab, Radio, RadioGroup, FormControlLabel, ToggleButtonGroup, ToggleButton } from "@mui/material";
+import { TextField, MenuItem, Button, Stack, Alert, Chip, IconButton, LinearProgress, Typography, Box, Tabs, Tab, Radio, RadioGroup, FormControlLabel, ToggleButtonGroup, ToggleButton, Checkbox, Paper } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
 import EditIcon from "@mui/icons-material/Edit";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
-import SearchIcon from "@mui/icons-material/Search";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -152,134 +151,145 @@ export default function OnboardingPage() {
       <div className="px-5 pt-3 pb-2">
         <h1 className="text-xl font-bold text-erp-text">รายชื่อลูกค้า</h1>
       </div>
-      <div className="flex-1 px-5 pb-5">
-        {/* Toolbar */}
-        <div className="flex items-center gap-2.5 mb-3 flex-wrap">
-          <Button variant="outlined" size="small" startIcon={<FileUploadOutlinedIcon />} sx={{ fontSize: 12 }}>
+      <Box sx={{ flex: 1, px: 3, pb: 3 }}>
+        {/* Toolbar — matches Figma */}
+        <Stack direction="row" alignItems="center" gap={2} sx={{ mb: 2 }}>
+          <Button
+            variant="contained"
+            startIcon={<FileUploadOutlinedIcon />}
+            sx={{ bgcolor: "#FF6B00", "&:hover": { bgcolor: "#E65C00" }, textTransform: "uppercase", fontWeight: 500, fontSize: 14, px: 2.5, py: 0.8 }}
+          >
             ส่งออกรายงาน
           </Button>
-          <div className="flex-1" />
+          <Box sx={{ flex: 1 }} />
           <TextField
             size="small"
-            placeholder="ค้นหารายชื่อลูกค้า..."
+            placeholder="ค้นหาชื่อลูกค้า"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            sx={{ width: 240, "& .MuiInputBase-input": { fontSize: 12 } }}
-            InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ fontSize: 18, color: "#999" }} /></InputAdornment> }}
+            sx={{ width: 280, "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
           />
           <Button
             variant="contained"
-            size="small"
             onClick={() => {
               setAccountForm({ company: "", firstName: "", lastName: "", position: "", customerGroup: "ทั่วไป", email: "", phone: "", tenantQuota: "3" });
               setEmailError(false);
               setAddAccountOpen(true);
             }}
-            sx={{ bgcolor: "#FF6B00", "&:hover": { bgcolor: "#E65C00" }, fontWeight: 600, fontSize: 12 }}
+            sx={{ bgcolor: "#FF6B00", "&:hover": { bgcolor: "#E65C00" }, fontWeight: 500, fontSize: 14, px: 2.5, py: 0.8, textTransform: "none", boxShadow: "0px 4px 8px -4px rgba(76,78,100,0.42)" }}
           >
-            + เพิ่มลูกค้า
+            เพิ่มลูกค้า
           </Button>
-        </div>
+        </Stack>
 
-        {/* Table */}
-        <div className="bg-white rounded-lg border border-erp-border overflow-hidden">
-          <table className="w-full text-sm">
+        {/* Table Card — Figma style: white card + shadow + rounded */}
+        <Paper sx={{ borderRadius: 2.5, boxShadow: "0px 2px 10px rgba(76,78,100,0.22)", overflow: "hidden" }}>
+          <table className="w-full" style={{ fontSize: 14, borderCollapse: "collapse" }}>
             <thead>
-              <tr className="bg-white border-b border-erp-border">
-                <th className="px-3.5 py-3 text-left text-[11px] font-semibold text-erp-muted whitespace-nowrap">รหัส Account</th>
-                <th className="px-3.5 py-3 text-left text-[11px] font-semibold text-erp-muted">ชื่อ-นามสกุล</th>
-                <th className="px-3.5 py-3 text-left text-[11px] font-semibold text-erp-muted">กลุ่มลูกค้า</th>
-                <th className="px-3.5 py-3 text-left text-[11px] font-semibold text-erp-muted">อีเมล (Master Email)</th>
-                <th className="px-3.5 py-3 text-left text-[11px] font-semibold text-erp-muted">เบอร์โทรศัพท์</th>
-                <th className="px-3.5 py-3 text-left text-[11px] font-semibold text-erp-muted">วันที่ยืนยัน Email</th>
-                <th className="px-3.5 py-3 text-left text-[11px] font-semibold text-erp-muted">จำนวนธุรกิจ</th>
-                <th className="px-3.5 py-3 text-left text-[11px] font-semibold text-erp-muted">สถานะ</th>
-                <th className="px-3.5 py-3 text-left text-[11px] font-semibold text-erp-muted">จัดการ</th>
+              <tr style={{ borderBottom: "1px solid #F5F5F7" }}>
+                <th style={{ width: 42, padding: "12px 8px", textAlign: "center" }}>
+                  <Checkbox size="small" sx={{ p: 0, color: "#C4C4C4" }} />
+                </th>
+                {["รหัส Account", "ชื่อ-นามสกุล", "กลุ่มลูกค้า", "Email", "เบอร์โทรศัพท์", "วันที่ยืนยัน Email", "จำนวนธุรกิจ (Quota)", "สถานะ", "จัดการ"].map((col, i) => (
+                  <th key={i} style={{ padding: "14px 16px", textAlign: "left", fontWeight: 500, color: "#374151", fontSize: 14, whiteSpace: "nowrap", borderRight: i < 8 ? "2px solid rgba(76,78,100,0.12)" : "none", position: "relative" }}>
+                    {col}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {filtered.map((a) => (
                 <tr
                   key={a.id}
-                  className="border-b border-gray-50 hover:bg-[#f8f6ff] cursor-pointer transition-colors"
+                  style={{ borderBottom: "1px solid rgba(76,78,100,0.12)" }}
+                  className="hover:bg-[#f8f6ff] cursor-pointer transition-colors"
                   onClick={() => { setSelectedAccount(a); setDetailTab("general"); go("s5"); }}
                 >
-                  <td className="px-3.5 py-3">
-                    <span className="font-mono text-[11px] font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">
-                      {a.id}
-                    </span>
+                  <td style={{ padding: "12px 8px", textAlign: "center" }}>
+                    <Checkbox size="small" sx={{ p: 0, color: "#C4C4C4" }} />
                   </td>
-                  <td className="px-3.5 py-3">
-                    <div className="font-semibold text-erp-text">{a.firstName} {a.lastName}</div>
-                    <div className="text-[11px] text-erp-muted">{a.position}</div>
+                  <td style={{ padding: "14px 16px" }}>
+                    <Typography variant="body2" sx={{ color: "#FF6B00", fontWeight: 400 }}>{a.id}</Typography>
                   </td>
-                  <td className="px-3.5 py-3">
-                    <Chip
-                      label={a.customerGroup}
-                      size="small"
-                      sx={{
-                        fontSize: 11, fontWeight: 500, "& .MuiChip-label": { px: 1 },
-                        ...(a.customerGroup === "ขายส่ง" ? { bgcolor: "#F3E8FF", color: "#6B21A8" } :
-                            a.customerGroup === "ขายปลีก" ? { bgcolor: "#ECFDF5", color: "#166534" } :
-                            a.customerGroup === "VIP" ? { bgcolor: "#EFF6FF", color: "#1E40AF" } :
-                            { bgcolor: "#FFF7ED", color: "#C2410C" })
-                      }}
-                    />
+                  <td style={{ padding: "14px 16px" }}>
+                    <Typography variant="body2" sx={{ fontWeight: 500, color: "#374151" }}>{a.firstName} {a.lastName}</Typography>
+                    <Typography variant="caption" sx={{ color: "#6B7280" }}>{a.position}</Typography>
                   </td>
-                  <td className="px-3.5 py-3 text-xs text-gray-500">{a.email}</td>
-                  <td className="px-3.5 py-3 text-xs">{a.phone}</td>
-                  <td className="px-3.5 py-3 text-xs text-erp-muted">{a.emailVerifiedAt || "—"}</td>
-                  <td className="px-3.5 py-3">
-                    <span className="font-semibold text-sa-primary">{a.tenantUsed}</span>
-                    <span className="text-erp-muted">/{a.tenantQuota}</span>
+                  <td style={{ padding: "14px 16px" }}>
+                    <Typography variant="body2" sx={{ color: "#4C4E63" }}>{a.customerGroup}</Typography>
                   </td>
-                  <td className="px-3.5 py-3">
+                  <td style={{ padding: "14px 16px" }}>
+                    <Typography variant="body2" sx={{ color: "#4C4E63" }}>{a.email}</Typography>
+                  </td>
+                  <td style={{ padding: "14px 16px" }}>
+                    <Typography variant="body2" sx={{ color: "#4C4E63" }}>{a.phone}</Typography>
+                  </td>
+                  <td style={{ padding: "14px 16px" }}>
+                    <Typography variant="body2" sx={{ color: "#4C4E63" }}>{a.emailVerifiedAt || "—"}</Typography>
+                  </td>
+                  <td style={{ padding: "14px 16px", textAlign: "center" }}>
+                    <Typography variant="body2">
+                      <span style={{ color: "#FF6B00", fontWeight: 600 }}>{a.tenantUsed}</span>
+                      <span style={{ color: "#4C4E63" }}>/{a.tenantQuota}</span>
+                    </Typography>
+                  </td>
+                  <td style={{ padding: "14px 16px" }}>
                     <Chip
                       label={a.status}
                       size="small"
-                      variant="outlined"
-                      color={a.status === "เปิดใช้งาน" ? "success" : a.status === "รอยืนยัน Email" ? "error" : "default"}
-                      sx={{ fontSize: 11, fontWeight: 600, "& .MuiChip-label": { px: 1 } }}
+                      sx={{
+                        borderRadius: 50, fontWeight: 500, fontSize: 14, px: 1,
+                        ...(a.status === "เปิดใช้งาน"
+                          ? { bgcolor: "rgba(238,251,229,0.98)", color: "#72E128" }
+                          : a.status === "รอยืนยัน Email"
+                          ? { bgcolor: "#FFF0E5", color: "#FF8228" }
+                          : { bgcolor: "#F0F0F0", color: "#999" }),
+                      }}
                     />
                   </td>
-                  <td className="px-3.5 py-3">
-                    <div className="flex items-center gap-0.5">
+                  <td style={{ padding: "14px 16px" }}>
+                    <Stack direction="row" gap={1.5} alignItems="center">
                       <IconButton
                         size="small"
                         onClick={(e) => { e.stopPropagation(); setSelectedAccount(a); setDetailTab("general"); go("s5"); }}
-                        sx={{ color: "#999", "&:hover": { color: "#FF6B00" } }}
+                        sx={{
+                          width: 28, height: 28, borderRadius: 3.5,
+                          bgcolor: a.status === "รอยืนยัน Email" ? "#FFEDE0" : "#E3E8F0",
+                          "&:hover": { bgcolor: a.status === "รอยืนยัน Email" ? "#FFD9BF" : "#D0D5E0" },
+                        }}
                       >
-                        <EditIcon sx={{ fontSize: 16 }} />
+                        <EditIcon sx={{ fontSize: 14, color: a.status === "รอยืนยัน Email" ? "#FF6B00" : "#4C4E63" }} />
                       </IconButton>
-                      <IconButton
-                        size="small"
-                        onClick={(e) => e.stopPropagation()}
-                        sx={{ color: "#999", "&:hover": { color: "#FF6B00" } }}
-                      >
-                        <MoreVertIcon sx={{ fontSize: 16 }} />
+                      <IconButton size="small" onClick={(e) => e.stopPropagation()} sx={{ width: 28, height: 28 }}>
+                        <MoreVertIcon sx={{ fontSize: 18, color: "#4C4E63" }} />
                       </IconButton>
-                    </div>
+                    </Stack>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          {/* Pagination */}
-          <div className="flex items-center justify-end gap-2 px-3.5 py-2.5 border-t border-erp-border text-xs text-erp-muted">
-            <span>จำนวนรายการต่อหน้า</span>
-            <select className="px-1.5 py-0.5 border border-erp-border rounded text-[11px]">
-              <option>6</option><option>12</option><option>25</option>
-            </select>
-            <span className="mx-1">1–{filtered.length} of {filtered.length}</span>
-            <button className="w-6 h-6 rounded border border-erp-border bg-white flex items-center justify-center text-xs hover:bg-gray-50">&#8249;</button>
-            <button className="w-6 h-6 rounded border border-sa-primary bg-sa-primary text-white flex items-center justify-center text-xs">1</button>
-            <button className="w-6 h-6 rounded border border-erp-border bg-white flex items-center justify-center text-xs hover:bg-gray-50">&#8250;</button>
-          </div>
-        </div>
-      </div>
-      <div className="px-5 py-2.5 text-[11px] text-gray-400 border-t border-erp-border bg-white text-center">
-        &copy; 2569, Made with &#10084; by ERP Jigsaw
-      </div>
+          {/* Pagination — Figma style */}
+          <Stack direction="row" alignItems="center" justifyContent="flex-end" gap={2} sx={{ px: 2.5, py: 1.5, borderTop: "1px solid #F5F5F7" }}>
+            <Typography variant="body2" sx={{ color: "#9294A1", fontSize: 13 }}>จำนวนรายการต่อหน้า</Typography>
+            <Stack direction="row" alignItems="center" gap={0.5}>
+              <Typography variant="body2" sx={{ color: "#4C4E63", fontSize: 13 }}>6</Typography>
+              <Box sx={{ fontSize: 10, color: "#4C4E63" }}>▼</Box>
+            </Stack>
+            <Typography variant="body2" sx={{ color: "#9294A1", fontSize: 13 }}>1-{filtered.length} of {filtered.length}</Typography>
+            <Stack direction="row" gap={0.5}>
+              <Box sx={{ width: 26, height: 26, borderRadius: 13, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 12, color: "#4C4E63" }}>&lt;</Box>
+              <Box sx={{ width: 26, height: 26, borderRadius: 13, bgcolor: "#FF6B00", color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 500 }}>1</Box>
+              <Box sx={{ width: 26, height: 26, borderRadius: 13, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 13, color: "#4C4E63" }}>2</Box>
+              <Box sx={{ width: 26, height: 26, borderRadius: 13, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 12, color: "#4C4E63" }}>&gt;</Box>
+            </Stack>
+          </Stack>
+        </Paper>
+      </Box>
+      {/* Footer — Figma style */}
+      <Box sx={{ px: 3, py: 2, fontSize: 14, color: "rgba(76,78,100,0.68)" }}>
+        &copy; 2026, Made with <span style={{ color: "#FF4D49" }}>❤</span>️ by <span style={{ color: "#565DFF" }}>Allder Now</span>
+      </Box>
 
       {/* === Add Account Modal (FormDialog from Showcase) === */}
       <FormDialog
