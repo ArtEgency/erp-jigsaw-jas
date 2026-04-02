@@ -8,7 +8,7 @@ import SlidePanel from "@/components/layout/SlidePanel";
 import FloatingField from "@/components/layout/FloatingField";
 import FormDialog from "@/components/ui/FormDialog";
 import { masterAccounts, MasterAccount, sampleTenantDetail } from "@/data/mock";
-import { TextField, MenuItem, Button, Stack, Alert, Chip, IconButton, LinearProgress, Typography, Box } from "@mui/material";
+import { TextField, MenuItem, Button, Stack, Alert, Chip, IconButton, LinearProgress, Typography, Box, Tabs, Tab, Radio, RadioGroup, FormControlLabel } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
 import EditIcon from "@mui/icons-material/Edit";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -696,29 +696,20 @@ export default function OnboardingPage() {
       {/* Detail Header */}
       <div className="px-5 bg-white border-b border-erp-border">
         <h1 className="text-xl font-bold pt-3 pb-2.5">ข้อมูลลูกค้า</h1>
-        <div className="flex gap-0">
-          {(["general", "tenants", "contracts", "history"] as const).map((tab) => {
-            const labels = {
-              general: "ข้อมูลทั่วไป",
-              tenants: `Tenants (${selectedAccount.tenantUsed}/${selectedAccount.tenantQuota})`,
-              contracts: "สัญญา",
-              history: "ประวัติ",
-            };
-            return (
-              <button
-                key={tab}
-                onClick={() => setDetailTab(tab)}
-                className={`px-4 py-2 text-sm font-medium rounded-t transition-colors ${
-                  detailTab === tab
-                    ? "bg-sa-primary text-white"
-                    : "text-erp-muted hover:text-erp-text"
-                }`}
-              >
-                {labels[tab]}
-              </button>
-            );
-          })}
-        </div>
+        <Tabs
+          value={detailTab}
+          onChange={(_, v) => setDetailTab(v)}
+          sx={{
+            "& .MuiTab-root": { textTransform: "none", fontSize: 13, fontWeight: 600, minHeight: 40 },
+            "& .Mui-selected": { color: "#FF6B00 !important" },
+            "& .MuiTabs-indicator": { bgcolor: "#FF6B00" },
+          }}
+        >
+          <Tab label="ข้อมูลทั่วไป" value="general" />
+          <Tab label={`Tenants (${selectedAccount.tenantUsed}/${selectedAccount.tenantQuota})`} value="tenants" />
+          <Tab label="สัญญา" value="contracts" />
+          <Tab label="ประวัติ" value="history" />
+        </Tabs>
       </div>
       {/* Detail Body */}
       <div className="flex-1 p-5 overflow-y-auto">
@@ -761,21 +752,11 @@ export default function OnboardingPage() {
                   <label>วันที่ยืนยัน Email</label>
                 </div>
                 <div className="col-span-2">
-                  <p className="text-[11px] text-erp-muted mb-1.5 font-medium">สถานะ</p>
-                  <div className="flex gap-5">
-                    <label className="flex items-center gap-2 cursor-pointer text-sm">
-                      <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${selectedAccount.status === "เปิดใช้งาน" ? "border-sa-primary" : "border-erp-border"}`}>
-                        {selectedAccount.status === "เปิดใช้งาน" && <span className="w-2 h-2 rounded-full bg-sa-primary" />}
-                      </span>
-                      เปิดใช้งาน
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer text-sm">
-                      <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${selectedAccount.status === "ปิดใช้งาน" ? "border-sa-primary" : "border-erp-border"}`}>
-                        {selectedAccount.status === "ปิดใช้งาน" && <span className="w-2 h-2 rounded-full bg-sa-primary" />}
-                      </span>
-                      ปิดใช้งาน
-                    </label>
-                  </div>
+                  <Typography variant="caption" sx={{ color: "#777", fontWeight: 500, mb: 0.5, display: "block" }}>สถานะ</Typography>
+                  <RadioGroup row value={selectedAccount.status}>
+                    <FormControlLabel value="เปิดใช้งาน" control={<Radio size="small" sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }} />} label={<Typography variant="body2">เปิดใช้งาน</Typography>} />
+                    <FormControlLabel value="ปิดใช้งาน" control={<Radio size="small" sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }} />} label={<Typography variant="body2">ปิดใช้งาน</Typography>} />
+                  </RadioGroup>
                 </div>
                 <div className="field-group sa">
                   <input value={`${selectedAccount.createdAt} — ${selectedAccount.createdBy}`} readOnly className="!bg-gray-50 !text-erp-muted" />
