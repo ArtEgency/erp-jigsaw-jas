@@ -22,6 +22,7 @@ const allModules = sampleTenantDetail.modules;
 export default function OnboardingPage() {
   const router = useRouter();
   const [screen, setScreen] = useState<Screen>("s1");
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedAccount, setSelectedAccount] = useState<MasterAccount>(masterAccounts[0]);
   const [showToast, setShowToast] = useState(false);
@@ -80,9 +81,9 @@ export default function OnboardingPage() {
   const pwStrength = pwChecks.filter((c) => c.ok).length;
 
   // ─── TOPBAR SA ───
-  const TopBarSA = () => (
+  const renderTopBarSA = () => (
     <div className="h-[52px] bg-sa-primary flex items-center px-4 gap-3 shrink-0">
-      <span className="text-white/80 text-lg cursor-pointer">&#9776;</span>
+      <div className="w-5" /> {/* spacer — hamburger toggle is the floating button */}
       <div className="text-xs text-white/70 flex-1">
         <strong className="text-white">Server: Prod</strong> | Jigsaw Admin
       </div>
@@ -151,7 +152,7 @@ export default function OnboardingPage() {
   const renderS1 = () => (
     <div className="flex flex-col flex-1">
       <ScreenMetaBar id="S-01-01" title="Master Account List — Data List" actor="sa" />
-      <TopBarSA />
+      {renderTopBarSA()}
       <Breadcrumb items={[{ label: "ลูกค้า" }, { label: "รายชื่อลูกค้า" }]} />
       <div className="px-5 pt-3 pb-2">
         <h1 className="text-xl font-bold text-erp-text">รายชื่อลูกค้า</h1>
@@ -287,7 +288,7 @@ export default function OnboardingPage() {
   const renderS2 = () => (
     <div className="flex flex-col flex-1">
       <ScreenMetaBar id="S-01-02" title="ฟอร์มสร้าง Master Account — Slide Panel (Filled State)" actor="sa" />
-      <TopBarSA />
+      {renderTopBarSA()}
       <Breadcrumb items={[{ label: "Master Accounts", onClick: () => go("s1") }, { label: "สร้างใหม่" }]} />
       <div className="px-5 pt-3 pb-2">
         <h1 className="text-xl font-bold text-erp-text">Master Accounts</h1>
@@ -363,7 +364,7 @@ export default function OnboardingPage() {
   const renderS2e = () => (
     <div className="flex flex-col flex-1">
       <ScreenMetaBar id="S-01-02e" title="Error — Email ซ้ำในระบบ · ปุ่ม disabled" actor="sa" />
-      <TopBarSA />
+      {renderTopBarSA()}
       <Breadcrumb items={[{ label: "Master Accounts", onClick: () => go("s1") }, { label: "สร้างใหม่" }]} />
       <div className="px-5 pt-3 pb-2">
         <h1 className="text-xl font-bold text-erp-text">Master Accounts</h1>
@@ -587,7 +588,7 @@ export default function OnboardingPage() {
   const renderS5 = () => (
     <div className="flex flex-col flex-1">
       <ScreenMetaBar id="S-01-05" title={`Account Detail — Tab: ข้อมูลทั่วไป + Tenants (${selectedAccount.tenantUsed}/${selectedAccount.tenantQuota})`} actor="sa" />
-      <TopBarSA />
+      {renderTopBarSA()}
       <Breadcrumb items={[
         { label: "Master Accounts", onClick: () => go("s1") },
         { label: `${selectedAccount.firstName} ${selectedAccount.lastName}` },
@@ -780,7 +781,7 @@ export default function OnboardingPage() {
   const renderS6 = () => (
     <div className="flex flex-col flex-1">
       <ScreenMetaBar id="S-01-06" title="ฟอร์มสร้าง Tenant — ข้อมูลนิติบุคคล + Package (Slide Panel)" actor="sa" />
-      <TopBarSA />
+      {renderTopBarSA()}
       <Breadcrumb items={[
         { label: "Master Accounts", onClick: () => go("s1") },
         { label: selectedAccount.firstName, onClick: () => go("s5") },
@@ -1075,7 +1076,7 @@ export default function OnboardingPage() {
   const renderS8 = () => (
     <div className="flex flex-col flex-1">
       <ScreenMetaBar id="S-01-08" title="Account Detail — Tenant List หลังสร้างสำเร็จ (F-01 Done)" actor="sa" />
-      <TopBarSA />
+      {renderTopBarSA()}
       {/* Success toast */}
       {showToast && (
         <div className="bg-green-50 text-green-700 border-b border-green-200 px-4 py-2.5 text-xs flex items-center gap-2 shrink-0">
@@ -1163,64 +1164,91 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen bg-erp-bg flex">
-      {/* Icon Sidebar */}
-      <div className="w-[52px] bg-[#2D2D2D] flex flex-col items-center fixed h-screen z-50">
-        <div className="w-[52px] h-14 bg-sa-primary flex items-center justify-center cursor-pointer" onClick={() => router.push("/")}>
-          <span className="text-[9px] font-extrabold text-white text-center leading-tight tracking-wider">JIG<br />SAW</span>
-        </div>
-        <div className="mt-1 flex flex-col gap-0.5">
-          {["&#8962;", "&#9201;", "&#128203;", "&#128230;", "&#128101;", "&#127991;", "&#128202;"].map((icon, i) => (
+      {/* Sidebar — Icon Bar + Expandable Nav */}
+      <div className={`fixed h-screen z-50 flex transition-all duration-300 ${sidebarExpanded ? "w-[272px]" : "w-[52px]"}`}>
+        {/* Icon Bar (always visible) */}
+        <div className="w-[52px] bg-[#2D2D2D] flex flex-col items-center shrink-0">
+          <div className="w-[52px] h-14 bg-sa-primary flex items-center justify-center cursor-pointer" onClick={() => router.push("/")}>
+            <span className="text-[9px] font-extrabold text-white text-center leading-tight tracking-wider">JIG<br />SAW</span>
+          </div>
+          <div className="mt-1 flex flex-col gap-0.5">
+            {/* Page menu item (first) */}
             <div
-              key={i}
-              className={`w-11 h-10 flex items-center justify-center rounded-md cursor-pointer text-sm transition-colors ${
-                i === 4 ? "bg-[#FF6B00]/15 text-sa-primary" : "text-gray-500 hover:bg-[#3a3a3a] hover:text-white"
-              }`}
-              dangerouslySetInnerHTML={{ __html: icon }}
-            />
-          ))}
-        </div>
-        <div className="flex-1" />
-        <div className="mb-2 flex flex-col gap-0.5">
-          <div className="w-11 h-10 flex items-center justify-center rounded-md cursor-pointer text-sm text-gray-500 hover:bg-[#3a3a3a] hover:text-white">&#9881;</div>
-          <div className="w-11 h-10 flex items-center justify-center rounded-md cursor-pointer text-sm text-gray-500 hover:bg-[#3a3a3a] hover:text-white">&bull;&bull;&bull;</div>
-        </div>
-      </div>
-
-      {/* Screen Nav */}
-      <div className="w-[220px] bg-[#12121f] fixed left-[52px] h-screen z-40 overflow-y-auto">
-        <div className="px-3 py-2 pb-3 border-b border-[#2a2a3e] bg-[#0e0e1a]">
-          <div className="text-xs font-semibold text-white">&#129513; F-01 Wireframe</div>
-          <div className="text-[10px] text-gray-600 mt-0.5">ERP Jigsaw — Onboarding</div>
-        </div>
-        <div className="py-1.5">
-          {navItems.map((item) => (
-            <div key={item.id}>
-              {item.section && (
-                <div className="px-3 pt-2 pb-1 text-[9px] font-semibold text-gray-500 uppercase tracking-wider">
-                  {item.section}
-                </div>
-              )}
-              <button
-                onClick={() => go(item.id)}
-                className={`w-full flex items-center gap-2 px-3 py-2 text-xs border-l-2 transition-colors ${
-                  screen === item.id
-                    ? "text-white bg-[#1a1a2e] border-l-sa-primary"
-                    : "text-gray-500 border-transparent hover:text-gray-300 hover:bg-[#1a1a2e]"
-                }`}
-              >
-                <span className="font-mono text-[10px] w-5 opacity-70">{item.num}</span>
-                <span className="flex-1 text-left">{item.label}</span>
-                {item.id === "s8" && (
-                  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-sa-primary text-white">&#10003;</span>
-                )}
-              </button>
+              className="w-11 h-10 flex items-center justify-center rounded-md cursor-pointer text-sm transition-colors bg-[#FF6B00]/15 text-sa-primary"
+              title="Page"
+              onClick={() => setSidebarExpanded(!sidebarExpanded)}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+              </svg>
             </div>
-          ))}
+            {/* Other nav icons */}
+            {["&#8962;", "&#9201;", "&#128203;", "&#128230;", "&#128101;", "&#127991;", "&#128202;"].map((icon, i) => (
+              <div
+                key={i}
+                className="w-11 h-10 flex items-center justify-center rounded-md cursor-pointer text-sm transition-colors text-gray-500 hover:bg-[#3a3a3a] hover:text-white"
+                dangerouslySetInnerHTML={{ __html: icon }}
+              />
+            ))}
+          </div>
+          <div className="flex-1" />
+          <div className="mb-2 flex flex-col gap-0.5">
+            <div className="w-11 h-10 flex items-center justify-center rounded-md cursor-pointer text-sm text-gray-500 hover:bg-[#3a3a3a] hover:text-white">&#9881;</div>
+            <div className="w-11 h-10 flex items-center justify-center rounded-md cursor-pointer text-sm text-gray-500 hover:bg-[#3a3a3a] hover:text-white">&bull;&bull;&bull;</div>
+          </div>
+        </div>
+
+        {/* Expandable Nav Panel (Screen Index / Page list) */}
+        <div className={`bg-[#12121f] overflow-hidden transition-all duration-300 ${sidebarExpanded ? "w-[220px] opacity-100" : "w-0 opacity-0"}`}>
+          <div className="w-[220px] h-full overflow-y-auto">
+            <div className="px-3 py-2 pb-3 border-b border-[#2a2a3e] bg-[#0e0e1a]">
+              <div className="text-xs font-semibold text-white flex items-center gap-1.5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Page — F-01 Wireframe
+              </div>
+              <div className="text-[10px] text-gray-600 mt-0.5">ERP Jigsaw — Onboarding ({navItems.length} screens)</div>
+            </div>
+            <div className="py-1.5">
+              {navItems.map((item) => (
+                <div key={item.id}>
+                  {item.section && (
+                    <div className="px-3 pt-2 pb-1 text-[9px] font-semibold text-gray-500 uppercase tracking-wider">
+                      {item.section}
+                    </div>
+                  )}
+                  <button
+                    onClick={() => go(item.id)}
+                    className={`w-full flex items-center gap-2 px-3 py-2 text-xs border-l-2 transition-colors ${
+                      screen === item.id
+                        ? "text-white bg-[#1a1a2e] border-l-sa-primary"
+                        : "text-gray-500 border-transparent hover:text-gray-300 hover:bg-[#1a1a2e]"
+                    }`}
+                  >
+                    <span className="font-mono text-[10px] w-5 opacity-70">{item.num}</span>
+                    <span className="flex-1 text-left">{item.label}</span>
+                    {item.id === "s8" && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-sa-primary text-white">&#10003;</span>
+                    )}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Main content */}
-      <div className="ml-[272px] flex-1 flex flex-col min-h-screen bg-erp-bg">
+      <div className={`flex-1 flex flex-col min-h-screen bg-erp-bg transition-all duration-300 ${sidebarExpanded ? "ml-[272px]" : "ml-[52px]"}`}>
+        {/* Floating hamburger toggle — always mounted by React */}
+        <button
+          type="button"
+          onClick={() => setSidebarExpanded(prev => !prev)}
+          className="fixed z-[60] w-8 h-8 flex items-center justify-center text-white/80 hover:text-white text-lg transition-colors"
+          style={{ top: 10, left: sidebarExpanded ? 284 : 64 }}
+          title={sidebarExpanded ? "หุบเมนู" : "กางเมนู"}
+        >
+          &#9776;
+        </button>
         {screens[screen]()}
       </div>
     </div>
