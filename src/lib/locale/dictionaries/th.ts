@@ -101,7 +101,6 @@ const th: Record<string, string> = {
   "onboarding.lastUpdatedAt": "วันที่แก้ไขล่าสุด",
   "onboarding.saActions": "การดำเนินการของ Super Admin",
   "onboarding.resetVerifyEmail": "Reset Email ยืนยัน",
-  "onboarding.resetPassword": "Reset รหัสผ่าน",
   "onboarding.contactWillReceiveEmail": "ผู้ติดต่อจะได้รับ Email พร้อมลิงก์ดำเนินการ",
   "onboarding.noTenantYet": "ยังไม่มี Tenant ภายใต้ Account นี้",
   "onboarding.createTenant": "สร้าง Tenant ใหม่",

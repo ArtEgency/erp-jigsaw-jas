@@ -101,7 +101,6 @@ const en: Record<string, string> = {
   "onboarding.lastUpdatedAt": "Last Updated At",
   "onboarding.saActions": "Super Admin Actions",
   "onboarding.resetVerifyEmail": "Reset Verify Email",
-  "onboarding.resetPassword": "Reset Password",
   "onboarding.contactWillReceiveEmail": "Contact will receive email with action link",
   "onboarding.noTenantYet": "No tenants under this account yet",
   "onboarding.createTenant": "Create New Tenant",
