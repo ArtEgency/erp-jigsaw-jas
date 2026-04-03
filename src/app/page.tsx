@@ -2,9 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useLocale } from "@/lib/locale";
 
 export default function JASLandingPage() {
   const router = useRouter();
+  const { t } = useLocale();
 
   return (
     <div className="min-h-screen bg-erp-body flex items-center justify-center">
@@ -25,8 +27,8 @@ export default function JASLandingPage() {
 
         {/* JAS Admin Entry */}
         <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-8 w-[480px]">
-          <h2 className="text-white text-lg font-semibold mb-1">Jigsaw Admin (JAS)</h2>
-          <p className="text-white/40 text-sm mb-6">admin.jigsawx.com — ระบบจัดการสำหรับทีม Jigsaw</p>
+          <h2 className="text-white text-lg font-semibold mb-1">{t("landing.title")}</h2>
+          <p className="text-white/40 text-sm mb-6">admin.jigsawx.com — {t("landing.subtitle")}</p>
 
           <div className="space-y-3">
             {/* JAS Admin Login */}
@@ -40,8 +42,8 @@ export default function JASLandingPage() {
                 </svg>
               </div>
               <div className="text-left flex-1 min-w-0">
-                <p className="text-white font-semibold text-sm">เข้าสู่ระบบ Admin</p>
-                <p className="text-white/40 text-xs mt-0.5 truncate">จัดการ Accounts, Onboarding, ระบบ</p>
+                <p className="text-white font-semibold text-sm">{t("landing.adminLogin")}</p>
+                <p className="text-white/40 text-xs mt-0.5 truncate">{t("landing.adminDesc")}</p>
               </div>
               <span className="text-white/30 text-lg group-hover:text-[#FF6B00] transition-colors shrink-0">&rarr;</span>
             </button>
@@ -56,7 +58,7 @@ export default function JASLandingPage() {
               <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
                 <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
               </svg>
-              Component Showcase / Design System
+              {t("landing.showcase")}
             </button>
           </div>
         </div>

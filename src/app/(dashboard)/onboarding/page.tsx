@@ -8,6 +8,7 @@ import SlidePanel from "@/components/layout/SlidePanel";
 import FloatingField from "@/components/layout/FloatingField";
 import FormDialog from "@/components/ui/FormDialog";
 import { masterAccounts, MasterAccount, sampleTenantDetail } from "@/data/mock";
+import { useLocale } from "@/lib/locale";
 import { TextField, MenuItem, Button, Stack, Alert, Chip, IconButton, LinearProgress, Typography, Box, Tabs, Tab, Radio, RadioGroup, FormControlLabel, ToggleButtonGroup, ToggleButton, Checkbox, Paper } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
 import EditIcon from "@mui/icons-material/Edit";
@@ -25,6 +26,7 @@ const allModules = sampleTenantDetail.modules;
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const { t } = useLocale();
   const [screen, setScreen] = useState<Screen>("s1");
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [addAccountOpen, setAddAccountOpen] = useState(false);
@@ -78,10 +80,10 @@ export default function OnboardingPage() {
 
   // Password strength
   const pwChecks = [
-    { label: "อย่างน้อย 8 ตัวอักษร", ok: password.length >= 8 },
-    { label: "มีตัวพิมพ์ใหญ่อย่างน้อย 1 ตัว", ok: /[A-Z]/.test(password) },
-    { label: "มีตัวเลขอย่างน้อย 1 ตัว", ok: /[0-9]/.test(password) },
-    { label: "มีอักขระพิเศษอย่างน้อย 1 ตัว", ok: /[^A-Za-z0-9]/.test(password) },
+    { label: t("onboarding.pwMin8"), ok: password.length >= 8 },
+    { label: t("onboarding.pwUppercase"), ok: /[A-Z]/.test(password) },
+    { label: t("onboarding.pwNumber"), ok: /[0-9]/.test(password) },
+    { label: t("onboarding.pwSpecial"), ok: /[^A-Za-z0-9]/.test(password) },
   ];
   const pwStrength = pwChecks.filter((c) => c.ok).length;
 
@@ -99,7 +101,7 @@ export default function OnboardingPage() {
           <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-sa-primary" />
         </span>
         <div className="w-px h-5 bg-white/30" />
-        <span className="text-white text-xs font-medium">สลิษา จิตดี</span>
+        <span className="text-white text-xs font-medium">{t("onboarding.adminName")}</span>
         <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs font-bold text-sa-primary border-2 border-white/40">
           สจ
         </div>
@@ -147,9 +149,9 @@ export default function OnboardingPage() {
   const renderS1 = () => (
     <div className="flex flex-col flex-1">
       {renderTopBarSA()}
-      <Breadcrumb items={[{ label: "ลูกค้า" }, { label: "รายชื่อลูกค้า" }]} />
+      <Breadcrumb items={[{ label: t("onboarding.customer") }, { label: t("onboarding.masterAccountList") }]} />
       <div className="px-5 pt-3 pb-2">
-        <h1 className="text-xl font-bold text-erp-text">รายชื่อลูกค้า</h1>
+        <h1 className="text-xl font-bold text-erp-text">{t("onboarding.masterAccountList")}</h1>
       </div>
       <Box sx={{ flex: 1, px: 3, pb: 3 }}>
         {/* Toolbar — matches Figma */}
@@ -159,12 +161,12 @@ export default function OnboardingPage() {
             startIcon={<FileUploadOutlinedIcon />}
             sx={{ bgcolor: "#FF6B00", "&:hover": { bgcolor: "#E65C00" }, textTransform: "uppercase", fontWeight: 500, fontSize: 14, px: 2.5, py: 0.8 }}
           >
-            ส่งออกรายงาน
+            {t("common.export")}
           </Button>
           <Box sx={{ flex: 1 }} />
           <TextField
             size="small"
-            placeholder="ค้นหาชื่อลูกค้า"
+            placeholder={t("onboarding.searchCustomer")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             sx={{ width: 280, "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
@@ -178,7 +180,7 @@ export default function OnboardingPage() {
             }}
             sx={{ bgcolor: "#FF6B00", "&:hover": { bgcolor: "#E65C00" }, fontWeight: 500, fontSize: 14, px: 2.5, py: 0.8, textTransform: "none", boxShadow: "0px 4px 8px -4px rgba(76,78,100,0.42)" }}
           >
-            เพิ่มลูกค้า
+            {t("onboarding.addCustomerShort")}
           </Button>
         </Stack>
 
@@ -190,7 +192,7 @@ export default function OnboardingPage() {
                 <th style={{ width: 42, padding: "12px 8px", textAlign: "center" }}>
                   <Checkbox size="small" sx={{ p: 0, color: "#C4C4C4" }} />
                 </th>
-                {["รหัส Account", "ชื่อ-นามสกุล", "กลุ่มลูกค้า", "Email", "เบอร์โทรศัพท์", "วันที่ยืนยัน Email", "จำนวนธุรกิจ (Quota)", "สถานะ", "จัดการ"].map((col, i) => (
+                {[t("onboarding.accountCode"), t("onboarding.name"), t("onboarding.customerGroup"), "Email", t("onboarding.phoneCol"), t("onboarding.emailVerifiedAt"), t("onboarding.businessCount"), t("onboarding.status"), t("onboarding.actions")].map((col, i) => (
                   <th key={i} style={{ padding: "14px 16px", textAlign: "left", fontWeight: 500, color: "#374151", fontSize: 14, whiteSpace: "nowrap", borderRight: i < 8 ? "2px solid rgba(76,78,100,0.12)" : "none", position: "relative" }}>
                     {col}
                   </th>
@@ -271,7 +273,7 @@ export default function OnboardingPage() {
           </table>
           {/* Pagination — Figma style */}
           <Stack direction="row" alignItems="center" justifyContent="flex-end" gap={2} sx={{ px: 2.5, py: 1.5, borderTop: "1px solid #F5F5F7" }}>
-            <Typography variant="body2" sx={{ color: "#9294A1", fontSize: 13 }}>จำนวนรายการต่อหน้า</Typography>
+            <Typography variant="body2" sx={{ color: "#9294A1", fontSize: 13 }}>{t("common.perPage")}</Typography>
             <Stack direction="row" alignItems="center" gap={0.5}>
               <Typography variant="body2" sx={{ color: "#4C4E63", fontSize: 13 }}>6</Typography>
               <Box sx={{ fontSize: 10, color: "#4C4E63" }}>▼</Box>
@@ -288,32 +290,32 @@ export default function OnboardingPage() {
       </Box>
       {/* Footer — Figma style */}
       <Box sx={{ px: 3, py: 2, fontSize: 14, color: "rgba(76,78,100,0.68)" }}>
-        &copy; 2026, Made with <span style={{ color: "#FF4D49" }}>❤</span>️ by <span style={{ color: "#565DFF" }}>Allder Now</span>
+        {t("onboarding.footer")}
       </Box>
 
       {/* === Add Account Modal (FormDialog from Showcase) === */}
       <FormDialog
         open={addAccountOpen}
         onClose={() => setAddAccountOpen(false)}
-        title="สร้าง Master Account"
+        title={t("onboarding.createAccount")}
         maxWidth="sm"
         fullWidth
         footer={
           <>
-            <Button onClick={() => setAddAccountOpen(false)}>ยกเลิก</Button>
+            <Button onClick={() => setAddAccountOpen(false)}>{t("common.cancel")}</Button>
             <Button
               variant="contained"
               sx={{ bgcolor: "#FF6B00", "&:hover": { bgcolor: "#E65C00" } }}
               onClick={() => { setAddAccountOpen(false); go("s3"); }}
             >
-              บันทึก
+              {t("common.save")}
             </Button>
           </>
         }
       >
         <Stack spacing={2.5} sx={{ mt: 1 }}>
           <TextField
-            label="ชื่อบริษัท / ห้างร้าน"
+            label={t("onboarding.companyName")}
             size="small"
             fullWidth
             value={accountForm.company}
@@ -321,7 +323,7 @@ export default function OnboardingPage() {
           />
           <Stack direction="row" spacing={2}>
             <TextField
-              label="ชื่อ"
+              label={t("onboarding.firstName")}
               size="small"
               fullWidth
               required
@@ -329,7 +331,7 @@ export default function OnboardingPage() {
               onChange={(e) => setAccountForm({ ...accountForm, firstName: e.target.value })}
             />
             <TextField
-              label="นามสกุล"
+              label={t("onboarding.lastName")}
               size="small"
               fullWidth
               required
@@ -338,7 +340,7 @@ export default function OnboardingPage() {
             />
           </Stack>
           <TextField
-            label="ตำแหน่ง"
+            label={t("onboarding.position")}
             size="small"
             fullWidth
             required
@@ -346,7 +348,7 @@ export default function OnboardingPage() {
             onChange={(e) => setAccountForm({ ...accountForm, position: e.target.value })}
           />
           <TextField
-            label="กลุ่มลูกค้า"
+            label={t("onboarding.customerGroup")}
             size="small"
             fullWidth
             required
@@ -361,7 +363,7 @@ export default function OnboardingPage() {
             <MenuItem value="Founding Partner">Founding Partner</MenuItem>
           </TextField>
           <TextField
-            label="อีเมล (Master Email)"
+            label={t("onboarding.masterEmail")}
             size="small"
             fullWidth
             required
@@ -369,7 +371,7 @@ export default function OnboardingPage() {
             onChange={(e) => setAccountForm({ ...accountForm, email: e.target.value })}
           />
           <TextField
-            label="เบอร์โทรศัพท์"
+            label={t("onboarding.phone")}
             size="small"
             fullWidth
             required
@@ -378,17 +380,17 @@ export default function OnboardingPage() {
             InputProps={{ startAdornment: <span style={{ marginRight: 8, fontSize: 13, color: "#999", whiteSpace: "nowrap" }}>+66</span> }}
           />
           <TextField
-            label="จำนวนธุรกิจ (Tenant Quota)"
+            label={t("onboarding.tenantQuota")}
             size="small"
             fullWidth
             required
             type="number"
             value={accountForm.tenantQuota}
             onChange={(e) => setAccountForm({ ...accountForm, tenantQuota: e.target.value })}
-            helperText="จำนวน Tenant สูงสุดที่สร้างได้ภายใต้ Account นี้"
+            helperText={t("onboarding.tenantQuotaHelp")}
           />
           <Alert severity="info" variant="outlined" sx={{ fontSize: 12 }}>
-            ระบบจะส่ง Email ยืนยันตัวตนให้ผู้ติดต่อทันที
+            {t("onboarding.emailNotice")}
           </Alert>
         </Stack>
       </FormDialog>
@@ -399,34 +401,34 @@ export default function OnboardingPage() {
   const renderS2 = () => (
     <div className="flex flex-col flex-1">
       {renderTopBarSA()}
-      <Breadcrumb items={[{ label: "Master Accounts", onClick: () => go("s1") }, { label: "สร้างใหม่" }]} />
+      <Breadcrumb items={[{ label: "Master Accounts", onClick: () => go("s1") }, { label: t("onboarding.createNew") }]} />
       <div className="px-5 pt-3 pb-2">
         <h1 className="text-xl font-bold text-erp-text">Master Accounts</h1>
       </div>
       <div className="flex-1 relative">
         <SlidePanel
           open={true}
-          title="สร้าง Master Account"
+          title={t("onboarding.createAccount")}
           onClose={() => go("s1")}
           headerColor="sa"
           footer={
             <>
               <button onClick={() => go("s1")} className="px-4 py-2 border border-erp-border rounded-lg text-sm hover:bg-gray-50 transition-colors">
-                ยกเลิก
+                {t("common.cancel")}
               </button>
               <button onClick={() => go("s3")} className="px-4 py-2 bg-sa-primary hover:bg-sa-hover text-white text-sm rounded-lg font-medium transition-colors">
-                บันทึก
+                {t("common.save")}
               </button>
             </>
           }
         >
           <div className="space-y-4">
-            <FloatingField label="ชื่อบริษัท / ห้างร้าน" value={accountForm.company} onChange={(v) => setAccountForm({ ...accountForm, company: v })} variant="sa" />
+            <FloatingField label={t("onboarding.companyName")} value={accountForm.company} onChange={(v) => setAccountForm({ ...accountForm, company: v })} variant="sa" />
             <div className="grid grid-cols-2 gap-3">
-              <FloatingField label="ชื่อ" value={accountForm.firstName} onChange={(v) => setAccountForm({ ...accountForm, firstName: v })} variant="sa" required />
-              <FloatingField label="นามสกุล" value={accountForm.lastName} onChange={(v) => setAccountForm({ ...accountForm, lastName: v })} variant="sa" required />
+              <FloatingField label={t("onboarding.firstName")} value={accountForm.firstName} onChange={(v) => setAccountForm({ ...accountForm, firstName: v })} variant="sa" required />
+              <FloatingField label={t("onboarding.lastName")} value={accountForm.lastName} onChange={(v) => setAccountForm({ ...accountForm, lastName: v })} variant="sa" required />
             </div>
-            <FloatingField label="ตำแหน่ง" value={accountForm.position} onChange={(v) => setAccountForm({ ...accountForm, position: v })} variant="sa" required />
+            <FloatingField label={t("onboarding.position")} value={accountForm.position} onChange={(v) => setAccountForm({ ...accountForm, position: v })} variant="sa" required />
             <div className="field-group sa">
               <select
                 value={accountForm.customerGroup}
@@ -438,16 +440,16 @@ export default function OnboardingPage() {
                 <option value="VIP">VIP</option>
                 <option value="Founding Partner">Founding Partner</option>
               </select>
-              <label>กลุ่มลูกค้า <span className="text-erp-error">*</span></label>
+              <label>{t("onboarding.customerGroup")} <span className="text-erp-error">*</span></label>
             </div>
             <div>
-              <FloatingField label="อีเมล (Master Email)" value={accountForm.email} onChange={(v) => setAccountForm({ ...accountForm, email: v })} variant="sa" required />
+              <FloatingField label={t("onboarding.masterEmail")} value={accountForm.email} onChange={(v) => setAccountForm({ ...accountForm, email: v })} variant="sa" required />
               {accountForm.email && !emailError && (
-                <p className="text-[10px] text-green-600 mt-1 pl-0.5">&#10003; ยังไม่มีในระบบ &middot; ใช้เป็น login หลักของ Account นี้</p>
+                <p className="text-[10px] text-green-600 mt-1 pl-0.5">&#10003; {t("onboarding.emailNotInSystem")}</p>
               )}
             </div>
             <div>
-              <p className="text-[11px] text-erp-muted mb-1.5 font-medium">เบอร์โทรศัพท์ <span className="text-erp-error">*</span></p>
+              <p className="text-[11px] text-erp-muted mb-1.5 font-medium">{t("onboarding.phone")} <span className="text-erp-error">*</span></p>
               <div className="flex border-[1.5px] border-erp-border rounded-md overflow-hidden focus-within:border-sa-primary transition-colors">
                 <div className="px-2.5 py-2 bg-gray-50 border-r border-erp-border flex items-center gap-1 text-xs text-erp-muted whitespace-nowrap">
                   &#127481;&#127469; +66 &#9662;
@@ -459,10 +461,10 @@ export default function OnboardingPage() {
                 />
               </div>
             </div>
-            <FloatingField label="จำนวนธุรกิจ (Tenant Quota)" value={accountForm.tenantQuota} onChange={(v) => setAccountForm({ ...accountForm, tenantQuota: v })} variant="sa" required type="number" />
-            <p className="text-[11px] text-erp-muted -mt-2 pl-0.5">จำนวน Tenant สูงสุดที่สร้างได้ภายใต้ Account นี้</p>
+            <FloatingField label={t("onboarding.tenantQuota")} value={accountForm.tenantQuota} onChange={(v) => setAccountForm({ ...accountForm, tenantQuota: v })} variant="sa" required type="number" />
+            <p className="text-[11px] text-erp-muted -mt-2 pl-0.5">{t("onboarding.tenantQuotaHelp")}</p>
             <div className="p-2.5 bg-[#FF6B00]/10 rounded-md border border-[#FF6B00]/20 text-xs text-sa-primary">
-              ระบบจะส่ง Email ยืนยันตัวตนให้ผู้ติดต่อทันที
+              {t("onboarding.emailNotice")}
             </div>
           </div>
         </SlidePanel>
@@ -474,39 +476,39 @@ export default function OnboardingPage() {
   const renderS2e = () => (
     <div className="flex flex-col flex-1">
       {renderTopBarSA()}
-      <Breadcrumb items={[{ label: "Master Accounts", onClick: () => go("s1") }, { label: "สร้างใหม่" }]} />
+      <Breadcrumb items={[{ label: "Master Accounts", onClick: () => go("s1") }, { label: t("onboarding.createNew") }]} />
       <div className="px-5 pt-3 pb-2">
         <h1 className="text-xl font-bold text-erp-text">Master Accounts</h1>
       </div>
       <div className="flex-1 relative">
         <SlidePanel
           open={true}
-          title="สร้าง Master Account"
+          title={t("onboarding.createAccount")}
           onClose={() => go("s1")}
           headerColor="sa"
           footer={
             <>
               <button onClick={() => go("s1")} className="px-4 py-2 border border-erp-border rounded-lg text-sm hover:bg-gray-50 transition-colors">
-                ยกเลิก
+                {t("common.cancel")}
               </button>
               <button disabled className="px-4 py-2 bg-sa-primary text-white text-sm rounded-lg font-medium opacity-40 cursor-not-allowed">
-                บันทึก
+                {t("common.save")}
               </button>
             </>
           }
         >
           <div className="space-y-4">
-            <FloatingField label="ชื่อ-นามสกุล" value="วิภา รัตนพันธ์" onChange={() => {}} variant="sa" required />
-            <FloatingField label="ตำแหน่ง" value="CEO" onChange={() => {}} variant="sa" required />
+            <FloatingField label={t("onboarding.name")} value="วิภา รัตนพันธ์" onChange={() => {}} variant="sa" required />
+            <FloatingField label={t("onboarding.position")} value="CEO" onChange={() => {}} variant="sa" required />
             <div>
               <div className="field-group sa required">
                 <input value="wipa@thaimart.co.th" readOnly className="!border-erp-error" />
-                <label>อีเมล (Master Email) <span className="text-erp-error">*</span></label>
+                <label>{t("onboarding.masterEmail")} <span className="text-erp-error">*</span></label>
               </div>
-              <p className="text-[10px] text-erp-error mt-1 pl-0.5">&#10005; อีเมลนี้มีในระบบแล้ว</p>
+              <p className="text-[10px] text-erp-error mt-1 pl-0.5">&#10005; {t("onboarding.emailAlreadyExists")}</p>
             </div>
             <div>
-              <p className="text-[11px] text-erp-muted mb-1.5 font-medium">เบอร์โทรศัพท์ <span className="text-erp-error">*</span></p>
+              <p className="text-[11px] text-erp-muted mb-1.5 font-medium">{t("onboarding.phone")} <span className="text-erp-error">*</span></p>
               <div className="flex border-[1.5px] border-erp-border rounded-md overflow-hidden">
                 <div className="px-2.5 py-2 bg-gray-50 border-r border-erp-border flex items-center gap-1 text-xs text-erp-muted">
                   &#127481;&#127469; +66 &#9662;
@@ -516,7 +518,7 @@ export default function OnboardingPage() {
             </div>
             <FloatingField label="Tenant Quota" value="5" onChange={() => {}} variant="sa" required type="number" />
             <div className="p-2.5 bg-red-50 rounded-md border border-red-200 text-xs text-erp-error">
-              &#9888; กรุณาแก้ไขข้อมูลให้ถูกต้องก่อนบันทึก
+              &#9888; {t("onboarding.fixBeforeSave")}
             </div>
           </div>
         </SlidePanel>
@@ -584,9 +586,9 @@ export default function OnboardingPage() {
           <div className="w-13 h-13 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-3.5 text-xl">
             &#9989;
           </div>
-          <h2 className="text-lg font-bold text-center mb-1">ยืนยันอีเมลสำเร็จ!</h2>
+          <h2 className="text-lg font-bold text-center mb-1">{t("onboarding.emailVerified")}</h2>
           <p className="text-xs text-erp-muted text-center leading-relaxed mb-4">
-            กรุณาตั้งรหัสผ่านเพื่อเริ่มใช้งาน Master Account
+            {t("onboarding.setPasswordDesc")}
           </p>
           <div className="text-center mb-5">
             <span className="inline-block text-[11px] px-3.5 py-1 bg-gray-50 rounded-full text-erp-muted border border-erp-border">
@@ -596,7 +598,7 @@ export default function OnboardingPage() {
 
           {/* Password field (MUI) */}
           <TextField
-            label="รหัสผ่านใหม่"
+            label={t("onboarding.newPassword")}
             size="small"
             fullWidth
             required
@@ -623,7 +625,7 @@ export default function OnboardingPage() {
             color={pwStrength >= 3 ? "success" : pwStrength >= 2 ? "warning" : "error"}
             sx={{ height: 4, borderRadius: 2, mb: 0.5 }}
           />
-          {pwStrength === 4 && <Typography variant="caption" sx={{ color: "success.main", fontWeight: 600, display: "block", mb: 1 }}>รหัสผ่านแข็งแกร่ง</Typography>}
+          {pwStrength === 4 && <Typography variant="caption" sx={{ color: "success.main", fontWeight: 600, display: "block", mb: 1 }}>{t("onboarding.pwStrong")}</Typography>}
 
           {/* Rules */}
           <Box sx={{ bgcolor: "#F9F9F9", borderRadius: 1, p: 1.5, mb: 2 }}>
@@ -637,7 +639,7 @@ export default function OnboardingPage() {
 
           {/* Confirm password (MUI) */}
           <TextField
-            label="ยืนยันรหัสผ่าน"
+            label={t("onboarding.confirmPassword")}
             size="small"
             fullWidth
             required
@@ -663,7 +665,7 @@ export default function OnboardingPage() {
             onClick={() => go("s5")}
             sx={{ bgcolor: "#565DFF", "&:hover": { bgcolor: "#4349E0" }, py: 1.2, fontWeight: 700, textTransform: "none" }}
           >
-            ตั้งรหัสผ่านและเริ่มใช้งาน
+            {t("onboarding.setPasswordBtn")}
           </Button>
         </div>
       </div>
@@ -679,16 +681,16 @@ export default function OnboardingPage() {
           <div className="w-13 h-13 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-3.5 text-xl">
             &#9888;&#65039;
           </div>
-          <h2 className="text-lg font-bold text-center mb-1 text-erp-error">ลิงก์นี้ใช้งานไม่ได้แล้ว</h2>
+          <h2 className="text-lg font-bold text-center mb-1 text-erp-error">{t("onboarding.linkExpiredTitle")}</h2>
           <p className="text-xs text-erp-muted text-center leading-relaxed mb-4">
-            ลิงก์อาจหมดอายุแล้ว (48 ชั่วโมง)<br />หรืออาจถูกใช้งานไปแล้ว
+            {t("onboarding.linkExpiredDesc")}
           </p>
           <div className="text-xs text-erp-muted text-center mb-5 p-2.5 bg-gray-50 rounded-md">
-            กรุณาติดต่อทีม Jigsaw เพื่อขอลิงก์ใหม่<br />
+            {t("onboarding.contactForNewLink")}<br />
             <strong>support@jigsawerp.com</strong>
           </div>
           <button className="w-full py-3 bg-erp-error hover:bg-red-700 text-white rounded-md text-sm font-bold transition-colors">
-            ขอลิงก์ใหม่
+            {t("onboarding.requestNewLink")}
           </button>
         </div>
       </div>
@@ -705,7 +707,7 @@ export default function OnboardingPage() {
       ]} />
       {/* Detail Header */}
       <div className="px-5 bg-white border-b border-erp-border">
-        <h1 className="text-xl font-bold pt-3 pb-2.5">ข้อมูลลูกค้า</h1>
+        <h1 className="text-xl font-bold pt-3 pb-2.5">{t("onboarding.customerInfo")}</h1>
         <Tabs
           value={detailTab}
           onChange={(_, v) => setDetailTab(v)}
@@ -715,10 +717,10 @@ export default function OnboardingPage() {
             "& .MuiTabs-indicator": { bgcolor: "#FF6B00" },
           }}
         >
-          <Tab label="ข้อมูลทั่วไป" value="general" />
+          <Tab label={t("onboarding.tabGeneral")} value="general" />
           <Tab label={`Tenants (${selectedAccount.tenantUsed}/${selectedAccount.tenantQuota})`} value="tenants" />
-          <Tab label="สัญญา" value="contracts" />
-          <Tab label="ประวัติ" value="history" />
+          <Tab label={t("onboarding.tabContracts")} value="contracts" />
+          <Tab label={t("onboarding.tabHistory")} value="history" />
         </Tabs>
       </div>
       {/* Detail Body */}
@@ -727,29 +729,29 @@ export default function OnboardingPage() {
           <>
             {/* General Info Card */}
             <div className="bg-white rounded-lg border border-erp-border p-5 mb-3.5">
-              <h3 className="text-sm font-bold text-sa-primary mb-3.5">ข้อมูลทั่วไป</h3>
+              <h3 className="text-sm font-bold text-sa-primary mb-3.5">{t("onboarding.tabGeneral")}</h3>
               <div className="grid grid-cols-2 gap-3.5">
                 <div className="field-group sa">
                   <input value={selectedAccount.id} readOnly className="!bg-gray-50 !text-blue-700 !font-mono !font-semibold" />
-                  <label>รหัส Account</label>
+                  <label>{t("onboarding.accountCode")}</label>
                 </div>
                 <div className="field-group sa">
                   <select defaultValue={selectedAccount.customerGroup}>
                     <option>ทั่วไป</option><option>ขายส่ง</option><option>ขายปลีก</option><option>VIP</option><option>Founding Partner</option>
                   </select>
-                  <label>กลุ่มลูกค้า <span className="text-erp-error">*</span></label>
+                  <label>{t("onboarding.customerGroup")} <span className="text-erp-error">*</span></label>
                 </div>
-                <FloatingField label="ชื่อ" value={selectedAccount.firstName} onChange={() => {}} variant="sa" required />
-                <FloatingField label="นามสกุล" value={selectedAccount.lastName} onChange={() => {}} variant="sa" required />
+                <FloatingField label={t("onboarding.firstName")} value={selectedAccount.firstName} onChange={() => {}} variant="sa" required />
+                <FloatingField label={t("onboarding.lastName")} value={selectedAccount.lastName} onChange={() => {}} variant="sa" required />
                 <div className="field-group sa">
                   <select><option>นาย</option><option>นาง</option><option>นางสาว</option></select>
-                  <label>คำนำหน้า <span className="text-erp-error">*</span></label>
+                  <label>{t("onboarding.prefix")} <span className="text-erp-error">*</span></label>
                 </div>
-                <FloatingField label="ตำแหน่ง" value={selectedAccount.position} onChange={() => {}} variant="sa" />
-                <FloatingField label="ชื่อบริษัท / ห้างร้าน" value={selectedAccount.company} onChange={() => {}} variant="sa" />
-                <FloatingField label="อีเมล" value={selectedAccount.email} onChange={() => {}} variant="sa" required />
+                <FloatingField label={t("onboarding.position")} value={selectedAccount.position} onChange={() => {}} variant="sa" />
+                <FloatingField label={t("onboarding.companyName")} value={selectedAccount.company} onChange={() => {}} variant="sa" />
+                <FloatingField label={t("onboarding.emailLabel")} value={selectedAccount.email} onChange={() => {}} variant="sa" required />
                 <div>
-                  <p className="text-[11px] text-erp-muted mb-1 font-medium">เบอร์โทรศัพท์</p>
+                  <p className="text-[11px] text-erp-muted mb-1 font-medium">{t("onboarding.phone")}</p>
                   <div className="flex border-[1.5px] border-erp-border rounded-md overflow-hidden">
                     <div className="px-2.5 py-2 bg-gray-50 border-r border-erp-border flex items-center gap-1 text-xs text-erp-muted">
                       &#127481;&#127469; +66 &#9662;
@@ -759,59 +761,59 @@ export default function OnboardingPage() {
                 </div>
                 <div className="field-group sa">
                   <input value={selectedAccount.emailVerifiedAt || "—"} readOnly className="!bg-gray-50 !text-erp-muted" />
-                  <label>วันที่ยืนยัน Email</label>
+                  <label>{t("onboarding.emailVerifiedAt")}</label>
                 </div>
                 <div className="col-span-2">
-                  <Typography variant="caption" sx={{ color: "#777", fontWeight: 500, mb: 0.5, display: "block" }}>สถานะ</Typography>
+                  <Typography variant="caption" sx={{ color: "#777", fontWeight: 500, mb: 0.5, display: "block" }}>{t("onboarding.status")}</Typography>
                   <RadioGroup row value={selectedAccount.status}>
-                    <FormControlLabel value="เปิดใช้งาน" control={<Radio size="small" sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }} />} label={<Typography variant="body2">เปิดใช้งาน</Typography>} />
-                    <FormControlLabel value="ปิดใช้งาน" control={<Radio size="small" sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }} />} label={<Typography variant="body2">ปิดใช้งาน</Typography>} />
+                    <FormControlLabel value="เปิดใช้งาน" control={<Radio size="small" sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }} />} label={<Typography variant="body2">{t("onboarding.statusActive")}</Typography>} />
+                    <FormControlLabel value="ปิดใช้งาน" control={<Radio size="small" sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }} />} label={<Typography variant="body2">{t("onboarding.statusDisabled")}</Typography>} />
                   </RadioGroup>
                 </div>
                 <div className="field-group sa">
                   <input value={`${selectedAccount.createdAt} — ${selectedAccount.createdBy}`} readOnly className="!bg-gray-50 !text-erp-muted" />
-                  <label>วันที่ลงทะเบียน</label>
+                  <label>{t("onboarding.registeredAt")}</label>
                 </div>
                 <div className="field-group sa">
                   <input value={`${selectedAccount.updatedAt} — ${selectedAccount.updatedBy}`} readOnly className="!bg-gray-50 !text-erp-muted" />
-                  <label>วันที่แก้ไขล่าสุด</label>
+                  <label>{t("onboarding.lastUpdatedAt")}</label>
                 </div>
               </div>
 
               {/* SA Actions */}
               <div className="mt-3.5 p-3 bg-[#FF6B00]/5 rounded-lg border border-[#FF6B00]/15">
-                <p className="text-[11px] font-semibold text-sa-primary mb-2">&#9881; การดำเนินการของ Super Admin</p>
+                <p className="text-[11px] font-semibold text-sa-primary mb-2">&#9881; {t("onboarding.saActions")}</p>
                 <div className="flex gap-2 flex-wrap">
                   <button className="px-3 py-1.5 bg-white border border-erp-border rounded-md text-xs hover:bg-gray-50 flex items-center gap-1.5 transition-colors">
-                    &#128231; Reset Email ยืนยัน
+                    &#128231; {t("onboarding.resetVerifyEmail")}
                   </button>
                   <button className="px-3 py-1.5 bg-white border border-erp-error rounded-md text-xs text-erp-error hover:bg-red-50 flex items-center gap-1.5 transition-colors">
-                    &#128273; Reset รหัสผ่าน
+                    &#128273; {t("onboarding.resetPassword")}
                   </button>
                 </div>
-                <p className="text-[11px] text-erp-muted mt-1.5">ผู้ติดต่อจะได้รับ Email พร้อมลิงก์ดำเนินการ</p>
+                <p className="text-[11px] text-erp-muted mt-1.5">{t("onboarding.contactWillReceiveEmail")}</p>
               </div>
 
               <div className="flex justify-end gap-2.5 mt-3.5">
-                <button className="px-4 py-2 border border-erp-border rounded-lg text-sm hover:bg-gray-50 transition-colors">ยกเลิก</button>
-                <button className="px-4 py-2 bg-sa-primary hover:bg-sa-hover text-white text-sm rounded-lg font-medium transition-colors">บันทึก</button>
+                <button className="px-4 py-2 border border-erp-border rounded-lg text-sm hover:bg-gray-50 transition-colors">{t("common.cancel")}</button>
+                <button className="px-4 py-2 bg-sa-primary hover:bg-sa-hover text-white text-sm rounded-lg font-medium transition-colors">{t("common.save")}</button>
               </div>
             </div>
 
             {/* Tenant Quota Card */}
             <div className="bg-white rounded-lg border border-erp-border p-5">
-              <h3 className="text-sm font-bold text-sa-primary mb-3.5">ข้อมูล Tenant Quota</h3>
+              <h3 className="text-sm font-bold text-sa-primary mb-3.5">{t("onboarding.tenantQuotaInfo")}</h3>
               <div className="bg-[#FF6B00]/10 rounded-md px-3 py-2 text-xs text-sa-primary border border-[#FF6B00]/20">
                 Tenant Quota: <strong>{selectedAccount.tenantUsed} / {selectedAccount.tenantQuota} บริษัท</strong> &middot; เหลืออีก {selectedAccount.tenantQuota - selectedAccount.tenantUsed} บริษัทที่สามารถสร้างได้
               </div>
               {selectedAccount.tenantUsed === 0 ? (
                 <div className="mt-3 flex flex-col items-center justify-center p-6 bg-orange-50 rounded-lg border border-orange-200 gap-2">
-                  <p className="text-sm text-orange-600 font-medium">ยังไม่มี Tenant ภายใต้ Account นี้</p>
+                  <p className="text-sm text-orange-600 font-medium">{t("onboarding.noTenantYet")}</p>
                   <button
                     onClick={() => go("s6")}
                     className="mt-1 px-4 py-2 bg-sa-primary hover:bg-sa-hover text-white text-sm rounded-md font-medium transition-colors"
                   >
-                    + สร้าง Tenant ใหม่
+                    + {t("onboarding.createTenant")}
                   </button>
                 </div>
               ) : (
@@ -831,8 +833,8 @@ export default function OnboardingPage() {
         {detailTab === "tenants" && (
           <div className="bg-white rounded-lg border border-erp-border p-5">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-bold text-sa-primary">Tenants ภายใต้ Account นี้</h3>
-              <span className="text-xs text-erp-muted">{selectedAccount.tenantUsed} จาก {selectedAccount.tenantQuota} บริษัท</span>
+              <h3 className="text-sm font-bold text-sa-primary">{t("onboarding.tenantsUnderAccount")}</h3>
+              <span className="text-xs text-erp-muted">{selectedAccount.tenantUsed} {t("onboarding.ofCompanies")} {selectedAccount.tenantQuota} {t("onboarding.company")}</span>
             </div>
             <div className="bg-[#FF6B00]/10 rounded-md px-3 py-2 text-xs text-sa-primary border border-[#FF6B00]/20 mb-3">
               จำนวนธุรกิจ (Tenant Quota): <strong>{selectedAccount.tenantUsed} / {selectedAccount.tenantQuota} บริษัท</strong> ใช้ไปแล้ว &middot; เหลืออีก {selectedAccount.tenantQuota - selectedAccount.tenantUsed} บริษัท
@@ -861,7 +863,7 @@ export default function OnboardingPage() {
 
         {(detailTab === "contracts" || detailTab === "history") && (
           <div className="bg-white rounded-lg border border-erp-border p-10 text-center">
-            <p className="text-erp-muted text-sm">ยังไม่มีข้อมูล</p>
+            <p className="text-erp-muted text-sm">{t("common.noData")}</p>
           </div>
         )}
       </div>
@@ -875,7 +877,7 @@ export default function OnboardingPage() {
       <Breadcrumb items={[
         { label: "Master Accounts", onClick: () => go("s1") },
         { label: selectedAccount.firstName, onClick: () => go("s5") },
-        { label: "สร้าง Tenant" },
+        { label: t("onboarding.createTenant") },
       ]} />
       <div className="flex-1 relative">
         <SlidePanel
@@ -887,10 +889,10 @@ export default function OnboardingPage() {
           footer={
             <>
               <button onClick={() => go("s5")} className="px-4 py-2 border border-erp-border rounded-lg text-sm hover:bg-gray-50 transition-colors">
-                ยกเลิก
+                {t("common.cancel")}
               </button>
               <button onClick={() => go("s7")} className="px-4 py-2 bg-sa-primary hover:bg-sa-hover text-white text-sm rounded-lg font-medium transition-colors">
-                บันทึก
+                {t("common.save")}
               </button>
             </>
           }
@@ -898,25 +900,25 @@ export default function OnboardingPage() {
           <div className="space-y-3">
             {/* Section: ข้อมูลนิติบุคคล */}
             <div className="flex items-center gap-2.5 mb-1">
-              <span className="text-xs font-semibold text-erp-muted whitespace-nowrap">ข้อมูลนิติบุคคล</span>
+              <span className="text-xs font-semibold text-erp-muted whitespace-nowrap">{t("onboarding.entityInfo")}</span>
               <div className="flex-1 h-px bg-erp-border" />
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <FloatingField label="ชื่อบริษัท (TH)" value={tenantForm.nameTh} onChange={(v) => setTenantForm({ ...tenantForm, nameTh: v })} variant="sa" required />
-              <FloatingField label="ชื่อบริษัท (EN)" value={tenantForm.nameEn} onChange={(v) => setTenantForm({ ...tenantForm, nameEn: v })} variant="sa" required />
+              <FloatingField label={t("onboarding.companyNameTh")} value={tenantForm.nameTh} onChange={(v) => setTenantForm({ ...tenantForm, nameTh: v })} variant="sa" required />
+              <FloatingField label={t("onboarding.companyNameEn")} value={tenantForm.nameEn} onChange={(v) => setTenantForm({ ...tenantForm, nameEn: v })} variant="sa" required />
               <div className="field-group sa">
                 <select value={tenantForm.entityType} onChange={(e) => setTenantForm({ ...tenantForm, entityType: e.target.value })}>
                   <option>บริษัทจำกัด (บจ.)</option><option>ห้างหุ้นส่วนจำกัด (หจก.)</option><option>บริษัทมหาชน (บมจ.)</option>
                 </select>
-                <label>ประเภทนิติบุคคล <span className="text-erp-error">*</span></label>
+                <label>{t("onboarding.entityType")} <span className="text-erp-error">*</span></label>
               </div>
               <div className="field-group sa">
                 <select value={tenantForm.businessType} onChange={(e) => setTenantForm({ ...tenantForm, businessType: e.target.value })}>
                   <option>Trading — ซื้อมาขายไป</option><option>Manufacturing — ผลิต</option><option>Service — บริการ</option>
                 </select>
-                <label>ประเภทธุรกิจ <span className="text-erp-error">*</span></label>
+                <label>{t("onboarding.businessType")} <span className="text-erp-error">*</span></label>
               </div>
-              <FloatingField label="เลขผู้เสียภาษี" value={tenantForm.taxId} onChange={(v) => setTenantForm({ ...tenantForm, taxId: v })} variant="sa" required />
+              <FloatingField label={t("onboarding.taxId")} value={tenantForm.taxId} onChange={(v) => setTenantForm({ ...tenantForm, taxId: v })} variant="sa" required />
               <div>
                 <p className="text-[11px] text-erp-muted mb-1 font-medium">Subdomain <span className="text-erp-error">*</span></p>
                 <div className="flex border-[1.5px] border-green-500 rounded-md overflow-hidden">
@@ -1066,11 +1068,11 @@ export default function OnboardingPage() {
             <div className="bg-gray-50 border border-erp-border rounded-md p-3">
               <p className="text-[11px] font-bold text-erp-muted mb-2 flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-sa-primary" />
-                สัญญา
+                {t("onboarding.tabContracts")}
               </p>
               <div className="grid grid-cols-2 gap-3">
-                <FloatingField label="วันเริ่มสัญญา" value={tenantForm.contractStart} onChange={(v) => setTenantForm({ ...tenantForm, contractStart: v })} variant="sa" required />
-                <FloatingField label="วันหมดสัญญา" value={tenantForm.contractEnd} onChange={(v) => setTenantForm({ ...tenantForm, contractEnd: v })} variant="sa" required />
+                <FloatingField label={t("onboarding.contractStart")} value={tenantForm.contractStart} onChange={(v) => setTenantForm({ ...tenantForm, contractStart: v })} variant="sa" required />
+                <FloatingField label={t("onboarding.contractEnd")} value={tenantForm.contractEnd} onChange={(v) => setTenantForm({ ...tenantForm, contractEnd: v })} variant="sa" required />
               </div>
               <Box sx={{ mt: 2 }}>
                 <Typography variant="caption" sx={{ color: "#777", fontWeight: 500, mb: 0.5, display: "block" }}>Auto-renewal</Typography>
@@ -1079,8 +1081,8 @@ export default function OnboardingPage() {
                   value={tenantForm.autoRenewal ? "yes" : "no"}
                   onChange={(e) => setTenantForm({ ...tenantForm, autoRenewal: e.target.value === "yes" })}
                 >
-                  <FormControlLabel value="yes" control={<Radio size="small" sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }} />} label={<Typography variant="body2">ต่ออายุอัตโนมัติ</Typography>} />
-                  <FormControlLabel value="no" control={<Radio size="small" sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }} />} label={<Typography variant="body2">ไม่ต่ออายุอัตโนมัติ</Typography>} />
+                  <FormControlLabel value="yes" control={<Radio size="small" sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }} />} label={<Typography variant="body2">{t("onboarding.autoRenewalYes")}</Typography>} />
+                  <FormControlLabel value="no" control={<Radio size="small" sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }} />} label={<Typography variant="body2">{t("onboarding.autoRenewalNo")}</Typography>} />
                 </RadioGroup>
               </Box>
               <div className="flex gap-1.5 p-2 bg-green-50 rounded-md text-[11px] text-green-700 mt-3 border border-green-200">
@@ -1157,24 +1159,24 @@ export default function OnboardingPage() {
         </div>
       )}
       <Breadcrumb items={[
-        { label: "รายชื่อลูกค้า", onClick: () => go("s1") },
+        { label: t("onboarding.masterAccountList"), onClick: () => go("s1") },
         { label: "สมชาย วงศ์ใหญ่" },
       ]} />
       {/* Detail Header */}
       <div className="px-5 bg-white border-b border-erp-border">
-        <h1 className="text-xl font-bold pt-3 pb-2.5">ข้อมูลลูกค้า</h1>
+        <h1 className="text-xl font-bold pt-3 pb-2.5">{t("onboarding.customerInfo")}</h1>
         <div className="flex gap-0">
           <button className="px-4 py-2 text-sm font-medium text-erp-muted hover:text-erp-text rounded-t transition-colors">
-            ข้อมูลทั่วไป
+            {t("onboarding.tabGeneral")}
           </button>
           <button className="px-4 py-2 text-sm font-medium bg-sa-primary text-white rounded-t transition-colors">
             Tenants (1/3)
           </button>
           <button className="px-4 py-2 text-sm font-medium text-erp-muted hover:text-erp-text rounded-t transition-colors">
-            สัญญา
+            {t("onboarding.tabContracts")}
           </button>
           <button className="px-4 py-2 text-sm font-medium text-erp-muted hover:text-erp-text rounded-t transition-colors">
-            ประวัติ
+            {t("onboarding.tabHistory")}
           </button>
         </div>
       </div>
@@ -1182,8 +1184,8 @@ export default function OnboardingPage() {
       <div className="flex-1 p-5">
         <div className="bg-white rounded-lg border border-erp-border p-5">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-bold text-sa-primary">Tenants ภายใต้ Account นี้</h3>
-            <span className="text-xs text-erp-muted">1 จาก 3 บริษัท</span>
+            <h3 className="text-sm font-bold text-sa-primary">{t("onboarding.tenantsUnderAccount")}</h3>
+            <span className="text-xs text-erp-muted">1 {t("onboarding.ofCompanies")} 3 {t("onboarding.company")}</span>
           </div>
           <div className="bg-[#FF6B00]/10 rounded-md px-3 py-2 text-xs text-sa-primary border border-[#FF6B00]/20 mb-3">
             จำนวนธุรกิจ (Tenant Quota): <strong>1 / 3 บริษัท</strong> ใช้ไปแล้ว &middot; เหลืออีก 2 บริษัท
@@ -1223,16 +1225,16 @@ export default function OnboardingPage() {
   };
 
   const navItems: { id: Screen; num: string; label: string; section?: string }[] = [
-    { id: "s1", num: "01", label: "Master Account List", section: "Step 1 — SA สร้าง Account" },
-    { id: "s2", num: "02", label: "ฟอร์มสร้าง Account" },
-    { id: "s2e", num: "02e", label: "Error — Email ซ้ำ" },
-    { id: "s3", num: "03", label: "Email: Verify", section: "Step 2 — TA ยืนยัน Email" },
-    { id: "s4", num: "04", label: "ตั้ง Password" },
-    { id: "s4e", num: "04e", label: "Token หมดอายุ" },
-    { id: "s5", num: "05", label: "Account Detail", section: "Step 3 — SA สร้าง Tenant" },
-    { id: "s6", num: "06", label: "ฟอร์มสร้าง Tenant" },
-    { id: "s7", num: "07", label: "Email: Welcome" },
-    { id: "s8", num: "08", label: "Tenant List (Done)" },
+    { id: "s1", num: "01", label: t("onboarding.navMasterList"), section: t("onboarding.navStep1") },
+    { id: "s2", num: "02", label: t("onboarding.navCreateForm") },
+    { id: "s2e", num: "02e", label: t("onboarding.navErrorEmail") },
+    { id: "s3", num: "03", label: t("onboarding.navEmailVerify"), section: t("onboarding.navStep2") },
+    { id: "s4", num: "04", label: t("onboarding.navSetPassword") },
+    { id: "s4e", num: "04e", label: t("onboarding.navTokenExpired") },
+    { id: "s5", num: "05", label: t("onboarding.navAccountDetail"), section: t("onboarding.navStep3") },
+    { id: "s6", num: "06", label: t("onboarding.navCreateTenantForm") },
+    { id: "s7", num: "07", label: t("onboarding.navEmailWelcome") },
+    { id: "s8", num: "08", label: t("onboarding.navTenantDone") },
   ];
 
   return (
