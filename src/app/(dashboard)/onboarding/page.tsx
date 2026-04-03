@@ -1270,8 +1270,48 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen bg-erp-bg flex">
-      {/* Sidebar — Figma Menu Drawer (white, 260px) */}
-      <div className={`fixed h-screen z-50 bg-white border-r border-gray-200 transition-all duration-300 overflow-hidden ${sidebarExpanded ? "w-[260px]" : "w-0"}`}>
+      {/* Sidebar — Figma Menu Drawer (expanded=260px, collapsed=68px icons only) */}
+      <div className={`fixed h-screen z-50 bg-white border-r border-gray-200 transition-all duration-300 ${sidebarExpanded ? "w-[260px]" : "w-[68px]"}`}>
+
+        {/* ═══ Collapsed: Icon-only bar (68px) ═══ */}
+        {!sidebarExpanded && (
+          <div className="w-[68px] h-full flex flex-col items-center py-3 gap-1">
+            {/* Logo */}
+            <div className="w-10 h-10 rounded-xl bg-sa-primary flex items-center justify-center cursor-pointer mb-0.5" onClick={() => setSidebarExpanded(true)}>
+              <span className="text-[7px] font-extrabold text-white leading-tight text-center">JIG<br/>SAW</span>
+            </div>
+            <span className="text-[8px] font-bold text-sa-primary tracking-wider mb-2">JIGSAW</span>
+
+            {/* Home (active) */}
+            <button onClick={() => go("s1")} className="w-11 h-11 rounded-lg flex items-center justify-center bg-sa-primary/10 transition-colors" title={t("nav.home")}>
+              <img src="/icons/commerce/home.svg" alt="" width={24} height={24} style={{ filter: "brightness(0) saturate(100%) invert(45%) sepia(96%) saturate(1500%) hue-rotate(360deg)" }} />
+            </button>
+
+            {/* Divider */}
+            <div className="w-6 h-px bg-gray-200 my-1.5" />
+
+            {/* ลูกค้า */}
+            <button onClick={() => { setSidebarExpanded(true); setMenuOpen(prev => ({ ...prev, customer: true })); }} className="w-11 h-11 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors" title={t("onboarding.customer")}>
+              <img src="/icons/data/user-id.svg" alt="" width={24} height={24} />
+            </button>
+
+            {/* รายงาน */}
+            <button className="w-11 h-11 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors" title={locale === "en" ? "Reports" : "รายงาน"}>
+              <img src="/icons/data/graph-up.svg" alt="" width={24} height={24} />
+            </button>
+
+            {/* Divider */}
+            <div className="w-6 h-px bg-gray-200 my-1.5" />
+
+            {/* ตั้งค่า */}
+            <button onClick={() => { setSidebarExpanded(true); setMenuOpen(prev => ({ ...prev, settings: true })); }} className="w-11 h-11 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors" title={t("nav.settings")}>
+              <img src="/icons/commerce/settings.svg" alt="" width={24} height={24} />
+            </button>
+          </div>
+        )}
+
+        {/* ═══ Expanded: Full menu (260px) ═══ */}
+        {sidebarExpanded && (
         <div className="w-[260px] h-full flex flex-col">
           {/* Logo + Collapse */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
@@ -1377,16 +1417,17 @@ export default function OnboardingPage() {
             </div>
           </div>
         </div>
+        )}
       </div>
 
       {/* Main content */}
-      <div className={`flex-1 flex flex-col min-h-screen bg-erp-bg transition-all duration-300 ${sidebarExpanded ? "ml-[260px]" : "ml-0"}`}>
+      <div className={`flex-1 flex flex-col min-h-screen bg-erp-bg transition-all duration-300 ${sidebarExpanded ? "ml-[260px]" : "ml-[68px]"}`}>
         {/* Floating hamburger toggle — always mounted by React */}
         <button
           type="button"
           onClick={() => setSidebarExpanded(prev => !prev)}
           className="fixed z-[60] w-8 h-8 flex items-center justify-center text-white/80 hover:text-white text-lg transition-colors"
-          style={{ top: 10, left: sidebarExpanded ? 272 : 12 }}
+          style={{ top: 10, left: sidebarExpanded ? 272 : 78 }}
           title={sidebarExpanded ? "หุบเมนู" : "กางเมนู"}
         >
           &#9776;
