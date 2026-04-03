@@ -28,6 +28,7 @@ export default function OnboardingPage() {
   const router = useRouter();
   const { t, locale, setLocale } = useLocale();
   const [langOpen, setLangOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState<Record<string, boolean>>({ customer: true, settings: false });
   const [screen, setScreen] = useState<Screen>("s1");
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [addAccountOpen, setAddAccountOpen] = useState(false);
@@ -1253,6 +1254,7 @@ export default function OnboardingPage() {
     s7: renderS7, s8: renderS8,
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const navItems: { id: Screen; num: string; label: string; section?: string }[] = [
     { id: "s1", num: "01", label: t("onboarding.navMasterList"), section: t("onboarding.navStep1") },
     { id: "s2", num: "02", label: t("onboarding.navCreateForm") },
@@ -1268,113 +1270,119 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen bg-erp-bg flex">
-      {/* Sidebar — Icon Bar + Expandable Nav */}
-      <div className={`fixed h-screen z-50 flex transition-all duration-300 ${sidebarExpanded ? "w-[272px]" : "w-[52px]"}`}>
-        {/* Icon Bar (always visible) */}
-        <div className="w-[52px] bg-[#2D2D2D] flex flex-col items-center shrink-0">
-          <div className="w-[52px] h-14 bg-sa-primary flex items-center justify-center cursor-pointer" onClick={() => router.push("/")}>
-            <span className="text-[9px] font-extrabold text-white text-center leading-tight tracking-wider">JIG<br />SAW</span>
-          </div>
-          <div className="mt-1 flex flex-col gap-0.5">
-            {/* Page menu item (first) */}
-            <div
-              className="w-11 h-10 flex items-center justify-center rounded-md cursor-pointer text-sm transition-colors bg-[#FF6B00]/15 text-sa-primary"
-              title="Page"
-              onClick={() => setSidebarExpanded(!sidebarExpanded)}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
-              </svg>
-            </div>
-            {/* Component Showcase link */}
-            <div
-              className="w-11 h-10 flex items-center justify-center rounded-md cursor-pointer text-sm transition-colors text-gray-500 hover:bg-[#3a3a3a] hover:text-white"
-              title="Component Showcase"
-              onClick={() => router.push("/component-showcase")}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-              </svg>
-            </div>
-            {/* Nav icons (SVG) */}
-            {[
-              { title: "Home", svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
-              { title: "Recent", svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
-              { title: "Clipboard", svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg> },
-              { title: "Mail", svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg> },
-              { title: "Users", svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, active: true },
-              { title: "Tags", svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> },
-              { title: "Charts", svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className={`w-11 h-10 flex items-center justify-center rounded-md cursor-pointer text-sm transition-colors ${
-                  item.active ? "bg-[#FF6B00]/15 text-sa-primary" : "text-gray-500 hover:bg-[#3a3a3a] hover:text-white"
-                }`}
-                title={item.title}
-              >
-                {item.svg}
+      {/* Sidebar — Figma Menu Drawer (white, 260px) */}
+      <div className={`fixed h-screen z-50 bg-white border-r border-gray-200 transition-all duration-300 overflow-hidden ${sidebarExpanded ? "w-[260px]" : "w-0"}`}>
+        <div className="w-[260px] h-full flex flex-col">
+          {/* Logo + Collapse */}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push("/")}>
+              <div className="w-8 h-8 rounded-lg bg-sa-primary flex items-center justify-center">
+                <span className="text-[7px] font-extrabold text-white leading-tight text-center">JIG<br/>SAW</span>
               </div>
-            ))}
-          </div>
-          <div className="flex-1" />
-          <div className="mb-2 flex flex-col gap-0.5">
-            <div className="w-11 h-10 flex items-center justify-center rounded-md cursor-pointer text-sm text-gray-500 hover:bg-[#3a3a3a] hover:text-white" title="Settings">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <span className="text-lg font-extrabold tracking-wider text-sa-primary">JIGSAW</span>
             </div>
-            <div className="w-11 h-10 flex items-center justify-center rounded-md cursor-pointer text-sm text-gray-500 hover:bg-[#3a3a3a] hover:text-white" title="More">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-            </div>
+            <button onClick={() => setSidebarExpanded(false)} className="text-gray-400 hover:text-gray-600 text-sm">&laquo;</button>
           </div>
-        </div>
 
-        {/* Expandable Nav Panel (Screen Index / Page list) */}
-        <div className={`bg-[#12121f] overflow-hidden transition-all duration-300 ${sidebarExpanded ? "w-[220px] opacity-100" : "w-0 opacity-0"}`}>
-          <div className="w-[220px] h-full overflow-y-auto">
-            <div className="px-3 py-2 pb-3 border-b border-[#2a2a3e] bg-[#0e0e1a]">
-              <div className="text-xs font-semibold text-white flex items-center gap-1.5">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                Page — F-01 Wireframe
-              </div>
-              <div className="text-[10px] text-gray-600 mt-0.5">ERP Jigsaw — Onboarding ({navItems.length} screens)</div>
+          {/* Menu Items */}
+          <div className="flex-1 overflow-y-auto py-2 px-3">
+            {/* ภาพรวม */}
+            <button
+              onClick={() => go("s1")}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium mb-1 transition-colors ${
+                screen === "s1" ? "bg-gray-100 text-sa-primary" : "text-gray-700 hover:bg-gray-50"
+              }`}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <span className="flex-1 text-left">{t("nav.home")}</span>
+              <span className="text-[10px] bg-red-500 text-white px-1.5 py-0.5 rounded-full font-bold">New</span>
+            </button>
+
+            {/* Section: เมนู */}
+            <div className="text-[10px] text-gray-400 font-medium uppercase tracking-wider px-3 mt-3 mb-1.5">
+              {locale === "en" ? "Menu" : "เมนู"}
             </div>
-            <div className="py-1.5">
-              {navItems.map((item) => (
-                <div key={item.id}>
-                  {item.section && (
-                    <div className="px-3 pt-2 pb-1 text-[9px] font-semibold text-gray-500 uppercase tracking-wider">
-                      {item.section}
-                    </div>
-                  )}
-                  <button
-                    onClick={() => go(item.id)}
-                    className={`w-full flex items-center gap-2 px-3 py-2 text-xs border-l-2 transition-colors ${
-                      screen === item.id
-                        ? "text-white bg-[#1a1a2e] border-l-sa-primary"
-                        : "text-gray-500 border-transparent hover:text-gray-300 hover:bg-[#1a1a2e]"
-                    }`}
-                  >
-                    <span className="font-mono text-[10px] w-5 opacity-70">{item.num}</span>
-                    <span className="flex-1 text-left">{item.label}</span>
-                    {item.id === "s8" && (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-sa-primary text-white">&#10003;</span>
-                    )}
+
+            {/* ลูกค้า — collapsible */}
+            <div className="mb-1">
+              <button
+                onClick={() => setMenuOpen(prev => ({ ...prev, customer: !prev.customer }))}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span className="flex-1 text-left">{t("onboarding.customer")}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`transition-transform ${menuOpen.customer ? "rotate-180" : ""}`}><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              {menuOpen.customer && (
+                <div className="ml-8 mt-0.5 space-y-0.5">
+                  <button onClick={() => go("s1")} className={`w-full text-left px-3 py-1.5 rounded text-xs transition-colors ${screen === "s1" ? "text-sa-primary font-semibold" : "text-gray-500 hover:text-gray-700"}`}>
+                    • {t("onboarding.masterAccountList")}
+                  </button>
+                  <button onClick={() => go("s5")} className={`w-full text-left px-3 py-1.5 rounded text-xs transition-colors ${screen === "s5" ? "text-sa-primary font-semibold" : "text-gray-500 hover:text-gray-700"}`}>
+                    • {locale === "en" ? "All Contracts" : "สัญญาทั้งหมด"}
                   </button>
                 </div>
-              ))}
+              )}
+            </div>
+
+            {/* รายงาน */}
+            <div className="mb-1">
+              <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                <span className="flex-1 text-left">{locale === "en" ? "Reports" : "รายงาน"}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+            </div>
+
+            {/* Section: ตั้งค่า */}
+            <div className="text-[10px] text-gray-400 font-medium uppercase tracking-wider px-3 mt-3 mb-1.5">
+              {t("nav.settings")}
+            </div>
+
+            {/* ตั้งค่า — collapsible */}
+            <div className="mb-1">
+              <button
+                onClick={() => setMenuOpen(prev => ({ ...prev, settings: !prev.settings }))}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                <span className="flex-1 text-left">{t("nav.settings")}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`transition-transform ${menuOpen.settings ? "rotate-180" : ""}`}><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              {menuOpen.settings && (
+                <div className="ml-8 mt-0.5 space-y-0.5">
+                  <button className="w-full text-left px-3 py-1.5 rounded text-xs text-gray-500 hover:text-gray-700 transition-colors">
+                    • {locale === "en" ? "User Management" : "จัดการผู้ใช้งาน"}
+                  </button>
+                  <button className="w-full text-left px-3 py-1.5 rounded text-xs text-gray-500 hover:text-gray-700 transition-colors">
+                    • {locale === "en" ? "Customer Groups" : "กลุ่มลูกค้า"}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Component Showcase link (dev only) */}
+            <div className="mt-4 pt-3 border-t border-gray-100">
+              <button
+                onClick={() => router.push("/component-showcase")}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                Component Showcase
+              </button>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main content */}
-      <div className={`flex-1 flex flex-col min-h-screen bg-erp-bg transition-all duration-300 ${sidebarExpanded ? "ml-[272px]" : "ml-[52px]"}`}>
+      <div className={`flex-1 flex flex-col min-h-screen bg-erp-bg transition-all duration-300 ${sidebarExpanded ? "ml-[260px]" : "ml-0"}`}>
         {/* Floating hamburger toggle — always mounted by React */}
         <button
           type="button"
           onClick={() => setSidebarExpanded(prev => !prev)}
           className="fixed z-[60] w-8 h-8 flex items-center justify-center text-white/80 hover:text-white text-lg transition-colors"
-          style={{ top: 10, left: sidebarExpanded ? 284 : 64 }}
+          style={{ top: 10, left: sidebarExpanded ? 272 : 12 }}
           title={sidebarExpanded ? "หุบเมนู" : "กางเมนู"}
         >
           &#9776;
