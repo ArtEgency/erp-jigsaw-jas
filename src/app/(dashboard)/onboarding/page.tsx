@@ -26,7 +26,8 @@ const allModules = sampleTenantDetail.modules;
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { t } = useLocale();
+  const { t, locale, setLocale } = useLocale();
+  const [langOpen, setLangOpen] = useState(false);
   const [screen, setScreen] = useState<Screen>("s1");
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [addAccountOpen, setAddAccountOpen] = useState(false);
@@ -100,6 +101,34 @@ export default function OnboardingPage() {
           &#128276;
           <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-sa-primary" />
         </span>
+        <div className="w-px h-5 bg-white/30" />
+        {/* Language Switcher */}
+        <div className="relative">
+          <button
+            onClick={() => setLangOpen(prev => !prev)}
+            className="flex items-center gap-1 text-white text-xs font-medium px-2 py-1 rounded hover:bg-white/10 transition-colors"
+          >
+            {locale.toUpperCase()} <span className="text-[10px]">▼</span>
+          </button>
+          {langOpen && (
+            <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50 min-w-[100px]">
+              <button
+                onClick={() => { setLocale("th"); setLangOpen(false); }}
+                className="w-full px-3 py-2 text-left text-xs hover:bg-gray-50 transition-colors"
+                style={{ color: locale === "th" ? "#FF6B00" : "#333", fontWeight: locale === "th" ? 600 : 400 }}
+              >
+                TH Thai
+              </button>
+              <button
+                onClick={() => { setLocale("en"); setLangOpen(false); }}
+                className="w-full px-3 py-2 text-left text-xs hover:bg-gray-50 transition-colors border-t border-gray-100"
+                style={{ color: locale === "en" ? "#FF6B00" : "#333", fontWeight: locale === "en" ? 600 : 400 }}
+              >
+                EN English
+              </button>
+            </div>
+          )}
+        </div>
         <div className="w-px h-5 bg-white/30" />
         <span className="text-white text-xs font-medium">{t("onboarding.adminName")}</span>
         <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs font-bold text-sa-primary border-2 border-white/40">
