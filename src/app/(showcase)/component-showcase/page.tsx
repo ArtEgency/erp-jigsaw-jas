@@ -144,6 +144,7 @@ const SECTION_GROUPS: SectionGroup[] = [
     group: "Icons & Assets",
     items: [
       { id: "__link__/component-showcase/icon", label: "Icons (แยกหน้า)", icon: <InventoryIcon fontSize="small" />, keywords: "icon svg menu ไอคอน รูป" },
+      { id: "__link__/component-showcase/template", label: "Templates (แยกหน้า)", icon: <DashboardIcon fontSize="small" />, keywords: "template standard design datalist ตาราง มาตรฐาน เทมเพลต" },
     ],
   },
   {
@@ -533,33 +534,77 @@ export default function ComponentShowcase() {
         {/* ── 2. TEXT INPUTS ── */}
         {/* ═══════════════════════════════════════════ */}
         <SectionBlock id="inputs" title="Text Inputs">
-          <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 2, mb: 3 }}>
-            <TextField label="Outlined (default)" size="small" />
-            <TextField label="Filled" variant="filled" size="small" />
-            <TextField label="Standard" variant="standard" size="small" />
-            <TextField label="With Placeholder" placeholder="พิมพ์ที่นี่..." size="small" InputLabelProps={{ shrink: true }} />
-            <TextField label="Required" required size="small" />
-            <TextField label="Disabled" disabled size="small" defaultValue="ข้อมูลเดิม" />
-            <TextField label="Error State" error helperText="กรุณากรอกข้อมูล" size="small" />
-            <TextField label="Password" type="password" size="small" defaultValue="secret" />
-            <TextField label="Number" type="number" size="small" defaultValue={42} />
-          </Box>
+          {/* Input sx standard: H:56px, placeholder:18px, label:16px */}
+          {(() => {
+            const TF = { "& .MuiOutlinedInput-root": { height: 54, fontSize: 16, alignItems: "center" }, "& .MuiInputLabel-root": { fontSize: 14 }, "& .MuiOutlinedInput-input": { fontSize: 16, display: "flex", alignItems: "center", "&::placeholder": { fontSize: 16 } } };
+            const TF_FILLED = { "& .MuiFilledInput-root": { fontSize: 16, alignItems: "center" }, "& .MuiInputLabel-root": { fontSize: 14 }, "& .MuiFilledInput-input": { fontSize: 16, display: "flex", alignItems: "center", "&::placeholder": { fontSize: 16 } } };
+            const TF_STD = { "& .MuiInput-root": { fontSize: 16, alignItems: "center" }, "& .MuiInputLabel-root": { fontSize: 14 }, "& .MuiInput-input": { fontSize: 16, display: "flex", alignItems: "center", "&::placeholder": { fontSize: 16 } } };
+            return (
+              <>
+                <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 2, mb: 3 }}>
+                  <Box>
+                    <Chip label="CP-INPUT-OUTLINED" size="small" sx={{ mb: 1, fontFamily: "monospace", fontSize: 11, bgcolor: "#F5F5F7" }} />
+                    <TextField label="Outlined (default)" sx={TF} fullWidth />
+                  </Box>
+                  <Box>
+                    <Chip label="CP-INPUT-FILLED" size="small" sx={{ mb: 1, fontFamily: "monospace", fontSize: 11, bgcolor: "#F5F5F7" }} />
+                    <TextField label="Filled" variant="filled" sx={TF_FILLED} fullWidth />
+                  </Box>
+                  <Box>
+                    <Chip label="CP-INPUT-STANDARD" size="small" sx={{ mb: 1, fontFamily: "monospace", fontSize: 11, bgcolor: "#F5F5F7" }} />
+                    <TextField label="Standard" variant="standard" sx={TF_STD} fullWidth />
+                  </Box>
+                  <Box>
+                    <Chip label="CP-INPUT-PLACEHOLDER" size="small" sx={{ mb: 1, fontFamily: "monospace", fontSize: 11, bgcolor: "#F5F5F7" }} />
+                    <TextField label="With Placeholder" placeholder="พิมพ์ที่นี่..." sx={TF} fullWidth InputLabelProps={{ shrink: true }} />
+                  </Box>
+                  <Box>
+                    <Chip label="CP-INPUT-REQUIRED" size="small" sx={{ mb: 1, fontFamily: "monospace", fontSize: 11, bgcolor: "#F5F5F7" }} />
+                    <TextField label="Required" required sx={TF} fullWidth />
+                  </Box>
+                  <Box>
+                    <Chip label="CP-INPUT-DISABLED" size="small" sx={{ mb: 1, fontFamily: "monospace", fontSize: 11, bgcolor: "#F5F5F7" }} />
+                    <TextField label="Disabled" disabled sx={TF} fullWidth defaultValue="ข้อมูลเดิม" />
+                  </Box>
+                  <Box>
+                    <Chip label="CP-INPUT-ERROR" size="small" sx={{ mb: 1, fontFamily: "monospace", fontSize: 11, bgcolor: "#F5F5F7" }} />
+                    <TextField label="Error State" error helperText="กรุณากรอกข้อมูล" sx={TF} fullWidth />
+                  </Box>
+                  <Box>
+                    <Chip label="CP-INPUT-PASSWORD" size="small" sx={{ mb: 1, fontFamily: "monospace", fontSize: 11, bgcolor: "#F5F5F7" }} />
+                    <TextField label="Password" type="password" sx={TF} fullWidth defaultValue="secret" />
+                  </Box>
+                  <Box>
+                    <Chip label="CP-INPUT-NUMBER" size="small" sx={{ mb: 1, fontFamily: "monospace", fontSize: 11, bgcolor: "#F5F5F7" }} />
+                    <TextField label="Number" type="number" sx={TF} fullWidth defaultValue={42} />
+                  </Box>
+                </Box>
 
-          <SubLabel>Multiline / Textarea</SubLabel>
-          <TextField label="ข้อความยาว" multiline rows={3} fullWidth placeholder="พิมพ์ข้อความยาวที่นี่..." />
+                <SubLabel>Multiline / Textarea</SubLabel>
+                <Chip label="CP-INPUT-MULTILINE" size="small" sx={{ mb: 1, fontFamily: "monospace", fontSize: 11, bgcolor: "#F5F5F7" }} />
+                <TextField label="ข้อความยาว" multiline rows={3} fullWidth placeholder="พิมพ์ข้อความยาวที่นี่..." sx={{ "& .MuiOutlinedInput-root": { fontSize: 18 }, "& .MuiInputLabel-root": { fontSize: 16 } }} />
 
-          <Typography variant="subtitle2" sx={{ mt: 3, mb: 1.5, color: "#666" }}>Select (Dropdown)</Typography>
-          <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 2 }}>
-            <TextField select label="เลือกแผนก" size="small" defaultValue="sales" InputLabelProps={{ shrink: true }}>
-              <MenuItem value="sales">ฝ่ายขาย</MenuItem>
-              <MenuItem value="acc">ฝ่ายบัญชี</MenuItem>
-              <MenuItem value="hr">ฝ่ายบุคคล</MenuItem>
-            </TextField>
-            <TextField select label="สถานะ" size="small" defaultValue="active" InputLabelProps={{ shrink: true }}>
-              <MenuItem value="active">ใช้งาน</MenuItem>
-              <MenuItem value="inactive">ไม่ใช้งาน</MenuItem>
-            </TextField>
-          </Box>
+                <Typography variant="subtitle2" sx={{ mt: 3, mb: 1.5, color: "#666" }}>Select (Dropdown)</Typography>
+                <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 2 }}>
+                  <Box>
+                    <Chip label="CP-SELECT-DROPDOWN" size="small" sx={{ mb: 1, fontFamily: "monospace", fontSize: 11, bgcolor: "#F5F5F7" }} />
+                    <TextField select label="เลือกแผนก" sx={TF} fullWidth defaultValue="sales" InputLabelProps={{ shrink: true }}>
+                      <MenuItem value="sales">ฝ่ายขาย</MenuItem>
+                      <MenuItem value="acc">ฝ่ายบัญชี</MenuItem>
+                      <MenuItem value="hr">ฝ่ายบุคคล</MenuItem>
+                    </TextField>
+                  </Box>
+                  <Box>
+                    <Chip label="CP-SELECT-STATUS" size="small" sx={{ mb: 1, fontFamily: "monospace", fontSize: 11, bgcolor: "#F5F5F7" }} />
+                    <TextField select label="สถานะ" sx={TF} fullWidth defaultValue="active" InputLabelProps={{ shrink: true }}>
+                      <MenuItem value="active">ใช้งาน</MenuItem>
+                      <MenuItem value="inactive">ไม่ใช้งาน</MenuItem>
+                    </TextField>
+                  </Box>
+                </Box>
+              </>
+            );
+          })()}
         </SectionBlock>
 
         {/* ═══════════════════════════════════════════ */}

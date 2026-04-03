@@ -9,11 +9,14 @@ import FloatingField from "@/components/layout/FloatingField";
 import FormDialog from "@/components/ui/FormDialog";
 import { masterAccounts, MasterAccount, sampleTenantDetail } from "@/data/mock";
 import { useLocale } from "@/lib/locale";
-import { TextField, MenuItem, Button, Stack, Alert, Chip, IconButton, LinearProgress, Typography, Box, Tabs, Tab, Radio, RadioGroup, FormControlLabel, ToggleButtonGroup, ToggleButton, Checkbox, Paper } from "@mui/material";
+import { useAuth } from "@/lib/auth";
+import { TextField, MenuItem, Button, Stack, Alert, Chip, IconButton, LinearProgress, Typography, Box, Tabs, Tab, Radio, RadioGroup, FormControlLabel, ToggleButtonGroup, ToggleButton, Checkbox, Paper, Menu } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
-import EditIcon from "@mui/icons-material/Edit";
+import EditIcon from "@mui/icons-material/EditOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
+import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import ActionButtons, { createActions } from "@/components/ui/ActionButtons";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -27,14 +30,18 @@ const allModules = sampleTenantDetail.modules;
 export default function OnboardingPage() {
   const router = useRouter();
   const { t, locale, setLocale } = useLocale();
+  const { user, logout } = useAuth();
   const [langOpen, setLangOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState<Record<string, boolean>>({ customer: true, settings: false });
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState<Record<string, boolean>>({ customer: true, settings: false, reports: false });
   const [screen, setScreen] = useState<Screen>("s1");
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [addAccountOpen, setAddAccountOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedAccount, setSelectedAccount] = useState<MasterAccount>(masterAccounts[0]);
   const [showToast, setShowToast] = useState(false);
+  const [meatballAnchor, setMeatballAnchor] = useState<null | HTMLElement>(null);
+  const [meatballRow, setMeatballRow] = useState<MasterAccount | null>(null);
 
   // S2 form state
   const [accountForm, setAccountForm] = useState({
@@ -92,7 +99,9 @@ export default function OnboardingPage() {
   // ─── TOPBAR SA ───
   const renderTopBarSA = () => (
     <div className="h-[52px] bg-sa-primary flex items-center px-4 gap-3 shrink-0">
-      <div className="w-5" /> {/* spacer — hamburger toggle is the floating button */}
+      <button onClick={() => setSidebarExpanded(prev => !prev)} className="text-white hover:bg-white/20 rounded-lg p-1.5 transition-colors cursor-pointer">
+        <svg width={20} height={20} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6} fill="none"><path d="M3 6h18M3 12h18M3 18h18" strokeLinecap="round" /></svg>
+      </button>
       <div className="text-xs text-white/70 flex-1">
         <strong className="text-white">Server: Prod</strong> | Jigsaw Admin
       </div>
@@ -131,9 +140,46 @@ export default function OnboardingPage() {
           )}
         </div>
         <div className="w-px h-5 bg-white/30" />
-        <span className="text-white text-xs font-medium">{t("onboarding.adminName")}</span>
-        <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs font-bold text-sa-primary border-2 border-white/40">
-          สจ
+        {/* Profile + Sign Out dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setProfileOpen(prev => !prev)}
+            className="flex items-center gap-2 hover:bg-white/10 rounded-lg px-2 py-1 transition-colors"
+          >
+            <span className="text-white text-xs font-medium">{user?.name || t("onboarding.adminName")}</span>
+            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs font-bold text-sa-primary border-2 border-white/40">
+              {user?.avatar || "สจ"}
+            </div>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><polyline points={profileOpen ? "18 15 12 9 6 15" : "6 9 12 15 18 9"}/></svg>
+          </button>
+          {profileOpen && (
+            <div className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50 min-w-[240px]" style={{ fontFamily: "'Sarabun', sans-serif" }}>
+              {/* User info */}
+              <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+                <div className="w-12 h-12 rounded-full bg-[#565DFF]/10 border-2 border-[#565DFF]/30 flex items-center justify-center text-sm font-bold text-[#565DFF]">
+                  {user?.avatar || "สจ"}
+                </div>
+                <div>
+                  <div className="text-sm font-semibold text-gray-800">{user?.name || t("onboarding.adminName")}</div>
+                  <div className="text-xs text-gray-500">{locale === "en" ? "Administrator" : "ผู้ดูแลระบบ"}</div>
+                </div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#565DFF" strokeWidth="2" className="ml-auto"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              {/* Profile link */}
+              <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors border-b border-gray-100">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#777" strokeWidth="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Profile
+              </button>
+              {/* Sign Out */}
+              <button
+                onClick={() => { setProfileOpen(false); logout(); router.push("/login"); }}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="1.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Sign Out
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -142,7 +188,9 @@ export default function OnboardingPage() {
   // ─── TOPBAR TA (for email/verify screens) ───
   const TopBarTA = ({ info }: { info: string }) => (
     <div className="h-[52px] bg-brand-primary flex items-center px-4 gap-3 shrink-0">
-      <span className="text-white/80 text-lg">&#9776;</span>
+      <button onClick={() => setSidebarExpanded(prev => !prev)} className="text-white hover:bg-white/20 rounded-lg p-1.5 transition-colors cursor-pointer">
+        <svg width={20} height={20} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6} fill="none"><path d="M3 6h18M3 12h18M3 18h18" strokeLinecap="round" /></svg>
+      </button>
       <div className="text-xs text-white/70 flex-1">
         <strong className="text-white">{info}</strong>
       </div>
@@ -180,143 +228,211 @@ export default function OnboardingPage() {
     <div className="flex flex-col flex-1">
       {renderTopBarSA()}
       <Breadcrumb items={[{ label: t("onboarding.customer") }, { label: t("onboarding.masterAccountList") }]} />
-      <div className="px-5 pt-3 pb-2">
-        <h1 className="text-xl font-bold text-erp-text">{t("onboarding.masterAccountList")}</h1>
-      </div>
-      <Box sx={{ flex: 1, px: 3, pb: 3 }}>
-        {/* Toolbar — matches Figma */}
-        <Stack direction="row" alignItems="center" gap={2} sx={{ mb: 2 }}>
-          <Button
-            variant="contained"
-            startIcon={<FileUploadOutlinedIcon />}
-            sx={{ bgcolor: "#FF6B00", "&:hover": { bgcolor: "#E65C00" }, textTransform: "uppercase", fontWeight: 500, fontSize: 14, px: 2.5, py: 0.8 }}
-          >
-            {t("common.export")}
-          </Button>
-          <Box sx={{ flex: 1 }} />
-          <TextField
-            size="small"
-            placeholder={t("onboarding.searchCustomer")}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            sx={{ width: 280, "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-          />
-          <Button
-            variant="contained"
-            onClick={() => {
-              setAccountForm({ company: "", firstName: "", lastName: "", position: "", customerGroup: "ทั่วไป", email: "", phone: "", tenantQuota: "3" });
-              setEmailError(false);
-              setAddAccountOpen(true);
-            }}
-            sx={{ bgcolor: "#FF6B00", "&:hover": { bgcolor: "#E65C00" }, fontWeight: 500, fontSize: 14, px: 2.5, py: 0.8, textTransform: "none", boxShadow: "0px 4px 8px -4px rgba(76,78,100,0.42)" }}
-          >
-            {t("onboarding.addCustomerShort")}
-          </Button>
-        </Stack>
+      {/* TPL-DATALIST-STANDARD */}
+      <Box sx={{ px: 3, py: 3, flex: 1 }}>
+        <Typography variant="h5" sx={{ fontWeight: 500, py: 2.5, color: "#374151" }}>
+          {t("onboarding.masterAccountList")}
+        </Typography>
 
-        {/* Table Card — Figma style: white card + shadow + rounded */}
-        <Paper sx={{ borderRadius: 2.5, boxShadow: "0px 2px 10px rgba(76,78,100,0.22)", overflow: "hidden" }}>
-          <table className="w-full" style={{ fontSize: 14, borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ borderBottom: "1px solid #F5F5F7" }}>
-                <th style={{ width: 42, padding: "12px 8px", textAlign: "center" }}>
-                  <Checkbox size="small" sx={{ p: 0, color: "#C4C4C4" }} />
-                </th>
-                {[t("onboarding.accountCode"), t("onboarding.name"), t("onboarding.customerGroup"), "Email", t("onboarding.phoneCol"), t("onboarding.emailVerifiedAt"), t("onboarding.businessCount"), t("onboarding.status"), t("onboarding.actions")].map((col, i) => (
-                  <th key={i} style={{ padding: "14px 16px", textAlign: "left", fontWeight: 500, color: "#374151", fontSize: 14, whiteSpace: "nowrap", borderRight: i < 8 ? "2px solid rgba(76,78,100,0.12)" : "none", position: "relative" }}>
-                    {col}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((a) => (
-                <tr
-                  key={a.id}
-                  style={{ borderBottom: "1px solid rgba(76,78,100,0.12)" }}
-                  className="hover:bg-[#f8f6ff] cursor-pointer transition-colors"
-                  onClick={() => { setSelectedAccount(a); setDetailTab("general"); go("s5"); }}
-                >
-                  <td style={{ padding: "12px 8px", textAlign: "center" }}>
-                    <Checkbox size="small" sx={{ p: 0, color: "#C4C4C4" }} />
-                  </td>
-                  <td style={{ padding: "14px 16px" }}>
-                    <Typography variant="body2" sx={{ color: "#FF6B00", fontWeight: 400 }}>{a.id}</Typography>
-                  </td>
-                  <td style={{ padding: "14px 16px" }}>
-                    <Typography variant="body2" sx={{ fontWeight: 500, color: "#374151" }}>{a.firstName} {a.lastName}</Typography>
-                    <Typography variant="caption" sx={{ color: "#6B7280" }}>{a.position}</Typography>
-                  </td>
-                  <td style={{ padding: "14px 16px" }}>
-                    <Typography variant="body2" sx={{ color: "#4C4E63" }}>{a.customerGroup}</Typography>
-                  </td>
-                  <td style={{ padding: "14px 16px" }}>
-                    <Typography variant="body2" sx={{ color: "#4C4E63" }}>{a.email}</Typography>
-                  </td>
-                  <td style={{ padding: "14px 16px" }}>
-                    <Typography variant="body2" sx={{ color: "#4C4E63" }}>{a.phone}</Typography>
-                  </td>
-                  <td style={{ padding: "14px 16px" }}>
-                    <Typography variant="body2" sx={{ color: "#4C4E63" }}>{a.emailVerifiedAt || "—"}</Typography>
-                  </td>
-                  <td style={{ padding: "14px 16px", textAlign: "center" }}>
-                    <Typography variant="body2">
-                      <span style={{ color: "#FF6B00", fontWeight: 600 }}>{a.tenantUsed}</span>
-                      <span style={{ color: "#4C4E63" }}>/{a.tenantQuota}</span>
-                    </Typography>
-                  </td>
-                  <td style={{ padding: "14px 16px" }}>
-                    <Chip
-                      label={a.status}
-                      size="small"
-                      sx={{
-                        borderRadius: 50, fontWeight: 500, fontSize: 14, px: 1,
-                        ...(a.status === "เปิดใช้งาน"
-                          ? { bgcolor: "rgba(238,251,229,0.98)", color: "#72E128" }
-                          : a.status === "รอยืนยัน Email"
-                          ? { bgcolor: "#FFF0E5", color: "#FF8228" }
-                          : { bgcolor: "#F0F0F0", color: "#999" }),
-                      }}
-                    />
-                  </td>
-                  <td style={{ padding: "14px 16px" }}>
-                    <Stack direction="row" gap={1.5} alignItems="center">
-                      <IconButton
-                        size="small"
-                        onClick={(e) => { e.stopPropagation(); setSelectedAccount(a); setDetailTab("general"); go("s5"); }}
-                        sx={{
-                          width: 28, height: 28, borderRadius: 3.5,
-                          bgcolor: a.status === "รอยืนยัน Email" ? "#FFEDE0" : "#E3E8F0",
-                          "&:hover": { bgcolor: a.status === "รอยืนยัน Email" ? "#FFD9BF" : "#D0D5E0" },
-                        }}
-                      >
-                        <EditIcon sx={{ fontSize: 14, color: a.status === "รอยืนยัน Email" ? "#FF6B00" : "#4C4E63" }} />
-                      </IconButton>
-                      <IconButton size="small" onClick={(e) => e.stopPropagation()} sx={{ width: 28, height: 28 }}>
-                        <MoreVertIcon sx={{ fontSize: 18, color: "#4C4E63" }} />
-                      </IconButton>
-                    </Stack>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {/* Pagination — Figma style */}
-          <Stack direction="row" alignItems="center" justifyContent="flex-end" gap={2} sx={{ px: 2.5, py: 1.5, borderTop: "1px solid #F5F5F7" }}>
-            <Typography variant="body2" sx={{ color: "#9294A1", fontSize: 13 }}>{t("common.perPage")}</Typography>
-            <Stack direction="row" alignItems="center" gap={0.5}>
-              <Typography variant="body2" sx={{ color: "#4C4E63", fontSize: 13 }}>6</Typography>
-              <Box sx={{ fontSize: 10, color: "#4C4E63" }}>▼</Box>
-            </Stack>
-            <Typography variant="body2" sx={{ color: "#9294A1", fontSize: 13 }}>1-{filtered.length} of {filtered.length}</Typography>
-            <Stack direction="row" gap={0.5}>
-              <Box sx={{ width: 26, height: 26, borderRadius: 13, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 12, color: "#4C4E63" }}>&lt;</Box>
-              <Box sx={{ width: 26, height: 26, borderRadius: 13, bgcolor: "#FF6B00", color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 500 }}>1</Box>
-              <Box sx={{ width: 26, height: 26, borderRadius: 13, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 13, color: "#4C4E63" }}>2</Box>
-              <Box sx={{ width: 26, height: 26, borderRadius: 13, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 12, color: "#4C4E63" }}>&gt;</Box>
-            </Stack>
+        <Paper elevation={3} sx={{ borderRadius: "10px", overflow: "hidden" }}>
+          {/* Filter Bar */}
+          <Stack direction="row" alignItems="center" spacing={2} sx={{ p: 2.5 }}>
+            <Button
+              variant="contained"
+              startIcon={<FileUploadOutlinedIcon />}
+              sx={{ bgcolor: "#FF6B00", "&:hover": { bgcolor: "#E65C00" }, textTransform: "none", whiteSpace: "nowrap" }}
+            >
+              {t("common.export")}
+            </Button>
+            <Box sx={{ flex: 1 }} />
+            <TextField
+              size="small"
+              placeholder={t("onboarding.searchCustomer")}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              sx={{ minWidth: 280 }}
+            />
+            <Button
+              variant="contained"
+              onClick={() => {
+                setAccountForm({ company: "", firstName: "", lastName: "", position: "", customerGroup: "ทั่วไป", email: "", phone: "", tenantQuota: "3" });
+                setEmailError(false);
+                setAddAccountOpen(true);
+              }}
+              sx={{ bgcolor: "#FF6B00", "&:hover": { bgcolor: "#E65C00" }, textTransform: "none", whiteSpace: "nowrap" }}
+            >
+              {t("onboarding.addCustomerShort")}
+            </Button>
           </Stack>
+          {/* DataGrid — TPL-DATALIST-STANDARD */}
+          <DataGrid
+            rows={filtered}
+            columns={(() => {
+              const cols: GridColDef[] = [
+                {
+                  field: "id",
+                  headerName: t("onboarding.accountCode"),
+                  width: 140,
+                  renderCell: (params: GridRenderCellParams) => (
+                    <Typography variant="body2" sx={{ color: "#FF6B00", fontWeight: 500, cursor: "pointer" }}>{params.value}</Typography>
+                  ),
+                },
+                {
+                  field: "name",
+                  headerName: t("onboarding.name"),
+                  flex: 1,
+                  minWidth: 180,
+                  valueGetter: (_value: unknown, row: MasterAccount) => `${row.firstName} ${row.lastName}`,
+                  renderCell: (params: GridRenderCellParams) => (
+                    <Stack direction="row" alignItems="center" spacing={1.5} sx={{ height: "100%" }}>
+                      <Box sx={{ width: 36, height: 36, borderRadius: "50%", bgcolor: "#FF6B00", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: "0.875rem", fontWeight: 600, flexShrink: 0 }}>
+                        {(params.value as string)?.charAt(0)}
+                      </Box>
+                      <Typography variant="body2">{params.value}</Typography>
+                    </Stack>
+                  ),
+                },
+                { field: "customerGroup", headerName: t("onboarding.customerGroup"), width: 100 },
+                { field: "email", headerName: "Email", width: 200 },
+                { field: "phone", headerName: t("onboarding.phoneCol"), width: 130 },
+                {
+                  field: "emailVerifiedAt",
+                  headerName: t("onboarding.emailVerifiedAt"),
+                  width: 150,
+                  renderCell: (params: GridRenderCellParams) => (
+                    <Typography variant="body2" sx={{ color: "#374151" }}>{params.value || "—"}</Typography>
+                  ),
+                },
+                {
+                  field: "tenantQuota",
+                  headerName: t("onboarding.businessCount"),
+                  width: 140,
+                  align: "center",
+                  headerAlign: "center",
+                  renderCell: (params: GridRenderCellParams) => {
+                    const row = params.row as MasterAccount;
+                    return (
+                      <Typography variant="body2">
+                        <span style={{ color: "#FF6B00", fontWeight: 600 }}>{row.tenantUsed}</span>
+                        <span style={{ color: "#4C4E63" }}>/{row.tenantQuota}</span>
+                      </Typography>
+                    );
+                  },
+                },
+                {
+                  field: "status",
+                  headerName: t("onboarding.status"),
+                  width: 140,
+                  renderCell: (params: GridRenderCellParams) => {
+                    const status = params.value as string;
+                    return (
+                      <Chip
+                        label={status}
+                        size="small"
+                        sx={{
+                          fontWeight: 500, fontSize: "0.8rem",
+                          ...(status === "เปิดใช้งาน"
+                            ? { bgcolor: "rgba(238,251,229,0.98)", color: "#3B6D11" }
+                            : status === "รอยืนยัน Email"
+                            ? { bgcolor: "#FFF0E5", color: "#FF8228" }
+                            : status === "ระงับ Account"
+                            ? { bgcolor: "#FFF0E5", color: "#FF8228", border: "1px solid #FF8228" }
+                            : { bgcolor: "#F0F0F0", color: "#999" }),
+                        }}
+                      />
+                    );
+                  },
+                },
+                {
+                  field: "actions",
+                  headerName: t("onboarding.actions"),
+                  width: 100,
+                  sortable: false,
+                  filterable: false,
+                  renderCell: (params: GridRenderCellParams) => {
+                    const row = params.row as MasterAccount;
+                    return (
+                      <Stack direction="row" alignItems="center" spacing={1}>
+                        <IconButton size="small" sx={{ p: 0 }} onClick={(e) => { e.stopPropagation(); setSelectedAccount(row); setDetailTab("general"); go("s5"); }}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src="/icons/actions/edit.svg" alt="edit" width={28} height={28} />
+                        </IconButton>
+                        <IconButton size="small" onClick={(e) => { e.stopPropagation(); setMeatballAnchor(e.currentTarget); setMeatballRow(row); }} sx={{ width: 28, height: 28 }}>
+                          <MoreVertIcon sx={{ fontSize: 18, color: "#93A1B8" }} />
+                        </IconButton>
+                      </Stack>
+                    );
+                  },
+                },
+              ];
+              return cols;
+            })()}
+            pageSizeOptions={[10, 25, 50]}
+            initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
+            checkboxSelection
+            disableRowSelectionOnClick
+            autoHeight
+            getRowHeight={() => 60}
+            onRowClick={(params, event) => {
+              const target = (event as React.MouseEvent).target as HTMLElement;
+              if (target.closest("button") || target.closest("a")) return;
+              const row = params.row as MasterAccount;
+              setSelectedAccount(row);
+              setDetailTab("general");
+              go("s5");
+            }}
+            sx={{
+              border: "none",
+              "& .MuiDataGrid-columnHeaders": {
+                bgcolor: "#F5F5F7",
+                fontSize: "0.9rem",
+                fontWeight: 600,
+                color: "#374151",
+              },
+              "& .MuiDataGrid-cell": {
+                fontSize: "0.875rem",
+                color: "#374151",
+                display: "flex",
+                alignItems: "center",
+              },
+              "& .MuiDataGrid-row:hover": {
+                bgcolor: "rgba(255,107,0,0.04)",
+              },
+              "& .MuiDataGrid-footerContainer": {
+                borderTop: "1px solid #F5F5F7",
+              },
+              "& .MuiCheckbox-root": {
+                color: "#ccc",
+                "&.Mui-checked": { color: "#FF6B00" },
+              },
+            }}
+          />
         </Paper>
+
+        {/* TPL-MEATBALL-MENU */}
+        <Menu
+          anchorEl={meatballAnchor}
+          open={Boolean(meatballAnchor)}
+          onClose={() => setMeatballAnchor(null)}
+          PaperProps={{ elevation: 3, sx: { borderRadius: "5px", width: 227, mt: 0.5 } }}
+        >
+          <MenuItem onClick={() => { setMeatballAnchor(null); }} sx={{ gap: 1.5, py: 1.5, fontSize: "0.875rem", color: "#374151" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            {t("onboarding.resendEmail")}
+          </MenuItem>
+          <MenuItem onClick={() => { setMeatballAnchor(null); }} sx={{ gap: 1.5, py: 1.5, fontSize: "0.875rem", color: "#374151" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            {t("onboarding.resetPassword")}
+          </MenuItem>
+          <MenuItem onClick={() => { setMeatballAnchor(null); if (meatballRow) { setSelectedAccount(meatballRow); setDetailTab("general"); go("s5"); } }} sx={{ gap: 1.5, py: 1.5, fontSize: "0.875rem", color: "#374151" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            {t("onboarding.editData")}
+          </MenuItem>
+          <MenuItem onClick={() => { setMeatballAnchor(null); }} sx={{ gap: 1.5, py: 1.5, fontSize: "0.875rem", color: "#FF6B00" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF6B00" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            {t("onboarding.suspendAccount")}
+          </MenuItem>
+        </Menu>
       </Box>
       {/* Footer — Figma style */}
       <Box sx={{ px: 3, py: 2, fontSize: 14, color: "rgba(76,78,100,0.68)" }}>
@@ -1283,7 +1399,7 @@ export default function OnboardingPage() {
             <span className="text-[8px] font-bold text-sa-primary tracking-wider mb-2">JIGSAW</span>
 
             {/* Home (active) */}
-            <button onClick={() => go("s1")} className="w-11 h-11 rounded-lg flex items-center justify-center bg-sa-primary/10 transition-colors" title={t("nav.home")}>
+            <button onClick={() => router.push("/home")} className="w-11 h-11 rounded-lg flex items-center justify-center bg-sa-primary/10 transition-colors" title={t("nav.home")}>
               <img src="/icons/commerce/home.svg" alt="" width={24} height={24} style={{ filter: "brightness(0) saturate(100%) invert(45%) sepia(96%) saturate(1500%) hue-rotate(360deg)" }} />
             </button>
 
@@ -1296,7 +1412,7 @@ export default function OnboardingPage() {
             </button>
 
             {/* รายงาน */}
-            <button className="w-11 h-11 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors" title={locale === "en" ? "Reports" : "รายงาน"}>
+            <button onClick={() => { setSidebarExpanded(true); setMenuOpen(prev => ({ ...prev, reports: true })); }} className="w-11 h-11 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors" title={locale === "en" ? "Reports" : "รายงาน"}>
               <img src="/icons/data/graph-up.svg" alt="" width={24} height={24} />
             </button>
 
@@ -1326,12 +1442,10 @@ export default function OnboardingPage() {
 
           {/* Menu Items — Sarabun Regular 16px */}
           <div className="flex-1 overflow-y-auto py-2 px-3" style={{ fontFamily: "'Sarabun', sans-serif" }}>
-            {/* ภาพรวม — icon: home.svg */}
+            {/* ภาพรวม — icon: home.svg → ไป /home (ไม่ highlight เพราะอยู่หน้า onboarding) */}
             <button
-              onClick={() => go("s1")}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-colors ${
-                screen === "s1" ? "bg-gray-100 text-sa-primary" : "text-gray-700 hover:bg-gray-50"
-              }`}
+              onClick={() => router.push("/home")}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-colors text-gray-700 hover:bg-gray-50"
               style={{ fontSize: 16, fontWeight: 400 }}
             >
               <img src="/icons/commerce/home.svg" alt="" width={24} height={24} />
@@ -1367,13 +1481,24 @@ export default function OnboardingPage() {
               )}
             </div>
 
-            {/* รายงาน — icon: graph-up.svg */}
+            {/* รายงาน — icon: graph-up.svg — collapsible */}
             <div className="mb-1">
-              <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" style={{ fontSize: 16, fontWeight: 400 }}>
+              <button
+                onClick={() => setMenuOpen(prev => ({ ...prev, reports: !prev.reports }))}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                style={{ fontSize: 16, fontWeight: 400 }}
+              >
                 <img src="/icons/data/graph-up.svg" alt="" width={24} height={24} />
                 <span className="flex-1 text-left">{locale === "en" ? "Reports" : "รายงาน"}</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`transition-transform ${menuOpen.reports ? "rotate-180" : ""}`}><polyline points="6 9 12 15 18 9"/></svg>
               </button>
+              {menuOpen.reports && (
+                <div className="ml-10 mt-0.5 space-y-0.5">
+                  <button onClick={() => alert(locale === "en" ? "Reports page coming soon" : "หน้ารายงาน กำลังพัฒนา")} className="w-full text-left px-3 py-1.5 rounded text-gray-500 hover:text-gray-700 transition-colors" style={{ fontSize: 16, fontWeight: 400 }}>
+                    • {locale === "en" ? "All Reports" : "รายงานทั้งหมด"}
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Section: ตั้งค่า */}
@@ -1381,7 +1506,7 @@ export default function OnboardingPage() {
               {t("nav.settings")}
             </div>
 
-            {/* ตั้งค่า — icon: settings.svg */}
+            {/* ตั้งค่า — icon: settings.svg — collapsible */}
             <div className="mb-1">
               <button
                 onClick={() => setMenuOpen(prev => ({ ...prev, settings: !prev.settings }))}
@@ -1394,10 +1519,10 @@ export default function OnboardingPage() {
               </button>
               {menuOpen.settings && (
                 <div className="ml-10 mt-0.5 space-y-0.5">
-                  <button className="w-full text-left px-3 py-1.5 rounded text-gray-500 hover:text-gray-700 transition-colors" style={{ fontSize: 16, fontWeight: 400 }}>
+                  <button onClick={() => alert(locale === "en" ? "User Management coming soon" : "จัดการผู้ใช้งาน กำลังพัฒนา")} className="w-full text-left px-3 py-1.5 rounded text-gray-500 hover:text-gray-700 transition-colors" style={{ fontSize: 16, fontWeight: 400 }}>
                     • {locale === "en" ? "User Management" : "จัดการผู้ใช้งาน"}
                   </button>
-                  <button className="w-full text-left px-3 py-1.5 rounded text-gray-500 hover:text-gray-700 transition-colors" style={{ fontSize: 16, fontWeight: 400 }}>
+                  <button onClick={() => alert(locale === "en" ? "Customer Groups coming soon" : "กลุ่มลูกค้า กำลังพัฒนา")} className="w-full text-left px-3 py-1.5 rounded text-gray-500 hover:text-gray-700 transition-colors" style={{ fontSize: 16, fontWeight: 400 }}>
                     • {locale === "en" ? "Customer Groups" : "กลุ่มลูกค้า"}
                   </button>
                 </div>
@@ -1421,17 +1546,13 @@ export default function OnboardingPage() {
       </div>
 
       {/* Main content */}
+      {/* Hamburger is now inside TopBar */}
+
       <div className={`flex-1 flex flex-col min-h-screen bg-erp-bg transition-all duration-300 ${sidebarExpanded ? "ml-[260px]" : "ml-[68px]"}`}>
-        {/* Floating hamburger toggle — always mounted by React */}
-        <button
-          type="button"
-          onClick={() => setSidebarExpanded(prev => !prev)}
-          className="fixed z-[60] w-8 h-8 flex items-center justify-center text-white/80 hover:text-white text-lg transition-colors"
-          style={{ top: 10, left: sidebarExpanded ? 272 : 78 }}
-          title={sidebarExpanded ? "หุบเมนู" : "กางเมนู"}
-        >
-          &#9776;
-        </button>
+        {/* Outside click overlay — กดข้างนอก sidebar จะหุบ */}
+        {sidebarExpanded && (
+          <div className="fixed inset-0 z-[45]" onClick={() => setSidebarExpanded(false)} />
+        )}
         {screens[screen]()}
       </div>
     </div>

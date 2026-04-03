@@ -197,7 +197,7 @@ export interface MasterAccount {
   phone: string;
   tenantQuota: number;
   tenantUsed: number;
-  status: "เปิดใช้งาน" | "รอยืนยัน Email" | "ปิดใช้งาน";
+  status: "เปิดใช้งาน" | "รอยืนยัน Email" | "ปิดใช้งาน" | "ระงับ Account";
   emailVerifiedAt: string | null;
   createdAt: string;
   createdBy: string;
@@ -255,6 +255,24 @@ export const masterAccounts: MasterAccount[] = [
     tenantUsed: 2,
     status: "เปิดใช้งาน",
     emailVerifiedAt: "20/03/2569 09:15",
+    createdAt: "20/03/2569",
+    createdBy: "สลิษา จิตดี",
+    updatedAt: "22/03/2569",
+    updatedBy: "สลิษา จิตดี",
+  },
+  {
+    id: "MA-69-03-0004",
+    firstName: "ชัยชนะ",
+    lastName: "มงคล",
+    position: "ผู้จัดการทั่วไป",
+    company: "มงคล เทรดดิ้ง",
+    customerGroup: "ขายปลีก",
+    email: "chaichana@mongkol.co.th",
+    phone: "062-345-8965",
+    tenantQuota: 3,
+    tenantUsed: 1,
+    status: "ระงับ Account",
+    emailVerifiedAt: "20/03/2569",
     createdAt: "20/03/2569",
     createdBy: "สลิษา จิตดี",
     updatedAt: "22/03/2569",

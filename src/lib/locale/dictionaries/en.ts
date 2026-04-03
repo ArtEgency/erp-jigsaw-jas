@@ -38,7 +38,7 @@ const en: Record<string, string> = {
   "auth.enterSystem": "Enter Company System",
 
   // ── Navigation ──
-  "nav.home": "Home",
+  "nav.home": "Overview",
   "nav.dashboard": "Dashboard",
   "nav.page": "Page",
   "nav.showcase": "Component Showcase",
@@ -85,6 +85,10 @@ const en: Record<string, string> = {
   "onboarding.businessCount": "Businesses (Quota)",
   "onboarding.status": "Status",
   "onboarding.actions": "Actions",
+  "onboarding.resendEmail": "Resend Verification Email",
+  "onboarding.resetPassword": "Reset Password",
+  "onboarding.editData": "Edit Data",
+  "onboarding.suspendAccount": "Suspend Account",
   "onboarding.statusActive": "Active",
   "onboarding.statusPending": "Pending Email",
   "onboarding.statusDisabled": "Disabled",

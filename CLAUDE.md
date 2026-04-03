@@ -172,14 +172,28 @@ Green:           #3B6D11
 Red:             #E53935
 ```
 
-## Layout
+## Layout (ต้องเท่ากันทั้ง 2 โปรเจกต์)
 
 ```
-── Admin (SA Onboarding) ──
-Sidebar:   width 52px, fixed left, bg #2D2D2D
-TopBar:    height 52px, bg #FF6B00 (ส้ม)
-
+TopBar:      height 52px
+Sidebar:     collapsed 68px / expanded 260px
+Icon buttons: 44px (w-11 h-11)
+Font:        Sarabun (MUI Theme)
+JAS color:   #FF6B00 (ส้ม)
+Tenant color: #565DFF (ม่วง)
 ```
+
+## กฎบังคับ — Mandatory Rules
+
+1. **Component Showcase (JAS) = Master** — ทุกหน้าทั้ง 2 โปรเจกต์ต้องใช้ component/icon จากที่นี่เท่านั้น
+2. **ห้ามสร้าง component/icon ใหม่** โดยไม่ถามก่อน
+3. **i18n** — ทุก UI text ต้องใช้ t("key") + รองรับ TH/EN + เพิ่มภาษาใหม่ง่าย
+4. **Data display** — Label เปลี่ยนตาม locale, Data EN field แสดง EN ถ้ามี, ไม่มีใช้ TH
+5. **Icons** — เก็บ shared-icons/ → copy ทั้ง 2 → rename EN kebab-case → จัดหมวด → อัปเดต Icon Showcase
+6. **Verify** — ทำเสร็จต้อง verify บน local preview ก่อนตอบ
+7. **DPG/DPV** — ไม่ทำจนกว่า user จะสั่ง
+8. **3 Roles** — โบทตี้ (PM) → โจอี้ (DEV) → บุ้งกี้ (Tester) ทุกงาน
+9. **Figma Design** — ยึด style/icon จาก Figma ให้ตรงมากที่สุด ยกเว้น padding/layout ที่ต้องยึดความสมบูรณ์และความเท่ากัน
 
 ## Folder Structure
 

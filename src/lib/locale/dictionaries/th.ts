@@ -38,7 +38,7 @@ const th: Record<string, string> = {
   "auth.enterSystem": "เข้าสู่ระบบบริษัท",
 
   // ── Navigation ──
-  "nav.home": "หน้าหลัก",
+  "nav.home": "ภาพรวม",
   "nav.dashboard": "แดชบอร์ด",
   "nav.page": "Page",
   "nav.showcase": "Component Showcase",
@@ -85,6 +85,10 @@ const th: Record<string, string> = {
   "onboarding.businessCount": "จำนวนธุรกิจ (Quota)",
   "onboarding.status": "สถานะ",
   "onboarding.actions": "จัดการ",
+  "onboarding.resendEmail": "ส่ง E-mail ยืนยันซ้ำ",
+  "onboarding.resetPassword": "Reset รหัสผ่าน",
+  "onboarding.editData": "แก้ไขข้อมูล",
+  "onboarding.suspendAccount": "ระงับ Account",
   "onboarding.statusActive": "เปิดใช้งาน",
   "onboarding.statusPending": "รอยืนยัน Email",
   "onboarding.statusDisabled": "ปิดใช้งาน",
