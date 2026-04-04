@@ -6,11 +6,12 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import SlidePanel from "@/components/layout/SlidePanel";
 import FloatingField from "@/components/layout/FloatingField";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import FormDialog from "@/components/ui/FormDialog";
 import { masterAccounts, MasterAccount, sampleTenantDetail } from "@/data/mock";
 import { useLocale } from "@/lib/locale";
 import { useAuth } from "@/lib/auth";
-import { TextField, MenuItem, Button, Stack, Alert, Chip, IconButton, LinearProgress, Typography, Box, Tabs, Tab, Radio, RadioGroup, FormControlLabel, ToggleButtonGroup, ToggleButton, Paper, Menu, Dialog, DialogContent, DialogActions, Tooltip } from "@mui/material";
+import { TextField, MenuItem, Button, Stack, Chip, IconButton, LinearProgress, Typography, Box, Tabs, Tab, Radio, RadioGroup, FormControlLabel, ToggleButtonGroup, ToggleButton, Paper, Menu, Dialog, DialogContent, DialogActions, Tooltip } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";

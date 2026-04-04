@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Box, Typography, Paper, Button, Chip, Table, TableHead, TableBody, TableRow, TableCell, TextField, Stack, Avatar, MenuItem, Tabs, Tab, IconButton, Tooltip, Dialog, DialogContent, DialogActions, Alert } from "@mui/material";
+import { Box, Typography, Paper, Button, Chip, Table, TableHead, TableBody, TableRow, TableCell, TextField, Stack, Avatar, MenuItem, Tabs, Tab, IconButton, Tooltip, Dialog, DialogContent, DialogActions } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import AddIcon from "@mui/icons-material/Add";
@@ -400,6 +400,7 @@ function PreviewMeatballMenu() {
 }
 
 /* ── Modal header icons ตาม Figma: folder, pin, external-link, close ── */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const MODAL_HEADER_ICONS = [
   <svg key="folder" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>,
   <svg key="pin" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>,
