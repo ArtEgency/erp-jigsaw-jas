@@ -148,6 +148,12 @@ const SECTION_GROUPS: SectionGroup[] = [
     ],
   },
   {
+    group: "Foundation",
+    items: [
+      { id: "typo", label: "Typo & Font Size", icon: <TextFieldsIcon fontSize="small" />, keywords: "typo typography font size weight color ฟอนต์ ขนาด สี" },
+    ],
+  },
+  {
     group: "Form Elements",
     items: [
       { id: "buttons", label: "Buttons & FAB", icon: <WidgetsIcon fontSize="small" />, keywords: "button ปุ่ม contained outlined text fab floating action" },
@@ -464,7 +470,7 @@ export default function ComponentShowcase() {
             fullWidth
             variant="outlined"
             startIcon={<ArrowBackIcon />}
-            onClick={() => router.push("/onboarding")}
+            onClick={() => router.push("/tenantlist")}
             size="small"
           >
             กลับหน้า Master Account List
@@ -489,6 +495,64 @@ export default function ComponentShowcase() {
             <Chip label="Tailwind CSS" size="small" variant="outlined" />
           </Stack>
         </Box>
+
+        {/* ═══════════════════════════════════════════ */}
+        {/* ── 0. TYPO & FONT SIZE ── */}
+        {/* ═══════════════════════════════════════════ */}
+        <SectionBlock id="typo" title="Typo & Font Size">
+          <Typography variant="body2" sx={{ color: "#777", mb: 2 }}>
+            DATA LIST — หน้าตาราง (1920px) — ค่ามาตรฐานสำหรับการออกแบบหน้า DataList ทุกหน้า
+          </Typography>
+          <Paper sx={{ borderRadius: 2, overflow: "hidden", border: "1px solid #E0E0E0" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14, fontFamily: "'Sarabun', sans-serif" }}>
+              <thead>
+                <tr style={{ backgroundColor: "#1A1A1A", color: "white" }}>
+                  <th style={{ padding: "12px 16px", textAlign: "left", fontWeight: 600, width: "30%" }}>Element</th>
+                  <th style={{ padding: "12px 16px", textAlign: "center", fontWeight: 600 }}>Font size</th>
+                  <th style={{ padding: "12px 16px", textAlign: "center", fontWeight: 600 }}>Weight</th>
+                  <th style={{ padding: "12px 16px", textAlign: "center", fontWeight: 600 }}>Height / Size</th>
+                  <th style={{ padding: "12px 16px", textAlign: "center", fontWeight: 600 }}>สี</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { el: "Breadcrumb", size: "13px", weight: "400", height: "—", color: "muted / primary", colorHex: "#777" },
+                  { el: 'Page title "รายชื่อลูกค้า"', size: "22px", weight: "700", height: "—", color: "#1A1A1A", colorHex: "#1A1A1A" },
+                  { el: 'Button "ส่งออกรายงาน"', size: "13px", weight: "600", height: "h: 36px", color: "outline orange", colorHex: "#FF6B00" },
+                  { el: 'Button "เพิ่มลูกค้า"', size: "13px", weight: "600", height: "h: 36px", color: "#FF6B00", colorHex: "#FF6B00" },
+                  { el: "Search input", size: "14px", weight: "400", height: "h: 40px", color: "border #E5E7EB", colorHex: "#E5E7EB" },
+                  { el: "Table header", size: "13px", weight: "600", height: "—", color: "#6B7280", colorHex: "#6B7280" },
+                  { el: "Table body — ชื่อหลัก", size: "14px", weight: "500", height: "—", color: "#1A1A1A", colorHex: "#1A1A1A" },
+                  { el: "Table body — sub (ตำแหน่ง)", size: "12px", weight: "400", height: "—", color: "#6B7280", colorHex: "#6B7280" },
+                  { el: "Table body — ทั่วไป", size: "14px", weight: "400", height: "—", color: "#1A1A1A", colorHex: "#1A1A1A" },
+                  { el: "Table row height", size: "—", weight: "—", height: "~56px", color: "—", colorHex: "" },
+                  { el: "Link รหัส MA-xx", size: "14px", weight: "500", height: "—", color: "#FF6B00", colorHex: "#FF6B00" },
+                  { el: "Status badge", size: "12px", weight: "500", height: "h: ~24px", color: "ตามสถานะ", colorHex: "" },
+                  { el: "Pagination text", size: "13px", weight: "400", height: "—", color: "#6B7280", colorHex: "#6B7280" },
+                  { el: "Pagination button", size: "13px", weight: "400", height: "28×28px", color: "active: orange", colorHex: "#FF6B00" },
+                  { el: "Footer text", size: "12px", weight: "400", height: "—", color: "#9CA3AF", colorHex: "#9CA3AF" },
+                ].map((row, i) => (
+                  <tr key={i} style={{ borderBottom: "1px solid #F0F0F0", backgroundColor: i % 2 === 0 ? "#FAFAFA" : "white" }}>
+                    <td style={{ padding: "10px 16px", fontWeight: 500, color: "#333" }}>{row.el}</td>
+                    <td style={{ padding: "10px 16px", textAlign: "center", color: "#FF6B00", fontWeight: 500 }}>{row.size}</td>
+                    <td style={{ padding: "10px 16px", textAlign: "center", color: "#333" }}>{row.weight}</td>
+                    <td style={{ padding: "10px 16px", textAlign: "center", color: row.height !== "—" ? "#FF6B00" : "#999" }}>{row.height}</td>
+                    <td style={{ padding: "10px 16px", textAlign: "center" }}>
+                      {row.colorHex ? (
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                          <span style={{ width: 14, height: 14, borderRadius: 3, backgroundColor: row.colorHex, border: "1px solid #E0E0E0", flexShrink: 0 }} />
+                          <span style={{ fontSize: 13, color: "#555" }}>{row.color}</span>
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: 13, color: "#999" }}>{row.color}</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Paper>
+        </SectionBlock>
 
         {/* ═══════════════════════════════════════════ */}
         {/* ── 1. BUTTONS & FAB ── */}

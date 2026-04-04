@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Box, Typography, Paper, Button, Chip, Table, TableHead, TableBody, TableRow, TableCell, TextField, Stack, Avatar, MenuItem, Tabs, Tab, IconButton, Tooltip, Dialog, DialogContent, DialogActions, Alert } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -97,25 +97,29 @@ const SAMPLE_ROWS = [
   { id: "MA-69-03-0005", name: "นารี สุขสันต์", position: "เจ้าหน้าที่", customerGroup: "ทั่วไป", email: "naree@example.co.th", phone: "084-567-8901", emailVerifiedAt: "18/03/2569", tenantUsed: 1, tenantQuota: 2, status: "เปิดใช้งาน" },
 ];
 
+/* ── DataList Columns — ใช้ค่ามาตรฐานจาก Typo & Font Size ── */
 const DATALIST_COLUMNS: GridColDef[] = [
   {
     field: "id",
     headerName: "รหัส Account",
     width: 150,
     renderCell: (params: GridRenderCellParams) => (
-      <Typography variant="body2" sx={{ color: SA, fontWeight: 500, cursor: "pointer" }}>{params.value}</Typography>
+      <Typography sx={{ fontSize: 14, fontWeight: 500, color: SA, cursor: "pointer" }}>{params.value}</Typography>
     ),
   },
   {
     field: "name",
     headerName: "ชื่อ-นามสกุล",
-    width: 240,
+    width: 260,
     renderCell: (params: GridRenderCellParams) => (
       <Stack direction="row" alignItems="center" spacing={1.5} sx={{ height: "100%" }}>
-        <Avatar sx={{ width: 36, height: 36, bgcolor: SA, fontSize: "0.875rem", fontWeight: 600 }}>
+        <Avatar sx={{ width: 36, height: 36, bgcolor: SA, fontSize: 14, fontWeight: 600, flexShrink: 0 }}>
           {(params.value as string)?.charAt(0)}
         </Avatar>
-        <Typography variant="body2">{params.value}</Typography>
+        <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "2px", py: 1 }}>
+          <Typography sx={{ fontSize: 14, fontWeight: 500, color: "#1A1A1A", lineHeight: 1.3 }}>{params.value}</Typography>
+          <Typography sx={{ fontSize: 12, fontWeight: 400, color: "#6B7280", lineHeight: 1.2 }}>{params.row.position}</Typography>
+        </Box>
       </Stack>
     ),
   },
@@ -127,7 +131,7 @@ const DATALIST_COLUMNS: GridColDef[] = [
     headerName: "วันที่ยืนยัน Email",
     width: 160,
     renderCell: (params: GridRenderCellParams) => (
-      <Typography variant="body2" sx={{ color: "#374151" }}>{params.value || "—"}</Typography>
+      <Typography sx={{ fontSize: 14, fontWeight: 400, color: "#1A1A1A" }}>{params.value || "—"}</Typography>
     ),
   },
   {
@@ -137,9 +141,9 @@ const DATALIST_COLUMNS: GridColDef[] = [
     align: "center",
     headerAlign: "center",
     renderCell: (params: GridRenderCellParams) => (
-      <Typography variant="body2">
+      <Typography sx={{ fontSize: 14 }}>
         <span style={{ color: SA, fontWeight: 600 }}>{params.row.tenantUsed}</span>
-        <span style={{ color: "#4C4E63" }}>/{params.row.tenantQuota}</span>
+        <span style={{ color: "#1A1A1A" }}>/{params.row.tenantQuota}</span>
       </Typography>
     ),
   },
@@ -154,7 +158,7 @@ const DATALIST_COLUMNS: GridColDef[] = [
           label={s}
           size="small"
           sx={{
-            fontWeight: 500, fontSize: "0.8rem",
+            fontWeight: 500, fontSize: 12, height: 24,
             ...(s === "เปิดใช้งาน"
               ? { bgcolor: "rgba(238,251,229,0.98)", color: "#3B6D11" }
               : s === "รอยืนยัน Email"
@@ -187,26 +191,30 @@ const DATALIST_COLUMNS: GridColDef[] = [
   },
 ];
 
-/* ── DataGrid sx — reusable standard ── */
+/* ── DataGrid sx — ค่ามาตรฐานจาก Typo & Font Size ── */
 const DATAGRID_SX = {
   border: "none",
   "& .MuiDataGrid-columnHeaders": {
     bgcolor: "#F5F5F7",
-    fontSize: "0.9rem",
+    fontSize: 13,
     fontWeight: 600,
-    color: "#374151",
+    color: "#6B7280",
   },
   "& .MuiDataGrid-cell": {
-    fontSize: "0.875rem",
-    color: "#374151",
+    fontSize: 14,
+    fontWeight: 400,
+    color: "#1A1A1A",
     display: "flex",
     alignItems: "center",
   },
   "& .MuiDataGrid-row:hover": {
-    bgcolor: `rgba(255,107,0,0.04)`,
+    bgcolor: "rgba(255,107,0,0.04)",
   },
   "& .MuiDataGrid-footerContainer": {
     borderTop: "1px solid #F5F5F7",
+    "& .MuiTablePagination-root": { fontSize: 13, color: "#6B7280" },
+    "& .MuiTablePagination-selectLabel": { fontSize: 13, color: "#6B7280" },
+    "& .MuiTablePagination-displayedRows": { fontSize: 13, color: "#6B7280" },
   },
   "& .MuiCheckbox-root": {
     color: "#ccc",
@@ -218,8 +226,8 @@ function PreviewDataListStandard() {
   const [tabIndex, setTabIndex] = useState(0);
   return (
     <Box>
-      {/* Page Title */}
-      <Typography variant="h5" sx={{ fontWeight: 500, py: 2.5, color: "#374151" }}>
+      {/* Page Title — 22px / 700 / #1A1A1A */}
+      <Typography sx={{ fontSize: 22, fontWeight: 700, py: 2.5, color: "#1A1A1A" }}>
         รายชื่อลูกค้า
       </Typography>
 
@@ -249,9 +257,9 @@ function PreviewDataListStandard() {
         {/* Filter Bar — เหมือน Tenant Employee */}
         <Stack direction="row" alignItems="center" spacing={2} sx={{ p: 2.5 }}>
           <Button
-            variant="contained"
+            variant="outlined"
             startIcon={<FileUploadOutlinedIcon />}
-            sx={{ bgcolor: SA, "&:hover": { bgcolor: "#E65C00" }, textTransform: "none", whiteSpace: "nowrap" }}
+            sx={{ color: SA, borderColor: SA, "&:hover": { borderColor: "#E65C00", bgcolor: "rgba(255,107,0,0.04)" }, textTransform: "none", whiteSpace: "nowrap", fontSize: 13, fontWeight: 600, height: 36 }}
           >
             ส่งออกรายงาน
           </Button>
@@ -278,13 +286,13 @@ function PreviewDataListStandard() {
 
           <TextField
             size="small" placeholder="ค้นหารหัส, ชื่อลูกค้า"
-            sx={{ minWidth: 280 }}
+            sx={{ minWidth: 280, "& .MuiOutlinedInput-root": { height: 40, fontSize: 14 }, "& .MuiOutlinedInput-notchedOutline": { borderColor: "#E5E7EB" } }}
           />
 
           <Button
             variant="contained"
             startIcon={<AddIcon />}
-            sx={{ bgcolor: SA, "&:hover": { bgcolor: "#E65C00" }, textTransform: "none", whiteSpace: "nowrap" }}
+            sx={{ bgcolor: SA, "&:hover": { bgcolor: "#E65C00" }, textTransform: "none", whiteSpace: "nowrap", fontSize: 13, fontWeight: 600, height: 36 }}
           >
             เพิ่มลูกค้า
           </Button>
@@ -399,22 +407,49 @@ const MODAL_HEADER_ICONS = [
 ];
 const MODAL_CLOSE_ICON = <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>;
 
-/* ── Modal TextField sx — H:54px, placeholder:16px vertically centered, label:14px ── */
+/* ── Modal TextField sx — spec: H:48px, value 15px, label 15px/12px, border 1.5px #E5E7EB, radius 8px, focus #FF6B00 ── */
 const MODAL_TF_SX = {
   "& .MuiOutlinedInput-root": {
-    height: 54,
-    fontSize: 16,
+    height: 48,
+    fontSize: 15,
+    fontWeight: 400,
+    color: "#1A1A1A",
+    borderRadius: "8px",
+    "& .MuiOutlinedInput-notchedOutline": {
+      borderWidth: "1.5px",
+      borderColor: "#E5E7EB",
+    },
+    "&:hover .MuiOutlinedInput-notchedOutline": {
+      borderColor: "#E5E7EB",
+    },
+    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderWidth: "1.5px",
+      borderColor: SA,
+    },
   },
   "& .MuiInputLabel-root": {
-    fontSize: 14,
-    "&:not(.MuiInputLabel-shrink)": {
-      top: -1,
+    fontSize: 15,
+    fontWeight: 400,
+    color: "#6B7280",
+    "&.Mui-focused": {
+      fontSize: 12,
+      fontWeight: 400,
+      color: SA,
+    },
+    "&.MuiInputLabel-shrink": {
+      fontSize: 12,
     },
   },
   "& .MuiOutlinedInput-input": {
-    fontSize: 16,
-    padding: "16.5px 14px",
-    "&::placeholder": { fontSize: 16 },
+    fontSize: 15,
+    fontWeight: 400,
+    color: "#1A1A1A",
+    padding: "12px 14px",
+    "&::placeholder": { fontSize: 15, fontWeight: 400 },
+  },
+  "& .MuiFormLabel-asterisk": {
+    color: "#EF4444",
+    fontWeight: 400,
   },
 };
 
@@ -423,43 +458,141 @@ const SH = { shrink: true }; // InputLabelProps shorthand — CP-INPUT-PLACEHOLD
 
 function ModalFormBody() {
   return (
-    <Stack spacing={2.5}>
+    <Stack spacing="20px">
       <TextField label="ชื่อร้าน / ชื่อบริษัท" required fullWidth placeholder="กรอกชื่อร้าน / ชื่อบริษัท" sx={MODAL_TF_SX} InputLabelProps={SH} />
-      <Stack direction="row" spacing={2}>
+      <Stack direction="row" spacing="16px">
         <TextField label="คำนำหน้า" required select sx={{ minWidth: 160, ...MODAL_TF_SX }} defaultValue="" InputLabelProps={SH}><MenuItem value="">เลือกคำนำหน้า</MenuItem><MenuItem value="นาย">นาย</MenuItem><MenuItem value="นาง">นาง</MenuItem><MenuItem value="นางสาว">นางสาว</MenuItem></TextField>
         <TextField label="ชื่อ" required fullWidth placeholder="กรอกชื่อ" sx={MODAL_TF_SX} InputLabelProps={SH} />
         <TextField label="นามสกุล" required fullWidth placeholder="กรอกนามสกุล" sx={MODAL_TF_SX} InputLabelProps={SH} />
       </Stack>
-      <Stack direction="row" spacing={2}>
+      <Stack direction="row" spacing="16px">
         <TextField label="ตำแหน่ง" required fullWidth placeholder="กรอกตำแหน่ง" sx={MODAL_TF_SX} InputLabelProps={SH} />
         <TextField label="กลุ่มลูกค้า" required select fullWidth sx={MODAL_TF_SX} defaultValue="" InputLabelProps={SH}><MenuItem value="">เลือกกลุ่มลูกค้า</MenuItem><MenuItem value="ขายส่ง">ขายส่ง</MenuItem><MenuItem value="ขายปลีก">ขายปลีก</MenuItem></TextField>
       </Stack>
-      <Stack direction="row" spacing={2}>
+      <Stack direction="row" spacing="16px">
         <TextField label="จำนวนธุรกิจ" required fullWidth defaultValue="3" sx={MODAL_TF_SX} InputLabelProps={SH} />
         <TextField
           label="เบอร์โทรศัพท์" required fullWidth placeholder="กรอกเบอร์โทร"
           sx={MODAL_TF_SX} InputLabelProps={SH}
-          InputProps={{ startAdornment: <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mr: 1, whiteSpace: "nowrap", fontSize: 16, color: "#374151" }}>🇹🇭 +66</Box> }}
+          InputProps={{ startAdornment: <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mr: 1, whiteSpace: "nowrap", fontSize: 15, color: "#374151" }}>🇹🇭 +66</Box> }}
         />
       </Stack>
-      <Stack direction="row" spacing={2} alignItems="flex-start">
+      <Stack direction="row" spacing="16px" alignItems="flex-start">
         <TextField label="อีเมล" required fullWidth placeholder="กรอกอีเมล" sx={{ flex: 1, ...MODAL_TF_SX }} InputLabelProps={SH} />
-        <Alert severity="info" variant="outlined" sx={{ fontSize: 14, flex: 1, py: 2, minHeight: 54, display: "flex", alignItems: "center" }}>ระบบจะส่ง Email ยืนยันตัวตนให้ผู้ติดต่อทันที</Alert>
+        <Box sx={{
+          flex: 1, minHeight: 48, display: "flex", alignItems: "center", gap: 1,
+          bgcolor: "#FEF3C7", borderRadius: "8px", px: 2, py: 1.5,
+          fontSize: 13, fontWeight: 400, color: "#92400E",
+        }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#92400E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          ระบบจะส่ง Email ยืนยันตัวตนให้ผู้ติดต่อทันที
+        </Box>
       </Stack>
     </Stack>
   );
 }
 
+const PINKEY_SHOWCASE = "modal_pin_showcase";
+
 function PreviewModalSizeM() {
   const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isPinned, setIsPinned] = useState(false);
+  const dragging = useRef(false);
+  const offset = useRef({ x: 0, y: 0 });
+  const paperRef = useRef<HTMLDivElement>(null);
 
-  const headerBar = (onClose?: () => void) => (
-    <Box sx={{ bgcolor: SA, px: 3, py: 1.5, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-      <Typography sx={{ color: "white", fontWeight: 600, fontSize: "1rem" }}>เพิ่มลูกค้า</Typography>
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest("button") || isFullscreen) return;
+    dragging.current = true;
+    const paper = paperRef.current;
+    if (paper) {
+      const rect = paper.getBoundingClientRect();
+      offset.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }
+    e.preventDefault();
+  }, [isFullscreen]);
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => { if (dragging.current) setPos({ x: e.clientX - offset.current.x, y: e.clientY - offset.current.y }); };
+    const onUp = () => { dragging.current = false; };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    return () => { window.removeEventListener("mousemove", onMove); window.removeEventListener("mouseup", onUp); };
+  }, []);
+
+  const handleOpen = () => {
+    setIsFullscreen(false);
+    // Restore pinned position
+    const saved = localStorage.getItem(PINKEY_SHOWCASE);
+    if (saved) {
+      try {
+        const { x, y } = JSON.parse(saved);
+        const safeX = Math.min(Math.max(0, x), window.innerWidth - 400);
+        const safeY = Math.min(Math.max(0, y), window.innerHeight - 200);
+        setPos({ x: safeX, y: safeY });
+        setIsPinned(true);
+      } catch { setPos(null); setIsPinned(false); }
+    } else {
+      setPos(null);
+      setIsPinned(false);
+    }
+    setOpen(true);
+  };
+
+  // Pin: save current position
+  const handlePin = () => {
+    if (isPinned) {
+      localStorage.removeItem(PINKEY_SHOWCASE);
+      setIsPinned(false);
+    } else if (pos) {
+      localStorage.setItem(PINKEY_SHOWCASE, JSON.stringify(pos));
+      setIsPinned(true);
+    }
+  };
+
+  // Expand: toggle fullscreen
+  const handleExpand = () => {
+    setIsFullscreen(prev => !prev);
+    if (!isFullscreen) setPos(null); // reset position when going fullscreen
+  };
+
+  // Close with static preview (no dirty check in showcase)
+  const handleClose = () => { setOpen(false); };
+
+  const headerBar = (onClose?: () => void, isDraggable?: boolean) => (
+    <Box
+      onMouseDown={isDraggable ? handleMouseDown : undefined}
+      sx={{
+        bgcolor: SA, px: 3, height: 52, display: "flex", alignItems: "center", justifyContent: "space-between",
+        ...(isDraggable && !isFullscreen ? { cursor: "move", userSelect: "none" } : { userSelect: "none" }),
+      }}
+    >
+      <Typography sx={{ color: "white", fontWeight: 600, fontSize: 18 }}>เพิ่มลูกค้า</Typography>
       <Stack direction="row" spacing={0.5}>
-        {MODAL_HEADER_ICONS.map((icon) => (
-          <IconButton key={icon.key} size="small" sx={{ color: "white" }}>{icon}</IconButton>
-        ))}
+        {/* Expand */}
+        <Tooltip title={isFullscreen ? "ย่อกลับ" : "ขยายเต็มจอ"}>
+          <IconButton size="small" sx={{ color: "white" }} onClick={handleExpand}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/icons/modal/expand.svg" alt="expand" width={20} height={20} />
+          </IconButton>
+        </Tooltip>
+        {/* Pin */}
+        <Tooltip title={isPinned ? "ยกเลิก Pin" : "จำตำแหน่ง"}>
+          <IconButton size="small" sx={{ color: "white", opacity: isPinned ? 1 : 0.6 }} onClick={handlePin}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/icons/modal/pin.svg" alt="pin" width={20} height={20} />
+          </IconButton>
+        </Tooltip>
+        {/* Pop out — showcase demo only */}
+        <Tooltip title="เปิดหน้าต่างใหม่">
+          <IconButton size="small" sx={{ color: "white" }} onClick={() => alert("Pop out: ใช้งานจริงจะเปิด window ใหม่")}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/icons/modal/popout.svg" alt="popout" width={20} height={20} />
+          </IconButton>
+        </Tooltip>
+        {/* Close */}
         <IconButton size="small" sx={{ color: "white" }} onClick={onClose}>{MODAL_CLOSE_ICON}</IconButton>
       </Stack>
     </Box>
@@ -471,40 +604,47 @@ function PreviewModalSizeM() {
         Modal Size M
       </Typography>
       <Typography variant="body2" sx={{ color: "#777", mb: 3 }}>
-        MUI Dialog ขนาด Medium (820×507) — Header สีส้ม + Form fields + Footer — ยืดหดได้ด้วย CSS resize
+        MUI Dialog 820×507 — Header ส้ม + 4 ปุ่ม (Expand / Pin / Pop out / Close) + Drag + Resize + Form
       </Typography>
 
-      <Button variant="contained" onClick={() => setOpen(true)} sx={{ bgcolor: SA, "&:hover": { bgcolor: "#E65C00" }, textTransform: "none" }}>
+      <Button variant="contained" onClick={handleOpen} sx={{ bgcolor: SA, "&:hover": { bgcolor: "#E65C00" }, textTransform: "none" }}>
         เปิด Modal ทดสอบ
       </Button>
 
       {/* Static preview */}
       <Paper elevation={3} sx={{ mt: 3, borderRadius: "8px", overflow: "hidden", maxWidth: 820 }}>
         {headerBar()}
-        <Box sx={{ p: 3 }}><ModalFormBody /></Box>
-        <Box sx={{ px: 3, py: 2, display: "flex", justifyContent: "flex-end", gap: 1.5, borderTop: "1px solid #F0F0F0" }}>
-          <Button variant="outlined" sx={{ textTransform: "none", color: "#666", borderColor: "#ccc" }}>ยกเลิก</Button>
-          <Button variant="contained" sx={{ bgcolor: SA, "&:hover": { bgcolor: "#E65C00" }, textTransform: "none" }}>บันทึก</Button>
+        <Box sx={{ p: "28px" }}><ModalFormBody /></Box>
+        <Box sx={{ px: "28px", py: 2, display: "flex", justifyContent: "flex-end", gap: 1.5, borderTop: "1px solid #F0F0F0" }}>
+          <Button variant="outlined" sx={{ textTransform: "none", fontSize: 14, fontWeight: 600, height: 40, color: SA, borderColor: SA, "&:hover": { borderColor: "#CC5500", color: "#CC5500", bgcolor: "rgba(255,107,0,0.04)" } }}>ยกเลิก</Button>
+          <Button variant="contained" sx={{ bgcolor: SA, "&:hover": { bgcolor: "#CC5500" }, textTransform: "none", fontSize: 14, fontWeight: 600, height: 40 }}>บันทึก</Button>
         </Box>
       </Paper>
 
-      {/* Live Dialog — resizable */}
+      {/* Live Dialog — resizable + draggable + fullscreen */}
       <Dialog
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={handleClose}
         maxWidth={false}
+        fullScreen={isFullscreen}
         PaperProps={{
+          ref: paperRef,
           sx: {
-            width: 820, minHeight: 507, borderRadius: "8px", overflow: "hidden",
-            resize: "both", minWidth: 400, maxWidth: "95vw", maxHeight: "95vh",
+            ...(!isFullscreen ? {
+              width: 820, minHeight: 507, borderRadius: "8px", overflow: "hidden",
+              resize: "both", minWidth: 400, maxWidth: "95vw", maxHeight: "95vh",
+              ...(pos ? { position: "fixed", left: pos.x, top: pos.y, margin: 0 } : {}),
+            } : {
+              borderRadius: 0, overflow: "hidden",
+            }),
           },
         }}
       >
-        {headerBar(() => setOpen(false))}
-        <DialogContent sx={{ p: 3, pt: "24px !important" }}><ModalFormBody /></DialogContent>
-        <DialogActions sx={{ px: 3, py: 2, borderTop: "1px solid #F0F0F0" }}>
-          <Button variant="outlined" onClick={() => setOpen(false)} sx={{ textTransform: "none", color: "#666", borderColor: "#ccc" }}>ยกเลิก</Button>
-          <Button variant="contained" onClick={() => setOpen(false)} sx={{ bgcolor: SA, "&:hover": { bgcolor: "#E65C00" }, textTransform: "none" }}>บันทึก</Button>
+        {headerBar(handleClose, true)}
+        <DialogContent sx={{ p: "28px", pt: "28px !important" }}><ModalFormBody /></DialogContent>
+        <DialogActions sx={{ px: "28px", py: 2, borderTop: "1px solid #F0F0F0" }}>
+          <Button variant="outlined" onClick={handleClose} sx={{ textTransform: "none", fontSize: 14, fontWeight: 600, height: 40, color: SA, borderColor: SA, "&:hover": { borderColor: "#CC5500", color: "#CC5500", bgcolor: "rgba(255,107,0,0.04)" } }}>ยกเลิก</Button>
+          <Button variant="contained" onClick={handleClose} sx={{ bgcolor: SA, "&:hover": { bgcolor: "#CC5500" }, textTransform: "none", fontSize: 14, fontWeight: 600, height: 40 }}>บันทึก</Button>
         </DialogActions>
       </Dialog>
     </Box>

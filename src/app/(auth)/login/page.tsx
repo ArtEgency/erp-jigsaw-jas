@@ -30,7 +30,7 @@ export default function JASLoginPage() {
     }
     const success = await login(email, password);
     if (success) {
-      router.push("/onboarding");
+      router.push("/tenantlist");
     }
   };
 

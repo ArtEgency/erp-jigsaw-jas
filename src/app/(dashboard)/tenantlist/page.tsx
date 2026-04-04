@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Image from "next/image";
@@ -10,7 +10,7 @@ import FormDialog from "@/components/ui/FormDialog";
 import { masterAccounts, MasterAccount, sampleTenantDetail } from "@/data/mock";
 import { useLocale } from "@/lib/locale";
 import { useAuth } from "@/lib/auth";
-import { TextField, MenuItem, Button, Stack, Alert, Chip, IconButton, LinearProgress, Typography, Box, Tabs, Tab, Radio, RadioGroup, FormControlLabel, ToggleButtonGroup, ToggleButton, Paper, Menu } from "@mui/material";
+import { TextField, MenuItem, Button, Stack, Alert, Chip, IconButton, LinearProgress, Typography, Box, Tabs, Tab, Radio, RadioGroup, FormControlLabel, ToggleButtonGroup, ToggleButton, Paper, Menu, Dialog, DialogContent, DialogActions, Tooltip } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
@@ -24,6 +24,26 @@ type Screen = "s1" | "s2" | "s2e" | "s3" | "s4" | "s4e" | "s5" | "s6" | "s7" | "
 // customerGroupColors moved to MUI Chip sx inline
 
 const allModules = sampleTenantDetail.modules;
+
+/* ── TPL-MODAL-SIZE-M TextField sx ── */
+const MODAL_FIELD_SX = {
+  "& .MuiOutlinedInput-root": {
+    height: 48, fontSize: 15, fontWeight: 400, color: "#1A1A1A", borderRadius: "8px",
+    "& .MuiOutlinedInput-notchedOutline": { borderWidth: "1.5px", borderColor: "#E5E7EB" },
+    "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#E5E7EB" },
+    "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderWidth: "1.5px", borderColor: "#FF6B00" },
+  },
+  "& .MuiInputLabel-root": {
+    fontSize: 15, fontWeight: 400, color: "#6B7280",
+    "&.Mui-focused": { fontSize: 12, fontWeight: 400, color: "#FF6B00" },
+    "&.MuiInputLabel-shrink": { fontSize: 12 },
+  },
+  "& .MuiOutlinedInput-input": {
+    fontSize: 15, fontWeight: 400, color: "#1A1A1A", padding: "12px 14px",
+    "&::placeholder": { fontSize: 15, fontWeight: 400 },
+  },
+  "& .MuiFormLabel-asterisk": { color: "#EF4444", fontWeight: 400 },
+};
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -40,6 +60,100 @@ export default function OnboardingPage() {
   const [showToast, setShowToast] = useState(false);
   const [meatballAnchor, setMeatballAnchor] = useState<null | HTMLElement>(null);
   const [meatballRow, setMeatballRow] = useState<MasterAccount | null>(null);
+
+  // Modal drag + 4-button state
+  const [modalPos, setModalPos] = useState<{ x: number; y: number } | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isPinned, setIsPinned] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+  const modalDragging = useRef(false);
+  const modalOffset = useRef({ x: 0, y: 0 });
+  const modalPaperRef = useRef<HTMLDivElement>(null);
+  const PINKEY = "modal_pin_addCustomer";
+
+  const handleModalDragDown = useCallback((e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest("button") || isFullscreen) return;
+    modalDragging.current = true;
+    const paper = modalPaperRef.current;
+    if (paper) {
+      const rect = paper.getBoundingClientRect();
+      modalOffset.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }
+    e.preventDefault();
+  }, [isFullscreen]);
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => { if (modalDragging.current) setModalPos({ x: e.clientX - modalOffset.current.x, y: e.clientY - modalOffset.current.y }); };
+    const onUp = () => { modalDragging.current = false; };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    return () => { window.removeEventListener("mousemove", onMove); window.removeEventListener("mouseup", onUp); };
+  }, []);
+
+  // BroadcastChannel listener for Pop out
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const ch = new BroadcastChannel("customer_channel");
+    ch.onmessage = () => {
+      // Refresh page data when pop-out saves (in real app, refetch from API)
+      window.location.reload();
+    };
+    return () => ch.close();
+  }, []);
+
+  const handleOpenAddAccount = () => {
+    setIsFullscreen(false);
+    setIsDirty(false);
+    // Restore pinned position
+    const saved = localStorage.getItem(PINKEY);
+    if (saved) {
+      try {
+        const { x, y } = JSON.parse(saved);
+        setModalPos({ x: Math.min(Math.max(0, x), window.innerWidth - 400), y: Math.min(Math.max(0, y), window.innerHeight - 200) });
+        setIsPinned(true);
+      } catch { setModalPos(null); setIsPinned(false); }
+    } else {
+      setModalPos(null);
+      setIsPinned(false);
+    }
+    setAccountForm({ company: "", firstName: "", lastName: "", position: "", customerGroup: "ทั่วไป", email: "", phone: "", tenantQuota: "3" });
+    setEmailError(false);
+    setAddAccountOpen(true);
+  };
+
+  const handleModalPin = () => {
+    if (isPinned) { localStorage.removeItem(PINKEY); setIsPinned(false); }
+    else if (modalPos) { localStorage.setItem(PINKEY, JSON.stringify(modalPos)); setIsPinned(true); }
+  };
+
+  const handleModalExpand = () => {
+    setIsFullscreen(prev => !prev);
+    if (!isFullscreen) setModalPos(null);
+  };
+
+  const handleModalPopout = () => {
+    setAddAccountOpen(false);
+    const w = 820, h = 700;
+    const left = Math.round((window.screen.width - w) / 2);
+    const top = Math.round((window.screen.height - h) / 2);
+    window.open(
+      "/tenantlist/add-customer",
+      "addCustomerPopup",
+      `width=${w},height=${h},left=${left},top=${top},toolbar=no,menubar=no,location=no,status=no,scrollbars=yes,resizable=yes`
+    );
+  };
+
+  const handleModalClose = () => {
+    if (isDirty) {
+      if (!window.confirm("คุณกรอกข้อมูลไปแล้ว ต้องการปิดโดยไม่บันทึกหรือไม่?")) return;
+    }
+    setAddAccountOpen(false);
+  };
+
+  const handleFormChange = (field: string, value: string) => {
+    setAccountForm(prev => ({ ...prev, [field]: value }));
+    setIsDirty(true);
+  };
 
   // S2 form state
   const [accountForm, setAccountForm] = useState({
@@ -96,7 +210,7 @@ export default function OnboardingPage() {
 
   // ─── TOPBAR SA ───
   const renderTopBarSA = () => (
-    <div className="h-[52px] bg-sa-primary flex items-center px-4 gap-3 shrink-0">
+    <div className="h-[52px] bg-sa-primary flex items-center px-4 gap-3 shrink-0 relative z-50 overflow-visible">
       <button onClick={() => setSidebarExpanded(prev => !prev)} className="text-white hover:bg-white/20 rounded-lg p-1.5 transition-colors cursor-pointer">
         <svg width={20} height={20} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6} fill="none"><path d="M3 6h18M3 12h18M3 18h18" strokeLinecap="round" /></svg>
       </button>
@@ -228,36 +342,74 @@ export default function OnboardingPage() {
       <Breadcrumb items={[{ label: t("onboarding.customer") }, { label: t("onboarding.masterAccountList") }]} />
       {/* TPL-DATALIST-STANDARD */}
       <Box sx={{ px: 3, py: 3, flex: 1 }}>
-        <Typography variant="h5" sx={{ fontWeight: 500, py: 2.5, color: "#374151" }}>
+        {/* Page Title — 22px / 700 / #1A1A1A */}
+        <Typography sx={{ fontSize: 22, fontWeight: 700, py: 2.5, color: "#1A1A1A" }}>
           {t("onboarding.masterAccountList")}
         </Typography>
 
+        {/* Sub-tabs — pill style */}
+        <Tabs
+          value={0}
+          sx={{
+            mb: 2,
+            "& .MuiTab-root": {
+              textTransform: "none", fontWeight: 500, fontSize: "1rem",
+              minHeight: 42, borderRadius: "8px", mr: 1,
+            },
+            "& .Mui-selected": {
+              bgcolor: "#FF6B00", color: "#fff !important", fontWeight: 600,
+            },
+            "& .MuiTabs-indicator": { display: "none" },
+          }}
+        >
+          <Tab label={locale === "en" ? "Current Customers" : "ลูกค้าปัจจุบัน"} />
+          <Tab label={locale === "en" ? "Cancelled" : "ลูกค้าที่ยกเลิก"} />
+          <Tab label={locale === "en" ? "Suspended" : "ลูกค้าที่ระงับ"} />
+        </Tabs>
+
         <Paper elevation={3} sx={{ borderRadius: "10px", overflow: "hidden" }}>
-          {/* Filter Bar */}
+          {/* Filter Bar — TPL-DATALIST-STANDARD */}
           <Stack direction="row" alignItems="center" spacing={2} sx={{ p: 2.5 }}>
             <Button
-              variant="contained"
+              variant="outlined"
               startIcon={<FileUploadOutlinedIcon />}
-              sx={{ bgcolor: "#FF6B00", "&:hover": { bgcolor: "#E65C00" }, textTransform: "none", whiteSpace: "nowrap" }}
+              sx={{ color: "#FF6B00", borderColor: "#FF6B00", "&:hover": { borderColor: "#E65C00", bgcolor: "rgba(255,107,0,0.04)" }, textTransform: "none", whiteSpace: "nowrap", fontSize: 13, fontWeight: 600, height: 36 }}
             >
               {t("common.export")}
             </Button>
+
+            <TextField
+              select value="" label={locale === "en" ? "Select Group" : "เลือกกลุ่ม"} size="small"
+              sx={{ minWidth: 180 }} InputLabelProps={{ shrink: true }}
+            >
+              <MenuItem value="">{locale === "en" ? "All" : "ทั้งหมด"}</MenuItem>
+              <MenuItem value="ขายส่ง">{locale === "en" ? "Wholesale" : "ขายส่ง"}</MenuItem>
+              <MenuItem value="ขายปลีก">{locale === "en" ? "Retail" : "ขายปลีก"}</MenuItem>
+            </TextField>
+
+            <TextField
+              select value="" label={locale === "en" ? "Select Position" : "เลือกตำแหน่ง"} size="small"
+              sx={{ minWidth: 180 }} InputLabelProps={{ shrink: true }}
+            >
+              <MenuItem value="">{locale === "en" ? "All" : "ทั้งหมด"}</MenuItem>
+              <MenuItem value="ผู้จัดการทั่วไป">{locale === "en" ? "General Manager" : "ผู้จัดการทั่วไป"}</MenuItem>
+              <MenuItem value="CEO">CEO</MenuItem>
+            </TextField>
+
             <Box sx={{ flex: 1 }} />
+
             <TextField
               size="small"
               placeholder={t("onboarding.searchCustomer")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              sx={{ minWidth: 280 }}
+              sx={{ minWidth: 280, "& .MuiOutlinedInput-root": { height: 40, fontSize: 14 }, "& .MuiOutlinedInput-notchedOutline": { borderColor: "#E5E7EB" } }}
             />
             <Button
               variant="contained"
-              onClick={() => {
-                setAccountForm({ company: "", firstName: "", lastName: "", position: "", customerGroup: "ทั่วไป", email: "", phone: "", tenantQuota: "3" });
-                setEmailError(false);
-                setAddAccountOpen(true);
-              }}
-              sx={{ bgcolor: "#FF6B00", "&:hover": { bgcolor: "#E65C00" }, textTransform: "none", whiteSpace: "nowrap" }}
+              startIcon={<span style={{ fontSize: 18 }}>+</span>}
+              onClick={handleOpenAddAccount}
+              sx={{ bgcolor: "#FF6B00", "&:hover": { bgcolor: "#E65C00" }, textTransform: "none", whiteSpace: "nowrap", fontSize: 13, fontWeight: 600, height: 36 }}
             >
               {t("onboarding.addCustomerShort")}
             </Button>
@@ -270,49 +422,51 @@ export default function OnboardingPage() {
                 {
                   field: "id",
                   headerName: t("onboarding.accountCode"),
-                  width: 140,
+                  width: 150,
                   renderCell: (params: GridRenderCellParams) => (
-                    <Typography variant="body2" sx={{ color: "#FF6B00", fontWeight: 500, cursor: "pointer" }}>{params.value}</Typography>
+                    <Typography sx={{ fontSize: 14, fontWeight: 500, color: "#FF6B00", cursor: "pointer" }}>{params.value}</Typography>
                   ),
                 },
                 {
                   field: "name",
                   headerName: t("onboarding.name"),
-                  flex: 1,
-                  minWidth: 180,
+                  width: 260,
                   valueGetter: (_value: unknown, row: MasterAccount) => `${row.firstName} ${row.lastName}`,
                   renderCell: (params: GridRenderCellParams) => (
                     <Stack direction="row" alignItems="center" spacing={1.5} sx={{ height: "100%" }}>
-                      <Box sx={{ width: 36, height: 36, borderRadius: "50%", bgcolor: "#FF6B00", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: "0.875rem", fontWeight: 600, flexShrink: 0 }}>
+                      <Box sx={{ width: 36, height: 36, borderRadius: "50%", bgcolor: "#FF6B00", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 14, fontWeight: 600, flexShrink: 0 }}>
                         {(params.value as string)?.charAt(0)}
                       </Box>
-                      <Typography variant="body2">{params.value}</Typography>
+                      <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "2px", py: 1 }}>
+                        <Typography sx={{ fontSize: 14, fontWeight: 500, color: "#1A1A1A", lineHeight: 1.3 }}>{params.value}</Typography>
+                        <Typography sx={{ fontSize: 12, fontWeight: 400, color: "#6B7280", lineHeight: 1.2 }}>{(params.row as MasterAccount).position}</Typography>
+                      </Box>
                     </Stack>
                   ),
                 },
-                { field: "customerGroup", headerName: t("onboarding.customerGroup"), width: 100 },
-                { field: "email", headerName: "Email", width: 200 },
-                { field: "phone", headerName: t("onboarding.phoneCol"), width: 130 },
+                { field: "customerGroup", headerName: t("onboarding.customerGroup"), width: 110 },
+                { field: "email", headerName: "Email", flex: 1, minWidth: 180 },
+                { field: "phone", headerName: t("onboarding.phoneCol"), width: 140 },
                 {
                   field: "emailVerifiedAt",
                   headerName: t("onboarding.emailVerifiedAt"),
-                  width: 150,
+                  width: 160,
                   renderCell: (params: GridRenderCellParams) => (
-                    <Typography variant="body2" sx={{ color: "#374151" }}>{params.value || "—"}</Typography>
+                    <Typography sx={{ fontSize: 14, fontWeight: 400, color: "#1A1A1A" }}>{params.value || "—"}</Typography>
                   ),
                 },
                 {
                   field: "tenantQuota",
                   headerName: t("onboarding.businessCount"),
-                  width: 140,
+                  width: 150,
                   align: "center",
                   headerAlign: "center",
                   renderCell: (params: GridRenderCellParams) => {
                     const row = params.row as MasterAccount;
                     return (
-                      <Typography variant="body2">
+                      <Typography sx={{ fontSize: 14 }}>
                         <span style={{ color: "#FF6B00", fontWeight: 600 }}>{row.tenantUsed}</span>
-                        <span style={{ color: "#4C4E63" }}>/{row.tenantQuota}</span>
+                        <span style={{ color: "#1A1A1A" }}>/{row.tenantQuota}</span>
                       </Typography>
                     );
                   },
@@ -320,7 +474,7 @@ export default function OnboardingPage() {
                 {
                   field: "status",
                   headerName: t("onboarding.status"),
-                  width: 140,
+                  width: 160,
                   renderCell: (params: GridRenderCellParams) => {
                     const status = params.value as string;
                     return (
@@ -328,7 +482,7 @@ export default function OnboardingPage() {
                         label={status}
                         size="small"
                         sx={{
-                          fontWeight: 500, fontSize: "0.8rem",
+                          fontWeight: 500, fontSize: 12, height: 24,
                           ...(status === "เปิดใช้งาน"
                             ? { bgcolor: "rgba(238,251,229,0.98)", color: "#3B6D11" }
                             : status === "รอยืนยัน Email"
@@ -383,13 +537,14 @@ export default function OnboardingPage() {
               border: "none",
               "& .MuiDataGrid-columnHeaders": {
                 bgcolor: "#F5F5F7",
-                fontSize: "0.9rem",
+                fontSize: 13,
                 fontWeight: 600,
-                color: "#374151",
+                color: "#6B7280",
               },
               "& .MuiDataGrid-cell": {
-                fontSize: "0.875rem",
-                color: "#374151",
+                fontSize: 14,
+                fontWeight: 400,
+                color: "#1A1A1A",
                 display: "flex",
                 alignItems: "center",
               },
@@ -398,6 +553,9 @@ export default function OnboardingPage() {
               },
               "& .MuiDataGrid-footerContainer": {
                 borderTop: "1px solid #F5F5F7",
+                "& .MuiTablePagination-root": { fontSize: 13, color: "#6B7280" },
+                "& .MuiTablePagination-selectLabel": { fontSize: 13, color: "#6B7280" },
+                "& .MuiTablePagination-displayedRows": { fontSize: 13, color: "#6B7280" },
               },
               "& .MuiCheckbox-root": {
                 color: "#ccc",
@@ -437,107 +595,139 @@ export default function OnboardingPage() {
         {t("onboarding.footer")}
       </Box>
 
-      {/* === Add Account Modal (FormDialog from Showcase) === */}
-      <FormDialog
+      {/* === Add Account Modal — TPL-MODAL-SIZE-M with 4 buttons === */}
+      <Dialog
         open={addAccountOpen}
-        onClose={() => setAddAccountOpen(false)}
-        title={t("onboarding.createAccount")}
-        maxWidth="sm"
-        fullWidth
-        footer={
-          <>
-            <Button onClick={() => setAddAccountOpen(false)}>{t("common.cancel")}</Button>
-            <Button
-              variant="contained"
-              sx={{ bgcolor: "#FF6B00", "&:hover": { bgcolor: "#E65C00" } }}
-              onClick={() => { setAddAccountOpen(false); go("s3"); }}
-            >
-              {t("common.save")}
-            </Button>
-          </>
-        }
+        onClose={handleModalClose}
+        maxWidth={false}
+        fullScreen={isFullscreen}
+        PaperProps={{
+          ref: modalPaperRef,
+          sx: {
+            ...(!isFullscreen ? {
+              width: 820, minHeight: 507, borderRadius: "8px", overflow: "hidden",
+              resize: "both", minWidth: 400, maxWidth: "95vw", maxHeight: "95vh",
+              ...(modalPos ? { position: "fixed", left: modalPos.x, top: modalPos.y, margin: 0 } : {}),
+            } : { borderRadius: 0, overflow: "hidden" }),
+          },
+        }}
       >
-        <Stack spacing={2.5} sx={{ mt: 1 }}>
-          <TextField
-            label={t("onboarding.companyName")}
-            size="small"
-            fullWidth
-            value={accountForm.company}
-            onChange={(e) => setAccountForm({ ...accountForm, company: e.target.value })}
-          />
-          <Stack direction="row" spacing={2}>
-            <TextField
-              label={t("onboarding.firstName")}
-              size="small"
-              fullWidth
-              required
-              value={accountForm.firstName}
-              onChange={(e) => setAccountForm({ ...accountForm, firstName: e.target.value })}
-            />
-            <TextField
-              label={t("onboarding.lastName")}
-              size="small"
-              fullWidth
-              required
-              value={accountForm.lastName}
-              onChange={(e) => setAccountForm({ ...accountForm, lastName: e.target.value })}
-            />
+        {/* Header — 52px #FF6B00 draggable + 4 buttons */}
+        <Box
+          onMouseDown={handleModalDragDown}
+          sx={{
+            bgcolor: "#FF6B00", px: 3, height: 52, display: "flex", alignItems: "center", justifyContent: "space-between",
+            ...(!isFullscreen ? { cursor: "move", userSelect: "none" } : { userSelect: "none" }),
+          }}
+        >
+          <Typography sx={{ color: "white", fontWeight: 600, fontSize: 18 }}>{t("onboarding.createAccount")}</Typography>
+          <Stack direction="row" spacing={0.5}>
+            <Tooltip title={isFullscreen ? "ย่อกลับ" : "ขยายเต็มจอ"}>
+              <IconButton size="small" sx={{ color: "white" }} onClick={handleModalExpand}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/icons/modal/expand.svg" alt="expand" width={20} height={20} />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={isPinned ? "ยกเลิก Pin" : "จำตำแหน่ง"}>
+              <IconButton size="small" sx={{ color: "white", opacity: isPinned ? 1 : 0.6 }} onClick={handleModalPin}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/icons/modal/pin.svg" alt="pin" width={20} height={20} />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="เปิดหน้าต่างใหม่">
+              <IconButton size="small" sx={{ color: "white" }} onClick={handleModalPopout}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/icons/modal/popout.svg" alt="popout" width={20} height={20} />
+              </IconButton>
+            </Tooltip>
+            <IconButton size="small" sx={{ color: "white" }} onClick={handleModalClose}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </IconButton>
           </Stack>
-          <TextField
-            label={t("onboarding.position")}
-            size="small"
-            fullWidth
-            required
-            value={accountForm.position}
-            onChange={(e) => setAccountForm({ ...accountForm, position: e.target.value })}
-          />
-          <TextField
-            label={t("onboarding.customerGroup")}
-            size="small"
-            fullWidth
-            required
-            select
-            value={accountForm.customerGroup}
-            onChange={(e) => setAccountForm({ ...accountForm, customerGroup: e.target.value })}
-          >
-            <MenuItem value="ทั่วไป">ทั่วไป</MenuItem>
-            <MenuItem value="ขายส่ง">ขายส่ง</MenuItem>
-            <MenuItem value="ขายปลีก">ขายปลีก</MenuItem>
-            <MenuItem value="VIP">VIP</MenuItem>
-            <MenuItem value="Founding Partner">Founding Partner</MenuItem>
-          </TextField>
-          <TextField
-            label={t("onboarding.masterEmail")}
-            size="small"
-            fullWidth
-            required
-            value={accountForm.email}
-            onChange={(e) => setAccountForm({ ...accountForm, email: e.target.value })}
-          />
-          <TextField
-            label={t("onboarding.phone")}
-            size="small"
-            fullWidth
-            required
-            value={accountForm.phone}
-            onChange={(e) => setAccountForm({ ...accountForm, phone: e.target.value })}
-            InputProps={{ startAdornment: <span style={{ marginRight: 8, fontSize: 13, color: "#999", whiteSpace: "nowrap" }}>+66</span> }}
-          />
-          <TextField
-            label={t("onboarding.tenantQuota")}
-            size="small"
-            fullWidth
-            required
-            type="number"
-            value={accountForm.tenantQuota}
-            onChange={(e) => setAccountForm({ ...accountForm, tenantQuota: e.target.value })}
-            helperText={t("onboarding.tenantQuotaHelp")}
-          />
-          <Alert severity="info" variant="outlined" sx={{ fontSize: 12 }}>
-            {t("onboarding.emailNotice")}
-          </Alert>
-        </Stack>
-      </FormDialog>
+        </Box>
+        {/* Body — padding 28px */}
+        <DialogContent sx={{ p: "28px", pt: "28px !important" }}>
+          <Stack spacing="20px">
+            <TextField
+              label={t("onboarding.companyName")} required fullWidth
+              placeholder={locale === "en" ? "Enter company name" : "กรอกชื่อร้าน / ชื่อบริษัท"}
+              value={accountForm.company} onChange={(e) => handleFormChange("company", e.target.value)}
+              sx={MODAL_FIELD_SX} InputLabelProps={{ shrink: true }}
+            />
+            <Stack direction="row" spacing="16px">
+              <TextField
+                label={t("onboarding.firstName")} required fullWidth
+                placeholder={locale === "en" ? "Enter first name" : "กรอกชื่อ"}
+                value={accountForm.firstName} onChange={(e) => handleFormChange("firstName", e.target.value)}
+                sx={MODAL_FIELD_SX} InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                label={t("onboarding.lastName")} required fullWidth
+                placeholder={locale === "en" ? "Enter last name" : "กรอกนามสกุล"}
+                value={accountForm.lastName} onChange={(e) => handleFormChange("lastName", e.target.value)}
+                sx={MODAL_FIELD_SX} InputLabelProps={{ shrink: true }}
+              />
+            </Stack>
+            <Stack direction="row" spacing="16px">
+              <TextField
+                label={t("onboarding.position")} required fullWidth
+                placeholder={locale === "en" ? "Enter position" : "กรอกตำแหน่ง"}
+                value={accountForm.position} onChange={(e) => handleFormChange("position", e.target.value)}
+                sx={MODAL_FIELD_SX} InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                label={t("onboarding.customerGroup")} required select fullWidth
+                value={accountForm.customerGroup} onChange={(e) => handleFormChange("customerGroup", e.target.value)}
+                sx={MODAL_FIELD_SX} InputLabelProps={{ shrink: true }}
+              >
+                <MenuItem value="ทั่วไป">{locale === "en" ? "General" : "ทั่วไป"}</MenuItem>
+                <MenuItem value="ขายส่ง">{locale === "en" ? "Wholesale" : "ขายส่ง"}</MenuItem>
+                <MenuItem value="ขายปลีก">{locale === "en" ? "Retail" : "ขายปลีก"}</MenuItem>
+                <MenuItem value="VIP">VIP</MenuItem>
+              </TextField>
+            </Stack>
+            <Stack direction="row" spacing="16px">
+              <TextField
+                label={t("onboarding.tenantQuota")} required fullWidth
+                value={accountForm.tenantQuota} onChange={(e) => handleFormChange("tenantQuota", e.target.value)}
+                sx={MODAL_FIELD_SX} InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                label={t("onboarding.phone")} required fullWidth
+                placeholder={locale === "en" ? "Enter phone number" : "กรอกเบอร์โทร"}
+                value={accountForm.phone} onChange={(e) => handleFormChange("phone", e.target.value)}
+                sx={MODAL_FIELD_SX} InputLabelProps={{ shrink: true }}
+                InputProps={{ startAdornment: <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mr: 1, whiteSpace: "nowrap", fontSize: 15, color: "#374151" }}>🇹🇭 +66</Box> }}
+              />
+            </Stack>
+            <Stack direction="row" spacing="16px" alignItems="flex-start">
+              <TextField
+                label={t("onboarding.masterEmail")} required fullWidth
+                placeholder={locale === "en" ? "Enter email" : "กรอกอีเมล"}
+                value={accountForm.email} onChange={(e) => handleFormChange("email", e.target.value)}
+                sx={{ flex: 1, ...MODAL_FIELD_SX }} InputLabelProps={{ shrink: true }}
+              />
+              <Box sx={{
+                flex: 1, minHeight: 48, display: "flex", alignItems: "center", gap: 1,
+                bgcolor: "#FEF3C7", borderRadius: "8px", px: 2, py: 1.5,
+                fontSize: 13, fontWeight: 400, color: "#92400E",
+              }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#92400E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                {t("onboarding.emailNotice")}
+              </Box>
+            </Stack>
+          </Stack>
+        </DialogContent>
+        {/* Footer */}
+        <DialogActions sx={{ px: "28px", py: 2, borderTop: "1px solid #F0F0F0" }}>
+          <Button variant="outlined" onClick={handleModalClose} sx={{ textTransform: "none", fontSize: 14, fontWeight: 600, height: 40, color: "#FF6B00", borderColor: "#FF6B00", "&:hover": { borderColor: "#CC5500", color: "#CC5500", bgcolor: "rgba(255,107,0,0.04)" } }}>
+            {t("common.cancel")}
+          </Button>
+          <Button variant="contained" onClick={() => { setAddAccountOpen(false); setIsDirty(false); go("s3"); }} sx={{ bgcolor: "#FF6B00", "&:hover": { bgcolor: "#CC5500" }, textTransform: "none", fontSize: 14, fontWeight: 600, height: 40 }}>
+            {t("common.save")}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 

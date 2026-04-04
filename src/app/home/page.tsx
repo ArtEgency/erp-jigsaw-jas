@@ -35,7 +35,7 @@ export default function HomePage() {
           <div className="w-6 h-px bg-gray-200 my-1.5" />
 
           {/* ลูกค้า */}
-          <button onClick={() => router.push("/onboarding")} className="w-11 h-11 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors" title={t("onboarding.customer")}>
+          <button onClick={() => router.push("/tenantlist")} className="w-11 h-11 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors" title={t("onboarding.customer")}>
             <img src="/icons/data/user-id.svg" alt="" width={24} height={24} />
           </button>
 
