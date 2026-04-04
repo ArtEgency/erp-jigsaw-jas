@@ -1718,17 +1718,7 @@ export default function OnboardingPage() {
               )}
             </div>
 
-            {/* Component Showcase link (dev only) */}
-            <div className="mt-4 pt-3 border-t border-gray-100">
-              <button
-                onClick={() => router.push("/component-showcase")}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors"
-                style={{ fontSize: 14, fontWeight: 400 }}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-                Component Showcase
-              </button>
-            </div>
+            {/* Component Showcase ย้ายไป erp-jigsaw-design แล้ว */}
           </div>
         </div>
         )}
