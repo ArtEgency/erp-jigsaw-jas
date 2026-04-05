@@ -1,7 +1,10 @@
 "use client";
 
 import React, { createContext, useContext, useState, useCallback } from "react";
-import { GREEN, GREEN_L, RED, RED_L, AMBER, AMBER_L } from "@/lib/theme";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import Slide from "@mui/material/Slide";
+import type { SlideProps } from "@mui/material/Slide";
 
 /* ── Types ── */
 type ToastType = "success" | "error" | "warning";
@@ -21,11 +24,10 @@ interface ToastContextValue {
 /* ── Context ── */
 const ToastContext = createContext<ToastContextValue | null>(null);
 
-const typeStyles: Record<ToastType, { bg: string; color: string; border: string; icon: string }> = {
-  success: { bg: GREEN_L, color: GREEN, border: GREEN, icon: "\u2713" },
-  error: { bg: RED_L, color: RED, border: RED, icon: "\u2717" },
-  warning: { bg: AMBER_L, color: AMBER, border: AMBER, icon: "!" },
-};
+/* ── Slide transition ── */
+function SlideDown(props: SlideProps) {
+  return <Slide {...props} direction="down" />;
+}
 
 /* ── Provider ── */
 let toastId = 0;
@@ -43,24 +45,37 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const showError = useCallback((msg: string) => addToast(msg, "error"), [addToast]);
   const showWarning = useCallback((msg: string) => addToast(msg, "warning"), [addToast]);
 
+  const handleClose = useCallback((id: number) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
   return (
     <ToastContext.Provider value={{ showSuccess, showError, showWarning }}>
       {children}
-      {/* Toast Container */}
-      <div className="fixed top-4 right-4 z-[9999] flex flex-col gap-2">
-        {toasts.map((t) => {
-          const s = typeStyles[t.type];
-          return (
-            <div key={t.id}
-              className="px-4 py-3 rounded-lg shadow-lg text-sm font-medium flex items-center gap-2 animate-[slideIn_0.3s_ease]"
-              style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}33` }}>
-              <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs text-white"
-                style={{ background: s.color }}>{s.icon}</span>
-              {t.message}
-            </div>
-          );
-        })}
-      </div>
+      {toasts.map((t, index) => (
+        <Snackbar
+          key={t.id}
+          open
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          TransitionComponent={SlideDown}
+          sx={{ top: `${(index * 60) + 16}px !important` }}
+          onClose={() => handleClose(t.id)}
+        >
+          <Alert
+            severity={t.type}
+            variant="filled"
+            onClose={() => handleClose(t.id)}
+            sx={{
+              fontWeight: 500,
+              fontSize: "0.875rem",
+              borderRadius: 2,
+              boxShadow: 3,
+            }}
+          >
+            {t.message}
+          </Alert>
+        </Snackbar>
+      ))}
     </ToastContext.Provider>
   );
 }

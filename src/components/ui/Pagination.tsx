@@ -1,7 +1,11 @@
 "use client";
 
 import React from "react";
-import { BORDER, MUTED, TENANT_PRIMARY } from "@/lib/theme";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import MuiPagination from "@mui/material/Pagination";
 
 interface PaginationProps {
   total: number;
@@ -24,52 +28,61 @@ export default function Pagination({
   const from = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const to = Math.min(page * pageSize, total);
 
-  // Generate visible page numbers
-  const pages: number[] = [];
-  for (let i = 1; i <= totalPages; i++) {
-    if (i === 1 || i === totalPages || Math.abs(i - page) <= 1) {
-      pages.push(i);
-    }
-  }
-
   return (
-    <div className="flex items-center justify-end px-5 py-3" style={{ borderTop: `1px solid ${BORDER}` }}>
-      <div className="flex items-center gap-4 text-sm">
-        <span style={{ color: "#9294A1" }}>จำนวนรายการต่อหน้า</span>
-        {onPageSizeChange && (
-          <select value={pageSize} onChange={(e) => onPageSizeChange(Number(e.target.value))}
-            className="border-0 text-sm font-medium" style={{ color: "#4C4E63" }}>
-            {pageSizeOptions.map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
-        )}
-        <span style={{ color: "#9294A1" }}>{from}-{to} of {total}</span>
-        <div className="flex items-center gap-1.5">
-          <button disabled={page <= 1} onClick={() => onPageChange(page - 1)}
-            className="w-[26px] h-[26px] rounded-full flex items-center justify-center text-xs"
-            style={{ color: page <= 1 ? "#ccc" : MUTED }}>&lt;</button>
-          {pages.map((p, i) => {
-            // Insert ellipsis
-            const prev = pages[i - 1];
-            const showEllipsis = prev && p - prev > 1;
-            return (
-              <React.Fragment key={p}>
-                {showEllipsis && <span className="text-xs" style={{ color: MUTED }}>...</span>}
-                <button onClick={() => onPageChange(p)}
-                  className="w-[26px] h-[26px] rounded-full flex items-center justify-center text-xs"
-                  style={{
-                    background: p === page ? TENANT_PRIMARY : "transparent",
-                    color: p === page ? "#fff" : "#4C4E63",
-                  }}>
-                  {p}
-                </button>
-              </React.Fragment>
-            );
-          })}
-          <button disabled={page >= totalPages} onClick={() => onPageChange(page + 1)}
-            className="w-[26px] h-[26px] rounded-full flex items-center justify-center text-xs"
-            style={{ color: page >= totalPages ? "#ccc" : MUTED }}>&gt;</button>
-        </div>
-      </div>
-    </div>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        px: 2.5,
+        py: 1.5,
+        borderTop: 1,
+        borderColor: "divider",
+        gap: 2,
+      }}
+    >
+      <Typography variant="body2" sx={{ color: "#9294A1" }}>
+        จำนวนรายการต่อหน้า
+      </Typography>
+
+      {onPageSizeChange && (
+        <Select
+          value={pageSize}
+          onChange={(e) => onPageSizeChange(Number(e.target.value))}
+          size="small"
+          variant="standard"
+          disableUnderline
+          sx={{ fontSize: "0.875rem", fontWeight: 500, color: "#4C4E63" }}
+        >
+          {pageSizeOptions.map((s) => (
+            <MenuItem key={s} value={s}>{s}</MenuItem>
+          ))}
+        </Select>
+      )}
+
+      <Typography variant="body2" sx={{ color: "#9294A1" }}>
+        {from}-{to} of {total}
+      </Typography>
+
+      <MuiPagination
+        count={totalPages}
+        page={page}
+        onChange={(_, p) => onPageChange(p)}
+        size="small"
+        shape="rounded"
+        sx={{
+          "& .MuiPaginationItem-root": {
+            fontSize: "0.75rem",
+            minWidth: 26,
+            height: 26,
+          },
+          "& .Mui-selected": {
+            bgcolor: "primary.main",
+            color: "#fff",
+            "&:hover": { bgcolor: "primary.dark" },
+          },
+        }}
+      />
+    </Box>
   );
 }

@@ -3,7 +3,11 @@
 import React, { useState, useCallback } from "react";
 import Modal from "./Modal";
 import Button from "./Button";
-import { TEXT, MUTED } from "@/lib/theme";
+import Typography from "@mui/material/Typography";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import Box from "@mui/material/Box";
 
 /* ── Types ── */
 interface ExistingUsedInfo {
@@ -25,19 +29,24 @@ export function ExistingUsedDialog({ open, onClose, info }: ExistingUsedDialogPr
     <Modal open={open} onClose={onClose} title="ไม่สามารถลบได้"
       width="480px"
       footer={<Button variant="ghost" onClick={onClose}>ปิด</Button>}>
-      <div className="text-sm" style={{ color: TEXT }}>
-        <p className="mb-3">
+      <Box>
+        <Typography variant="body2" sx={{ mb: 1.5, color: "text.primary" }}>
           <strong>&quot;{info.itemName}&quot;</strong> ไม่สามารถลบได้เนื่องจากถูกใช้งานอยู่ใน:
-        </p>
-        <ul className="list-disc pl-5 space-y-1">
+        </Typography>
+        <List dense disablePadding sx={{ pl: 2 }}>
           {info.usedIn.map((item, i) => (
-            <li key={i} style={{ color: MUTED }}>{item}</li>
+            <ListItem key={i} disableGutters sx={{ py: 0.25 }}>
+              <ListItemText
+                primary={`• ${item}`}
+                primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
+              />
+            </ListItem>
           ))}
-        </ul>
-        <p className="mt-4 text-xs" style={{ color: MUTED }}>
+        </List>
+        <Typography variant="caption" sx={{ display: "block", mt: 2, color: "text.secondary" }}>
           กรุณาลบหรือแก้ไขรายการที่เกี่ยวข้องก่อน แล้วลองอีกครั้ง
-        </p>
-      </div>
+        </Typography>
+      </Box>
     </Modal>
   );
 }

@@ -2,14 +2,15 @@
 
 import React from "react";
 import { Controller, Control, FieldValues, Path } from "react-hook-form";
-import { TENANT_PRIMARY, TEXT } from "@/lib/theme";
+import MuiSwitch from "@mui/material/Switch";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Typography from "@mui/material/Typography";
 
 interface FormSwitchProps<T extends FieldValues> {
   name: Path<T>;
   control: Control<T>;
   label?: string;
   disabled?: boolean;
-  className?: string;
 }
 
 export default function FormSwitch<T extends FieldValues>({
@@ -17,30 +18,36 @@ export default function FormSwitch<T extends FieldValues>({
   control,
   label,
   disabled,
-  className = "",
 }: FormSwitchProps<T>) {
   return (
     <Controller
       name={name}
       control={control}
       render={({ field }) => (
-        <label className={`inline-flex items-center gap-3 cursor-pointer select-none ${disabled ? "opacity-50 cursor-default" : ""} ${className}`}>
-          <button
-            type="button"
-            role="switch"
-            aria-checked={!!field.value}
-            disabled={disabled}
-            onClick={() => field.onChange(!field.value)}
-            className="relative w-10 h-5 rounded-full transition-colors"
-            style={{ background: field.value ? TENANT_PRIMARY : "#ccc" }}
-          >
-            <div
-              className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform"
-              style={{ left: field.value ? 22 : 2 }}
+        <FormControlLabel
+          disabled={disabled}
+          control={
+            <MuiSwitch
+              checked={!!field.value}
+              onChange={(e) => field.onChange(e.target.checked)}
+              sx={{
+                "& .MuiSwitch-switchBase.Mui-checked": {
+                  color: "primary.main",
+                },
+                "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                  bgcolor: "primary.main",
+                },
+              }}
             />
-          </button>
-          {label && <span className="text-sm" style={{ color: TEXT }}>{label}</span>}
-        </label>
+          }
+          label={
+            label ? (
+              <Typography variant="body2" sx={{ color: "text.primary" }}>
+                {label}
+              </Typography>
+            ) : undefined
+          }
+        />
       )}
     />
   );

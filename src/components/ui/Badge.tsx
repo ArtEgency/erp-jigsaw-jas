@@ -1,30 +1,35 @@
 "use client";
 
 import React from "react";
-import { GREEN, GREEN_L, RED, RED_L, AMBER, AMBER_L, TENANT_PRIMARY, TENANT_LIGHT } from "@/lib/theme";
+import Chip from "@mui/material/Chip";
 
 type BadgeVariant = "success" | "error" | "warning" | "info" | "default";
 
 interface BadgeProps {
   label: string;
   variant?: BadgeVariant;
-  className?: string;
 }
 
-const variantStyles: Record<BadgeVariant, { bg: string; color: string }> = {
-  success: { bg: GREEN_L, color: GREEN },
-  error: { bg: RED_L, color: RED },
-  warning: { bg: AMBER_L, color: AMBER },
-  info: { bg: TENANT_LIGHT, color: TENANT_PRIMARY },
-  default: { bg: "#F0F0F0", color: "#666" },
+const variantSx: Record<BadgeVariant, { bgcolor: string; color: string }> = {
+  success: { bgcolor: "success.light", color: "success.main" },
+  error: { bgcolor: "#FCEBEB", color: "error.main" },
+  warning: { bgcolor: "#FAEEDA", color: "#854F0B" },
+  info: { bgcolor: "primary.light", color: "primary.main" },
+  default: { bgcolor: "#F0F0F0", color: "#666" },
 };
 
-export default function Badge({ label, variant = "default", className = "" }: BadgeProps) {
-  const s = variantStyles[variant];
+export default function Badge({ label, variant = "default" }: BadgeProps) {
+  /* MUI theme: success.light = #EAF3DE, success.main = #3B6D11 */
   return (
-    <span className={`inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium ${className}`}
-      style={{ background: s.bg, color: s.color }}>
-      {label}
-    </span>
+    <Chip
+      label={label}
+      size="small"
+      sx={{
+        ...variantSx[variant],
+        fontWeight: 500,
+        fontSize: "0.75rem",
+        height: 24,
+      }}
+    />
   );
 }

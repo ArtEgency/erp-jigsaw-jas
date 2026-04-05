@@ -1,5 +1,8 @@
 "use client";
 
+import React from "react";
+import TextField from "@mui/material/TextField";
+
 interface Props {
   label: string;
   value: string;
@@ -23,42 +26,35 @@ export default function FloatingField({
   maxLength,
   variant = "tenant",
 }: Props) {
-  const cls = [
-    "field-group",
-    variant === "sa" ? "sa" : "",
-    required && !value ? "required" : "",
-  ]
-    .filter(Boolean)
-    .join(" ");
+  const focusColor = variant === "sa" ? "#FF6B00" : undefined; // sa = orange, tenant = default primary
 
   return (
-    <div className={cls}>
-      {textarea ? (
-        <textarea
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          disabled={disabled}
-          rows={3}
-          maxLength={maxLength}
-        />
-      ) : (
-        <input
-          type={type}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          disabled={disabled}
-          maxLength={maxLength}
-        />
-      )}
-      <label>
-        {label}
-        {required && <span className="text-erp-error ml-0.5">*</span>}
-      </label>
-      {maxLength && (
-        <span className="field-char-count">
-          {value.length}/{maxLength}
-        </span>
-      )}
-    </div>
+    <TextField
+      label={label}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      type={type}
+      disabled={disabled}
+      required={required}
+      multiline={textarea}
+      rows={textarea ? 3 : undefined}
+      size="small"
+      fullWidth
+      inputProps={{ maxLength }}
+      helperText={maxLength ? `${value.length}/${maxLength}` : undefined}
+      InputLabelProps={{ shrink: true }}
+      sx={
+        focusColor
+          ? {
+              "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: focusColor,
+              },
+              "& .MuiInputLabel-root.Mui-focused": {
+                color: focusColor,
+              },
+            }
+          : undefined
+      }
+    />
   );
 }

@@ -1,40 +1,46 @@
 "use client";
 
 import React from "react";
-import { TENANT_PRIMARY, TENANT_HOVER, TENANT_LIGHT, BORDER, MUTED } from "@/lib/theme";
+import MuiButton from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 
 type ButtonVariant = "primary" | "outline" | "ghost" | "danger";
 type ButtonSize = "sm" | "md" | "lg";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "color"> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   loading?: boolean;
   icon?: React.ReactNode;
+  children?: React.ReactNode;
 }
 
-const sizeMap: Record<ButtonSize, string> = {
-  sm: "px-3 py-1.5 text-xs",
-  md: "px-4 py-2 text-sm",
-  lg: "px-6 py-2.5 text-base",
+const sizeMap: Record<ButtonSize, { px: number; py: number; fontSize: string }> = {
+  sm: { px: 1.5, py: 0.75, fontSize: "0.75rem" },
+  md: { px: 2, py: 1, fontSize: "0.875rem" },
+  lg: { px: 3, py: 1.25, fontSize: "1rem" },
 };
 
-const variantStyles: Record<ButtonVariant, { base: React.CSSProperties; hover: React.CSSProperties }> = {
+const variantSx: Record<ButtonVariant, object> = {
   primary: {
-    base: { background: TENANT_PRIMARY, color: "#fff", border: "none" },
-    hover: { background: TENANT_HOVER },
+    bgcolor: "primary.main",
+    color: "#fff",
+    "&:hover": { bgcolor: "primary.dark" },
   },
   outline: {
-    base: { background: "transparent", color: TENANT_PRIMARY, border: `1px solid ${TENANT_PRIMARY}` },
-    hover: { background: TENANT_LIGHT },
+    borderColor: "primary.main",
+    color: "primary.main",
+    "&:hover": { bgcolor: "primary.light" },
   },
   ghost: {
-    base: { background: "transparent", color: MUTED, border: `1px solid ${BORDER}` },
-    hover: { borderColor: TENANT_PRIMARY, color: TENANT_PRIMARY },
+    borderColor: "divider",
+    color: "text.secondary",
+    "&:hover": { borderColor: "primary.main", color: "primary.main" },
   },
   danger: {
-    base: { background: "#E53935", color: "#fff", border: "none" },
-    hover: { background: "#C62828" },
+    bgcolor: "#E53935",
+    color: "#fff",
+    "&:hover": { bgcolor: "#C62828" },
   },
 };
 
@@ -44,28 +50,33 @@ export default function Button({
   loading = false,
   icon,
   children,
-  className = "",
   disabled,
   ...rest
 }: ButtonProps) {
-  const vs = variantStyles[variant];
+  const s = sizeMap[size];
+  const muiVariant = variant === "primary" || variant === "danger" ? "contained" : "outlined";
 
   return (
-    <button
-      className={`rounded-lg font-medium transition-colors inline-flex items-center justify-center gap-2 ${sizeMap[size]} ${className}`}
-      style={{ ...vs.base, opacity: disabled || loading ? 0.6 : 1, cursor: disabled || loading ? "not-allowed" : "pointer" }}
+    <MuiButton
+      variant={muiVariant}
       disabled={disabled || loading}
-      onMouseEnter={(e) => { if (!disabled && !loading) Object.assign(e.currentTarget.style, vs.hover); }}
-      onMouseLeave={(e) => { if (!disabled && !loading) Object.assign(e.currentTarget.style, vs.base); }}
-      {...rest}
+      disableElevation
+      sx={{
+        px: s.px,
+        py: s.py,
+        fontSize: s.fontSize,
+        borderRadius: 2,
+        fontWeight: 500,
+        gap: 1,
+        minWidth: 0,
+        ...variantSx[variant],
+      }}
+      startIcon={
+        loading ? <CircularProgress size={16} color="inherit" /> : icon || undefined
+      }
+      {...(rest as React.ComponentProps<typeof MuiButton>)}
     >
-      {loading && (
-        <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="60" strokeLinecap="round" />
-        </svg>
-      )}
-      {icon && !loading && icon}
       {children}
-    </button>
+    </MuiButton>
   );
 }

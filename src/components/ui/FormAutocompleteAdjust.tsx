@@ -1,8 +1,14 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { Controller, Control, FieldValues, Path } from "react-hook-form";
-import { BORDER, TEXT, MUTED, TENANT_PRIMARY, TENANT_LIGHT, TENANT_HOVER } from "@/lib/theme";
+import MuiAutocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import CircularProgress from "@mui/material/CircularProgress";
+import Link from "@mui/material/Link";
 
 interface Option {
   id: string | number;
@@ -28,6 +34,8 @@ interface FormAutocompleteAdjustProps<T extends FieldValues> {
   allowManage?: boolean;
 }
 
+const filter = createFilterOptions<Option>();
+
 export default function FormAutocompleteAdjust<T extends FieldValues>({
   name,
   control,
@@ -44,111 +52,147 @@ export default function FormAutocompleteAdjust<T extends FieldValues>({
   allowCreate = false,
   allowManage = false,
 }: FormAutocompleteAdjustProps<T>) {
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
   const [creating, setCreating] = useState(false);
-  const wrapRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  const filtered = options.filter((o) => o.name.toLowerCase().includes(search.toLowerCase()));
-
-  const handleCreate = async (fieldOnChange: (val: string | number) => void) => {
-    if (!onCreateNew || !search.trim()) return;
-    setCreating(true);
-    try {
-      const newOpt = await onCreateNew(search.trim());
-      fieldOnChange(newOpt.id);
-      setOpen(false);
-      setSearch("");
-    } finally {
-      setCreating(false);
-    }
-  };
+  const [inputValue, setInputValue] = useState("");
 
   return (
     <Controller
       name={name}
       control={control}
       render={({ field, fieldState: { error } }) => {
-        const selected = options.find((o) => String(o.id) === String(field.value));
+        const selected = options.find((o) => String(o.id) === String(field.value)) || null;
+
+        const handleCreate = async (newName: string) => {
+          if (!onCreateNew || !newName.trim()) return;
+          setCreating(true);
+          try {
+            const newOpt = await onCreateNew(newName.trim());
+            field.onChange(newOpt.id);
+            setInputValue("");
+          } finally {
+            setCreating(false);
+          }
+        };
+
         return (
-          <div ref={wrapRef} className={`relative ${className}`}>
-            <div className="field-group">
-              <input
-                value={open ? search : selected?.name || ""}
+          <MuiAutocomplete
+            options={options}
+            getOptionLabel={(opt) => opt.name}
+            value={selected}
+            inputValue={inputValue}
+            onInputChange={(_, val) => setInputValue(val)}
+            onChange={(_, newVal) => {
+              if (newVal && (newVal as Option & { isNew?: boolean }).id === "__create__") {
+                handleCreate(inputValue);
+              } else {
+                field.onChange(newVal ? newVal.id : "");
+              }
+            }}
+            disabled={disabled || creating}
+            isOptionEqualToValue={(opt, val) => String(opt.id) === String(val.id)}
+            noOptionsText="ไม่พบรายการ"
+            className={className}
+            size="small"
+            filterOptions={(opts, params) => {
+              const filtered = filter(opts, params);
+              return filtered;
+            }}
+            sx={{
+              "& .MuiOutlinedInput-root": { borderRadius: 2 },
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label={label}
+                required={required}
                 placeholder={placeholder}
-                disabled={disabled}
-                readOnly={!open}
-                onChange={(e) => setSearch(e.target.value)}
-                onFocus={() => { setOpen(true); setSearch(""); }}
-                style={{ borderColor: error ? "#E53935" : undefined }}
+                error={!!error}
+                helperText={error?.message}
+                InputLabelProps={{ ...params.InputLabelProps, shrink: true }}
+                InputProps={{
+                  ...params.InputProps,
+                  endAdornment: (
+                    <>
+                      {creating && <CircularProgress size={18} />}
+                      {params.InputProps.endAdornment}
+                    </>
+                  ),
+                }}
               />
-              <label>
-                {label}
-                {required && <span className="text-[#E53935] ml-0.5">*</span>}
-              </label>
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-xs"
-                style={{ color: MUTED }}>{open ? "\u25B2" : "\u25BC"}</span>
-            </div>
-
-            {open && !disabled && (
-              <div className="absolute z-50 left-0 right-0 mt-1 bg-white rounded-lg shadow-xl border max-h-[240px] overflow-y-auto"
-                style={{ borderColor: BORDER }}>
-                {/* Options list */}
-                {filtered.length === 0 && !allowCreate && (
-                  <div className="px-3 py-2 text-sm" style={{ color: MUTED }}>ไม่พบรายการ</div>
-                )}
-                {filtered.map((opt) => (
-                  <button key={opt.id} type="button"
-                    className="w-full text-left px-3 py-2 text-sm transition-colors"
-                    style={{
-                      color: String(opt.id) === String(field.value) ? TENANT_PRIMARY : TEXT,
-                      background: String(opt.id) === String(field.value) ? TENANT_LIGHT : "transparent",
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = TENANT_LIGHT; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = String(opt.id) === String(field.value) ? TENANT_LIGHT : "transparent"; }}
-                    onClick={() => { field.onChange(opt.id); setOpen(false); setSearch(""); }}>
-                    {opt.name}
-                  </button>
-                ))}
-
-                {/* Divider + actions */}
+            )}
+            ListboxProps={{
+              sx: { maxHeight: 240 },
+            }}
+            renderOption={(props, opt) => (
+              <Box component="li" {...props} key={opt.id}>
+                <Typography variant="body2">{opt.name}</Typography>
+              </Box>
+            )}
+            PaperComponent={({ children, ...paperProps }) => (
+              <Box
+                {...paperProps}
+                sx={{
+                  bgcolor: "background.paper",
+                  borderRadius: 2,
+                  boxShadow: 8,
+                  border: 1,
+                  borderColor: "divider",
+                  overflow: "hidden",
+                }}
+              >
+                {children}
                 {(allowCreate || allowManage) && (
                   <>
-                    <div className="border-t" style={{ borderColor: BORDER }} />
-                    {allowCreate && search.trim() && (
-                      <button type="button" disabled={creating}
-                        className="w-full text-left px-3 py-2 text-sm font-medium transition-colors"
-                        style={{ color: TENANT_PRIMARY }}
-                        onMouseEnter={(e) => { e.currentTarget.style.background = TENANT_LIGHT; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
-                        onClick={() => handleCreate(field.onChange)}>
-                        {creating ? "กำลังสร้าง..." : `+ ${createNewLabel} "${search.trim()}"`}
-                      </button>
-                    )}
-                    {allowManage && managePath && (
-                      <a href={managePath}
-                        className="block w-full text-left px-3 py-2 text-sm font-medium transition-colors"
-                        style={{ color: TENANT_HOVER }}
-                        onMouseEnter={(e) => { e.currentTarget.style.background = TENANT_LIGHT; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}>
-                        {manageLabel} &rarr;
-                      </a>
-                    )}
+                    <Divider />
+                    <Box sx={{ px: 1.5, py: 1 }}>
+                      {allowCreate && inputValue.trim() && (
+                        <Box
+                          component="button"
+                          type="button"
+                          disabled={creating}
+                          onClick={() => handleCreate(inputValue)}
+                          sx={{
+                            width: "100%",
+                            textAlign: "left",
+                            py: 0.75,
+                            px: 1,
+                            fontSize: "0.875rem",
+                            fontWeight: 500,
+                            color: "primary.main",
+                            bgcolor: "transparent",
+                            border: "none",
+                            borderRadius: 1,
+                            cursor: "pointer",
+                            "&:hover": { bgcolor: "primary.light" },
+                          }}
+                        >
+                          {creating ? "กำลังสร้าง..." : `+ ${createNewLabel} "${inputValue.trim()}"`}
+                        </Box>
+                      )}
+                      {allowManage && managePath && (
+                        <Link
+                          href={managePath}
+                          underline="none"
+                          sx={{
+                            display: "block",
+                            py: 0.75,
+                            px: 1,
+                            fontSize: "0.875rem",
+                            fontWeight: 500,
+                            color: "primary.dark",
+                            borderRadius: 1,
+                            "&:hover": { bgcolor: "primary.light" },
+                          }}
+                        >
+                          {manageLabel} →
+                        </Link>
+                      )}
+                    </Box>
                   </>
                 )}
-              </div>
+              </Box>
             )}
-
-            {error && <p className="text-[11px] mt-0.5 ml-1" style={{ color: "#E53935" }}>{error.message}</p>}
-          </div>
+          />
         );
       }}
     />

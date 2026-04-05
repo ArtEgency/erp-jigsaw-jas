@@ -2,13 +2,17 @@
 
 import React, { useState } from "react";
 import { Controller, Control, FieldValues, Path } from "react-hook-form";
-import { BORDER, TEXT, MUTED, TENANT_PRIMARY } from "@/lib/theme";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Typography from "@mui/material/Typography";
 
 const LANGUAGES = [
-  { code: "th", label: "TH", flag: "\uD83C\uDDF9\uD83C\uDDED" },
-  { code: "en", label: "EN", flag: "\uD83C\uDDEC\uD83C\uDDE7" },
-  { code: "zh", label: "CN", flag: "\uD83C\uDDE8\uD83C\uDDF3" },
-  { code: "ja", label: "JP", flag: "\uD83C\uDDEF\uD83C\uDDF5" },
+  { code: "th", label: "TH", flag: "🇹🇭" },
+  { code: "en", label: "EN", flag: "🇬🇧" },
+  { code: "zh", label: "CN", flag: "🇨🇳" },
+  { code: "ja", label: "JP", flag: "🇯🇵" },
 ];
 
 /**
@@ -36,7 +40,7 @@ export default function MultiLanguageInput<T extends FieldValues>({
   rows = 2,
   className = "",
 }: MultiLanguageInputProps<T>) {
-  const [activeLang, setActiveLang] = useState("th");
+  const [activeLang, setActiveLang] = useState(0);
 
   return (
     <Controller
@@ -44,70 +48,81 @@ export default function MultiLanguageInput<T extends FieldValues>({
       control={control}
       render={({ field, fieldState: { error } }) => {
         const values: Record<string, string> = field.value || {};
+        const langCode = LANGUAGES[activeLang].code;
 
         const handleChange = (lang: string, val: string) => {
           field.onChange({ ...values, [lang]: val });
         };
 
         return (
-          <div className={className}>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-medium" style={{ color: MUTED }}>
+          <Box className={className}>
+            {/* Header: label + language tabs */}
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 0.5 }}>
+              <Typography variant="caption" sx={{ fontWeight: 500, color: "text.secondary" }}>
                 {label}
-                {required && <span className="text-[#E53935] ml-0.5">*</span>}
-              </label>
-              {/* Language tabs */}
-              <div className="flex items-center gap-0.5">
-                {LANGUAGES.map((lang) => (
-                  <button key={lang.code} type="button"
-                    className="px-2 py-0.5 rounded text-[11px] font-medium transition-colors"
-                    style={{
-                      background: activeLang === lang.code ? TENANT_PRIMARY : "transparent",
-                      color: activeLang === lang.code ? "#fff" : MUTED,
-                    }}
-                    onClick={() => setActiveLang(lang.code)}>
-                    {lang.flag} {lang.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+                {required && (
+                  <Box component="span" sx={{ color: "error.main", ml: 0.5 }}>*</Box>
+                )}
+              </Typography>
 
-            {multiline ? (
-              <textarea
-                value={values[activeLang] || ""}
-                onChange={(e) => handleChange(activeLang, e.target.value)}
-                disabled={disabled}
-                rows={rows}
-                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition-colors"
-                style={{ borderColor: error ? "#E53935" : BORDER, color: TEXT }}
-                onFocus={(e) => { e.currentTarget.style.borderColor = TENANT_PRIMARY; }}
-                onBlur={(e) => { e.currentTarget.style.borderColor = error ? "#E53935" : BORDER; }}
-                placeholder={`${label} (${LANGUAGES.find((l) => l.code === activeLang)?.label})`}
-              />
-            ) : (
-              <input
-                value={values[activeLang] || ""}
-                onChange={(e) => handleChange(activeLang, e.target.value)}
-                disabled={disabled}
-                className="w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none transition-colors"
-                style={{ borderColor: error ? "#E53935" : BORDER, color: TEXT }}
-                onFocus={(e) => { e.currentTarget.style.borderColor = TENANT_PRIMARY; }}
-                onBlur={(e) => { e.currentTarget.style.borderColor = error ? "#E53935" : BORDER; }}
-                placeholder={`${label} (${LANGUAGES.find((l) => l.code === activeLang)?.label})`}
-              />
-            )}
+              <Tabs
+                value={activeLang}
+                onChange={(_, v) => setActiveLang(v)}
+                sx={{
+                  minHeight: 0,
+                  "& .MuiTabs-indicator": { height: 2 },
+                  "& .MuiTab-root": {
+                    minHeight: 0,
+                    minWidth: 0,
+                    px: 1,
+                    py: 0.25,
+                    fontSize: "0.6875rem",
+                    fontWeight: 500,
+                  },
+                }}
+              >
+                {LANGUAGES.map((lang) => (
+                  <Tab key={lang.code} label={`${lang.flag} ${lang.label}`} />
+                ))}
+              </Tabs>
+            </Box>
+
+            {/* Input */}
+            <TextField
+              value={values[langCode] || ""}
+              onChange={(e) => handleChange(langCode, e.target.value)}
+              disabled={disabled}
+              multiline={multiline}
+              rows={multiline ? rows : undefined}
+              size="small"
+              fullWidth
+              error={!!error}
+              placeholder={`${label} (${LANGUAGES[activeLang].label})`}
+              InputLabelProps={{ shrink: true }}
+            />
 
             {/* Language fill indicator */}
-            <div className="flex items-center gap-1 mt-1">
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 0.5 }}>
               {LANGUAGES.map((lang) => (
-                <span key={lang.code} className="w-2 h-2 rounded-full"
-                  style={{ background: values[lang.code]?.trim() ? "#10B981" : "#D1D5DB" }}
-                  title={`${lang.label}: ${values[lang.code] ? "filled" : "empty"}`} />
+                <Box
+                  key={lang.code}
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    bgcolor: values[lang.code]?.trim() ? "#10B981" : "#D1D5DB",
+                  }}
+                  title={`${lang.label}: ${values[lang.code] ? "filled" : "empty"}`}
+                />
               ))}
-            </div>
+            </Box>
 
-            {error && <p className="text-[11px] mt-0.5" style={{ color: "#E53935" }}>{error.message}</p>}
-          </div>
+            {error && (
+              <Typography variant="caption" sx={{ color: "error.main", mt: 0.25 }}>
+                {error.message}
+              </Typography>
+            )}
+          </Box>
         );
       }}
     />
