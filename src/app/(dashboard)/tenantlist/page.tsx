@@ -57,6 +57,7 @@ export default function OnboardingPage() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [addAccountOpen, setAddAccountOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [statusTab, setStatusTab] = useState(0);
   const [selectedAccount, setSelectedAccount] = useState<MasterAccount>(masterAccounts[0]);
   const [showToast, setShowToast] = useState(false);
   const [meatballAnchor, setMeatballAnchor] = useState<null | HTMLElement>(null);
@@ -192,13 +193,23 @@ export default function OnboardingPage() {
     window.scrollTo(0, 0);
   };
 
-  const filtered = masterAccounts.filter(
-    (a) =>
-      a.firstName.includes(search) ||
-      a.lastName.includes(search) ||
-      a.email.toLowerCase().includes(search.toLowerCase()) ||
-      a.id.toLowerCase().includes(search.toLowerCase())
-  );
+  const STATUS_MAP = ["", "รอยืนยัน", "รอสร้างธุรกิจ", "กำลังใช้งาน", "ระงับการใช้งาน", "หมดอายุ"];
+  const filtered = masterAccounts.filter((a) => {
+    // tab filter (0 = ทั้งหมด)
+    if (statusTab > 0 && a.status !== STATUS_MAP[statusTab]) return false;
+    // search filter
+    if (search) {
+      const q = search.toLowerCase();
+      return (
+        a.firstName.toLowerCase().includes(q) ||
+        a.lastName.toLowerCase().includes(q) ||
+        a.email.toLowerCase().includes(q) ||
+        a.id.toLowerCase().includes(q) ||
+        a.company.toLowerCase().includes(q)
+      );
+    }
+    return true;
+  });
 
   // Password strength
   const pwChecks = [
@@ -350,12 +361,15 @@ export default function OnboardingPage() {
 
         {/* Sub-tabs — pill style */}
         <Tabs
-          value={0}
+          value={statusTab}
+          onChange={(_, v) => setStatusTab(v)}
+          variant="scrollable"
+          scrollButtons="auto"
           sx={{
             mb: 2,
             "& .MuiTab-root": {
-              textTransform: "none", fontWeight: 500, fontSize: "1rem",
-              minHeight: 42, borderRadius: "8px", mr: 1,
+              textTransform: "none", fontWeight: 500, fontSize: "0.9rem",
+              minHeight: 38, borderRadius: "8px", mr: 0.5, px: 2,
             },
             "& .Mui-selected": {
               bgcolor: "#FF6B00", color: "#fff !important", fontWeight: 600,
@@ -363,9 +377,12 @@ export default function OnboardingPage() {
             "& .MuiTabs-indicator": { display: "none" },
           }}
         >
-          <Tab label={locale === "en" ? "Current Customers" : "ลูกค้าปัจจุบัน"} />
-          <Tab label={locale === "en" ? "Cancelled" : "ลูกค้าที่ยกเลิก"} />
-          <Tab label={locale === "en" ? "Suspended" : "ลูกค้าที่ระงับ"} />
+          <Tab label={locale === "en" ? "All Customers" : "ลูกค้าทั้งหมด"} />
+          <Tab label={locale === "en" ? "Pending Verify" : "รอยืนยัน"} />
+          <Tab label={locale === "en" ? "Pending Business" : "รอสร้างธุรกิจ"} />
+          <Tab label={locale === "en" ? "Active" : "กำลังใช้งาน"} />
+          <Tab label={locale === "en" ? "Suspended" : "ระงับการใช้งาน"} />
+          <Tab label={locale === "en" ? "Expired" : "หมดอายุ"} />
         </Tabs>
 
         <Paper elevation={3} sx={{ borderRadius: "10px", overflow: "hidden" }}>
@@ -425,7 +442,10 @@ export default function OnboardingPage() {
                   headerName: t("onboarding.accountCode"),
                   width: 150,
                   renderCell: (params: GridRenderCellParams) => (
-                    <Typography sx={{ fontSize: 14, fontWeight: 500, color: "#FF6B00", cursor: "pointer" }}>{params.value}</Typography>
+                    <Typography
+                      onClick={(e) => { e.stopPropagation(); router.push(`/tenantlist/${params.value}`); }}
+                      sx={{ fontSize: 14, fontWeight: 500, color: "#FF6B00", cursor: "pointer", "&:hover": { textDecoration: "underline" } }}
+                    >{params.value}</Typography>
                   ),
                 },
                 {
@@ -484,12 +504,16 @@ export default function OnboardingPage() {
                         size="small"
                         sx={{
                           fontWeight: 500, fontSize: 12, height: 24,
-                          ...(status === "เปิดใช้งาน"
-                            ? { bgcolor: "rgba(238,251,229,0.98)", color: "#3B6D11" }
-                            : status === "รอยืนยัน Email"
-                            ? { bgcolor: "#FFF0E5", color: "#FF8228" }
-                            : status === "ระงับ Account"
-                            ? { bgcolor: "#FFF0E5", color: "#FF8228", border: "1px solid #FF8228" }
+                          ...(status === "กำลังใช้งาน"
+                            ? { bgcolor: "#EEFBE5", color: "#3B6D11" }
+                            : status === "รอยืนยัน"
+                            ? { bgcolor: "#FFF7ED", color: "#C2410C" }
+                            : status === "รอสร้างธุรกิจ"
+                            ? { bgcolor: "#EFF6FF", color: "#1D4ED8" }
+                            : status === "ระงับการใช้งาน"
+                            ? { bgcolor: "#FEF2F2", color: "#B91C1C" }
+                            : status === "หมดอายุ"
+                            ? { bgcolor: "#F5F5F5", color: "#737373" }
                             : { bgcolor: "#F0F0F0", color: "#999" }),
                         }}
                       />
@@ -1101,8 +1125,8 @@ export default function OnboardingPage() {
                 <div className="col-span-2">
                   <Typography variant="caption" sx={{ color: "#777", fontWeight: 500, mb: 0.5, display: "block" }}>{t("onboarding.status")}</Typography>
                   <RadioGroup row value={selectedAccount.status}>
-                    <FormControlLabel value="เปิดใช้งาน" control={<Radio size="small" sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }} />} label={<Typography variant="body2">{t("onboarding.statusActive")}</Typography>} />
-                    <FormControlLabel value="ปิดใช้งาน" control={<Radio size="small" sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }} />} label={<Typography variant="body2">{t("onboarding.statusDisabled")}</Typography>} />
+                    <FormControlLabel value="กำลังใช้งาน" control={<Radio size="small" sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }} />} label={<Typography variant="body2">{locale === "en" ? "Active" : "กำลังใช้งาน"}</Typography>} />
+                    <FormControlLabel value="ระงับการใช้งาน" control={<Radio size="small" sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }} />} label={<Typography variant="body2">{locale === "en" ? "Suspended" : "ระงับการใช้งาน"}</Typography>} />
                   </RadioGroup>
                 </div>
                 <div className="field-group sa">
