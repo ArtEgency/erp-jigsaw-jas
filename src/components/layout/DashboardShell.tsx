@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Box } from "@mui/material";
 import { useLocale } from "@/lib/locale";
 import { useAuth } from "@/lib/auth";
+import { SA_PRIMARY, SA_LIGHT, BORDER, TEXT, BG } from "@/lib/theme";
 
 /**
  * DashboardShell — Sidebar + TopBar + Main Content wrapper
- * ใช้ร่วมกันทุกหน้าใน (dashboard)
  */
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -17,132 +18,178 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   const [menuOpen, setMenuOpen] = useState<Record<string, boolean>>({ customer: true, settings: false, reports: false });
 
   return (
-    <div className="min-h-screen bg-erp-bg flex">
-      {/* ══ Sidebar ══ */}
-      <div className={`fixed h-screen z-50 bg-white border-r border-gray-200 transition-all duration-300 ${sidebarExpanded ? "w-[260px]" : "w-[68px]"}`}>
+    <Box sx={{ minHeight: "100vh", bgcolor: BG, display: "flex" }}>
+      {/* Sidebar */}
+      <Box
+        sx={{
+          position: "fixed", height: "100vh", zIndex: 50,
+          bgcolor: "white", borderRight: `1px solid ${BORDER}`,
+          transition: "width 300ms", width: sidebarExpanded ? 260 : 68,
+        }}
+      >
         {/* Collapsed (68px) */}
         {!sidebarExpanded && (
-          <div className="w-[68px] h-full flex flex-col items-center py-3 gap-1">
-            <div className="w-10 h-10 rounded-xl bg-sa-primary flex items-center justify-center cursor-pointer mb-0.5" onClick={() => setSidebarExpanded(true)}>
-              <span className="text-[7px] font-extrabold text-white leading-tight text-center">JIG<br/>SAW</span>
-            </div>
-            <span className="text-[8px] font-bold text-sa-primary tracking-wider mb-2">JIGSAW</span>
-            <button onClick={() => router.push("/home")} className="w-11 h-11 rounded-lg flex items-center justify-center bg-sa-primary/10 transition-colors" title={t("nav.home")}>
+          <Box sx={{ width: 68, height: "100%", display: "flex", flexDirection: "column", alignItems: "center", py: 1.5, gap: 0.5 }}>
+            <Box
+              onClick={() => setSidebarExpanded(true)}
+              sx={{ width: 40, height: 40, borderRadius: 3, bgcolor: SA_PRIMARY, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", mb: 0.25 }}
+            >
+              <Box component="span" sx={{ fontSize: 7, fontWeight: 800, color: "white", lineHeight: 1.2, textAlign: "center" }}>JIG<br/>SAW</Box>
+            </Box>
+            <Box component="span" sx={{ fontSize: 8, fontWeight: 700, color: SA_PRIMARY, letterSpacing: "0.1em", mb: 1 }}>JIGSAW</Box>
+            <Box
+              component="button" onClick={() => router.push("/home")} title={t("nav.home")}
+              sx={{ width: 44, height: 44, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", bgcolor: `${SA_PRIMARY}1A`, transition: "background 200ms", border: "none", cursor: "pointer", "&:hover": { bgcolor: `${SA_PRIMARY}33` } }}
+            >
               <img src="/icons/commerce/home.svg" alt="" width={24} height={24} style={{ filter: "brightness(0) saturate(100%) invert(45%) sepia(96%) saturate(1500%) hue-rotate(360deg)" }} />
-            </button>
-            <div className="w-6 h-px bg-gray-200 my-1.5" />
-            <button onClick={() => { setSidebarExpanded(true); setMenuOpen(prev => ({ ...prev, customer: true })); }} className="w-11 h-11 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors" title={t("onboarding.customer")}>
+            </Box>
+            <Box sx={{ width: 24, height: 1, bgcolor: BORDER, my: 0.75 }} />
+            <Box
+              component="button" onClick={() => { setSidebarExpanded(true); setMenuOpen(prev => ({ ...prev, customer: true })); }} title={t("onboarding.customer")}
+              sx={{ width: 44, height: 44, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", border: "none", cursor: "pointer", bgcolor: "transparent", transition: "background 200ms", "&:hover": { bgcolor: "#f5f5f5" } }}
+            >
               <img src="/icons/data/user-id.svg" alt="" width={24} height={24} />
-            </button>
-            <button onClick={() => { setSidebarExpanded(true); setMenuOpen(prev => ({ ...prev, reports: true })); }} className="w-11 h-11 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors" title={locale === "en" ? "Reports" : "รายงาน"}>
+            </Box>
+            <Box
+              component="button" onClick={() => { setSidebarExpanded(true); setMenuOpen(prev => ({ ...prev, reports: true })); }} title={locale === "en" ? "Reports" : "รายงาน"}
+              sx={{ width: 44, height: 44, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", border: "none", cursor: "pointer", bgcolor: "transparent", transition: "background 200ms", "&:hover": { bgcolor: "#f5f5f5" } }}
+            >
               <img src="/icons/data/graph-up.svg" alt="" width={24} height={24} />
-            </button>
-            <div className="w-6 h-px bg-gray-200 my-1.5" />
-            <button onClick={() => { setSidebarExpanded(true); setMenuOpen(prev => ({ ...prev, settings: true })); }} className="w-11 h-11 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors" title={t("nav.settings")}>
+            </Box>
+            <Box sx={{ width: 24, height: 1, bgcolor: BORDER, my: 0.75 }} />
+            <Box
+              component="button" onClick={() => { setSidebarExpanded(true); setMenuOpen(prev => ({ ...prev, settings: true })); }} title={t("nav.settings")}
+              sx={{ width: 44, height: 44, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", border: "none", cursor: "pointer", bgcolor: "transparent", transition: "background 200ms", "&:hover": { bgcolor: "#f5f5f5" } }}
+            >
               <img src="/icons/commerce/settings.svg" alt="" width={24} height={24} />
-            </button>
-          </div>
+            </Box>
+          </Box>
         )}
 
         {/* Expanded (260px) */}
         {sidebarExpanded && (
-        <div className="w-[260px] h-full flex flex-col">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-            <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push("/")}>
-              <div className="w-8 h-8 rounded-lg bg-sa-primary flex items-center justify-center">
-                <span className="text-[7px] font-extrabold text-white leading-tight text-center">JIG<br/>SAW</span>
-              </div>
-              <span className="text-sa-primary font-bold text-lg tracking-wide">JIGSAW</span>
-            </div>
-            <button onClick={() => setSidebarExpanded(false)} className="text-gray-400 hover:text-gray-600 text-sm">&laquo;</button>
-          </div>
+          <Box sx={{ width: 260, height: "100%", display: "flex", flexDirection: "column" }}>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", px: 2, py: 1.5, borderBottom: "1px solid #f5f5f5" }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, cursor: "pointer" }} onClick={() => router.push("/")}>
+                <Box sx={{ width: 32, height: 32, borderRadius: 2, bgcolor: SA_PRIMARY, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Box component="span" sx={{ fontSize: 7, fontWeight: 800, color: "white", lineHeight: 1.2, textAlign: "center" }}>JIG<br/>SAW</Box>
+                </Box>
+                <Box component="span" sx={{ color: SA_PRIMARY, fontWeight: 700, fontSize: 18, letterSpacing: "0.05em" }}>JIGSAW</Box>
+              </Box>
+              <Box component="button" onClick={() => setSidebarExpanded(false)} sx={{ color: "#bbb", border: "none", bgcolor: "transparent", cursor: "pointer", fontSize: 14, "&:hover": { color: "#888" } }}>&laquo;</Box>
+            </Box>
 
-          <div className="flex-1 overflow-y-auto px-3 py-2">
-            {/* ภาพรวม */}
-            <button onClick={() => router.push("/home")} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors mb-1" style={{ fontSize: 16, fontWeight: 400, color: "#333" }}>
-              <img src="/icons/commerce/home.svg" alt="" width={22} height={22} />
-              {t("nav.home")}
-              <span className="ml-auto text-[10px] bg-green-500 text-white px-1.5 py-0.5 rounded-full font-semibold">New</span>
-            </button>
+            <Box sx={{ flex: 1, overflowY: "auto", px: 1.5, py: 1 }}>
+              {/* Home */}
+              <Box
+                component="button" onClick={() => router.push("/home")}
+                sx={{ width: "100%", display: "flex", alignItems: "center", gap: 1.5, px: 1.5, py: 1.25, borderRadius: 2, border: "none", cursor: "pointer", bgcolor: "transparent", transition: "background 200ms", fontSize: 16, fontWeight: 400, color: TEXT, mb: 0.5, "&:hover": { bgcolor: "#fafafa" } }}
+              >
+                <img src="/icons/commerce/home.svg" alt="" width={22} height={22} />
+                {t("nav.home")}
+                <Box component="span" sx={{ ml: "auto", fontSize: 10, bgcolor: "#4caf50", color: "white", px: 0.75, py: 0.25, borderRadius: 5, fontWeight: 600 }}>New</Box>
+              </Box>
 
-            {/* เมนู label */}
-            <p className="text-xs text-gray-400 px-3 mt-3 mb-1" style={{ fontWeight: 400 }}>{locale === "en" ? "Menu" : "เมนู"}</p>
+              {/* Menu label */}
+              <Box component="p" sx={{ fontSize: 12, color: "#bbb", px: 1.5, mt: 1.5, mb: 0.5, fontWeight: 400 }}>{locale === "en" ? "Menu" : "เมนู"}</Box>
 
-            {/* ลูกค้า */}
-            <div>
-              <button onClick={() => setMenuOpen(prev => ({ ...prev, customer: !prev.customer }))} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors" style={{ fontSize: 16, fontWeight: 400, color: "#333" }}>
-                <img src="/icons/data/user-id.svg" alt="" width={22} height={22} />
-                {t("onboarding.customer")}
-                <img src="/icons/nav/arrow-dropdown.svg" alt="" width={16} height={16} className={`ml-auto transition-transform ${menuOpen.customer ? "rotate-180" : ""}`} />
-              </button>
-              {menuOpen.customer && (
-                <div className="ml-6 mt-0.5 space-y-0.5">
-                  <button onClick={() => router.push("/tenantlist")} className="w-full text-left px-3 py-1.5 rounded-lg text-sa-primary font-medium hover:bg-orange-50 transition-colors" style={{ fontSize: 15 }}>
-                    &bull; {locale === "en" ? "Customer List" : "รายชื่อลูกค้า"}
-                  </button>
-                  <button className="w-full text-left px-3 py-1.5 rounded-lg text-gray-500 hover:bg-gray-50 transition-colors" style={{ fontSize: 15 }}>
-                    &bull; {locale === "en" ? "All Contracts" : "สัญญาทั้งหมด"}
-                  </button>
-                </div>
-              )}
-            </div>
+              {/* Customer */}
+              <Box>
+                <Box
+                  component="button" onClick={() => setMenuOpen(prev => ({ ...prev, customer: !prev.customer }))}
+                  sx={{ width: "100%", display: "flex", alignItems: "center", gap: 1.5, px: 1.5, py: 1.25, borderRadius: 2, border: "none", cursor: "pointer", bgcolor: "transparent", transition: "background 200ms", fontSize: 16, fontWeight: 400, color: TEXT, "&:hover": { bgcolor: "#fafafa" } }}
+                >
+                  <img src="/icons/data/user-id.svg" alt="" width={22} height={22} />
+                  {t("onboarding.customer")}
+                  <img src="/icons/nav/arrow-dropdown.svg" alt="" width={16} height={16} style={{ marginLeft: "auto", transition: "transform 200ms", transform: menuOpen.customer ? "rotate(180deg)" : "none" }} />
+                </Box>
+                {menuOpen.customer && (
+                  <Box sx={{ ml: 3, mt: 0.25 }}>
+                    <Box
+                      component="button" onClick={() => router.push("/tenantlist")}
+                      sx={{ width: "100%", textAlign: "left", px: 1.5, py: 0.75, borderRadius: 2, color: SA_PRIMARY, fontWeight: 500, border: "none", cursor: "pointer", bgcolor: "transparent", transition: "background 200ms", fontSize: 15, "&:hover": { bgcolor: SA_LIGHT } }}
+                    >
+                      &bull; {locale === "en" ? "Customer List" : "รายชื่อลูกค้า"}
+                    </Box>
+                    <Box
+                      component="button"
+                      sx={{ width: "100%", textAlign: "left", px: 1.5, py: 0.75, borderRadius: 2, color: "#999", border: "none", cursor: "pointer", bgcolor: "transparent", transition: "background 200ms", fontSize: 15, "&:hover": { bgcolor: "#fafafa" } }}
+                    >
+                      &bull; {locale === "en" ? "All Contracts" : "สัญญาทั้งหมด"}
+                    </Box>
+                  </Box>
+                )}
+              </Box>
 
-            {/* รายงาน */}
-            <button onClick={() => setMenuOpen(prev => ({ ...prev, reports: !prev.reports }))} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors" style={{ fontSize: 16, fontWeight: 400, color: "#333" }}>
-              <img src="/icons/data/graph-up.svg" alt="" width={22} height={22} />
-              {locale === "en" ? "Reports" : "รายงาน"}
-              <img src="/icons/nav/arrow-dropdown.svg" alt="" width={16} height={16} className={`ml-auto transition-transform ${menuOpen.reports ? "rotate-180" : ""}`} />
-            </button>
+              {/* Reports */}
+              <Box
+                component="button" onClick={() => setMenuOpen(prev => ({ ...prev, reports: !prev.reports }))}
+                sx={{ width: "100%", display: "flex", alignItems: "center", gap: 1.5, px: 1.5, py: 1.25, borderRadius: 2, border: "none", cursor: "pointer", bgcolor: "transparent", transition: "background 200ms", fontSize: 16, fontWeight: 400, color: TEXT, "&:hover": { bgcolor: "#fafafa" } }}
+              >
+                <img src="/icons/data/graph-up.svg" alt="" width={22} height={22} />
+                {locale === "en" ? "Reports" : "รายงาน"}
+                <img src="/icons/nav/arrow-dropdown.svg" alt="" width={16} height={16} style={{ marginLeft: "auto", transition: "transform 200ms", transform: menuOpen.reports ? "rotate(180deg)" : "none" }} />
+              </Box>
 
-            {/* ตั้งค่า label */}
-            <p className="text-xs text-gray-400 px-3 mt-3 mb-1" style={{ fontWeight: 400 }}>{locale === "en" ? "Settings" : "ตั้งค่า"}</p>
-            <button onClick={() => setMenuOpen(prev => ({ ...prev, settings: !prev.settings }))} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors" style={{ fontSize: 16, fontWeight: 400, color: "#333" }}>
-              <img src="/icons/commerce/settings.svg" alt="" width={22} height={22} />
-              {locale === "en" ? "Settings" : "ตั้งค่า"}
-              <img src="/icons/nav/arrow-dropdown.svg" alt="" width={16} height={16} className={`ml-auto transition-transform ${menuOpen.settings ? "rotate-180" : ""}`} />
-            </button>
-
-            {/* Component Showcase ย้ายไป erp-jigsaw-design แล้ว */}
-          </div>
-        </div>
+              {/* Settings label */}
+              <Box component="p" sx={{ fontSize: 12, color: "#bbb", px: 1.5, mt: 1.5, mb: 0.5, fontWeight: 400 }}>{locale === "en" ? "Settings" : "ตั้งค่า"}</Box>
+              <Box
+                component="button" onClick={() => setMenuOpen(prev => ({ ...prev, settings: !prev.settings }))}
+                sx={{ width: "100%", display: "flex", alignItems: "center", gap: 1.5, px: 1.5, py: 1.25, borderRadius: 2, border: "none", cursor: "pointer", bgcolor: "transparent", transition: "background 200ms", fontSize: 16, fontWeight: 400, color: TEXT, "&:hover": { bgcolor: "#fafafa" } }}
+              >
+                <img src="/icons/commerce/settings.svg" alt="" width={22} height={22} />
+                {locale === "en" ? "Settings" : "ตั้งค่า"}
+                <img src="/icons/nav/arrow-dropdown.svg" alt="" width={16} height={16} style={{ marginLeft: "auto", transition: "transform 200ms", transform: menuOpen.settings ? "rotate(180deg)" : "none" }} />
+              </Box>
+            </Box>
+          </Box>
         )}
-      </div>
+      </Box>
 
-      {/* ══ Main content ══ */}
-      <div className={`flex-1 flex flex-col min-h-screen bg-erp-bg transition-all duration-300 ${sidebarExpanded ? "ml-[260px]" : "ml-[68px]"}`}>
+      {/* Main content */}
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", minHeight: "100vh", bgcolor: BG, transition: "margin-left 300ms", ml: sidebarExpanded ? "260px" : "68px" }}>
         {sidebarExpanded && (
-          <div className="fixed inset-0 z-[45]" onClick={() => setSidebarExpanded(false)} />
+          <Box onClick={() => setSidebarExpanded(false)} sx={{ position: "fixed", inset: 0, zIndex: 45 }} />
         )}
 
         {/* TopBar */}
-        <div className="h-[52px] bg-sa-primary flex items-center px-4 gap-3 shrink-0 relative z-50 overflow-visible">
-          <button className="text-white hover:bg-white/10 p-1.5 rounded-lg" onClick={() => setSidebarExpanded(!sidebarExpanded)}>
+        <Box sx={{ height: 52, bgcolor: SA_PRIMARY, display: "flex", alignItems: "center", px: 2, gap: 1.5, flexShrink: 0, position: "relative", zIndex: 50, overflow: "visible" }}>
+          <Box
+            component="button" onClick={() => setSidebarExpanded(!sidebarExpanded)}
+            sx={{ color: "white", border: "none", cursor: "pointer", bgcolor: "transparent", p: 0.75, borderRadius: 2, "&:hover": { bgcolor: "rgba(255,255,255,0.1)" } }}
+          >
             <img src="/icons/nav/hamburger.svg" alt="" width={22} height={22} style={{ filter: "brightness(0) invert(1)" }} />
-          </button>
-          <div className="flex-1 flex items-center gap-1.5 text-white text-sm">
+          </Box>
+          <Box sx={{ flex: 1, display: "flex", alignItems: "center", gap: 0.75, color: "white", fontSize: 14 }}>
             <strong>Server: Prod</strong> | Jigsaw Admin
-          </div>
-          <div className="flex items-center gap-3 relative z-[60]">
-            <span className="text-white text-sm">✉</span>
-            <span className="text-white text-sm">🔔</span>
-            <button onClick={() => setLocale(locale === "th" ? "en" : "th")} className="text-white text-sm font-medium hover:bg-white/10 px-2 py-1 rounded-lg">
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, position: "relative", zIndex: 60 }}>
+            <Box component="span" sx={{ color: "white", fontSize: 14 }}>✉</Box>
+            <Box component="span" sx={{ color: "white", fontSize: 14 }}>🔔</Box>
+            <Box
+              component="button" onClick={() => setLocale(locale === "th" ? "en" : "th")}
+              sx={{ color: "white", fontSize: 14, fontWeight: 500, border: "none", cursor: "pointer", bgcolor: "transparent", px: 1, py: 0.5, borderRadius: 2, "&:hover": { bgcolor: "rgba(255,255,255,0.1)" } }}
+            >
               {locale === "th" ? "TH" : "EN"} ▼
-            </button>
-            <button onClick={logout} className="flex items-center gap-2 text-white text-sm font-medium hover:bg-white/10 px-2 py-1 rounded-lg">
+            </Box>
+            <Box
+              component="button" onClick={logout}
+              sx={{ display: "flex", alignItems: "center", gap: 1, color: "white", fontSize: 14, fontWeight: 500, border: "none", cursor: "pointer", bgcolor: "transparent", px: 1, py: 0.5, borderRadius: 2, "&:hover": { bgcolor: "rgba(255,255,255,0.1)" } }}
+            >
               {user?.name || "Admin"}
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">
+              <Box sx={{ width: 32, height: 32, borderRadius: "50%", bgcolor: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700 }}>
                 {(user?.name || "A").slice(0, 2)}
-              </div>
+              </Box>
               <img src="/icons/nav/arrow-dropdown.svg" alt="" width={14} height={14} style={{ filter: "brightness(0) invert(1)" }} />
-            </button>
-          </div>
-        </div>
+            </Box>
+          </Box>
+        </Box>
 
         {/* Page content */}
-        <div className="flex-1 relative z-10">
+        <Box sx={{ flex: 1, position: "relative", zIndex: 10 }}>
           {children}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 }

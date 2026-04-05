@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Box, Typography, Paper } from "@mui/material";
 import { useAuth } from "@/lib/auth";
 import { useLocale } from "@/lib/locale";
+import { SA_PRIMARY, BORDER, BG } from "@/lib/theme";
 
 export default function HomePage() {
   const router = useRouter();
@@ -16,109 +17,124 @@ export default function HomePage() {
   const userName = user?.name || t("onboarding.adminName");
 
   return (
-    <div className="min-h-screen bg-erp-bg flex">
+    <Box sx={{ minHeight: "100vh", bgcolor: BG, display: "flex" }}>
       {/* Sidebar — collapsed icon bar (68px) matching Figma */}
-      <div className="fixed h-screen z-50 bg-white border-r border-gray-200 w-[68px]">
-        <div className="w-[68px] h-full flex flex-col items-center py-3 gap-1">
+      <Box sx={{ position: "fixed", height: "100vh", zIndex: 50, bgcolor: "white", borderRight: `1px solid ${BORDER}`, width: 68 }}>
+        <Box sx={{ width: 68, height: "100%", display: "flex", flexDirection: "column", alignItems: "center", py: 1.5, gap: 0.5 }}>
           {/* Logo */}
-          <div className="w-10 h-10 rounded-xl bg-sa-primary flex items-center justify-center cursor-pointer mb-0.5" onClick={() => router.push("/home")}>
-            <span className="text-[7px] font-extrabold text-white leading-tight text-center">JIG<br/>SAW</span>
-          </div>
-          <span className="text-[8px] font-bold text-sa-primary tracking-wider mb-2">JIGSAW</span>
+          <Box
+            onClick={() => router.push("/home")}
+            sx={{ width: 40, height: 40, borderRadius: 3, bgcolor: SA_PRIMARY, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", mb: 0.25 }}
+          >
+            <Box component="span" sx={{ fontSize: 7, fontWeight: 800, color: "white", lineHeight: 1.2, textAlign: "center" }}>JIG<br/>SAW</Box>
+          </Box>
+          <Box component="span" sx={{ fontSize: 8, fontWeight: 700, color: SA_PRIMARY, letterSpacing: "0.1em", mb: 1 }}>JIGSAW</Box>
 
           {/* Home (active) */}
-          <button onClick={() => router.push("/home")} className="w-11 h-11 rounded-lg flex items-center justify-center bg-sa-primary/10 transition-colors" title={t("nav.home")}>
+          <Box
+            component="button" onClick={() => router.push("/home")} title={t("nav.home")}
+            sx={{ width: 44, height: 44, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", bgcolor: `${SA_PRIMARY}1A`, border: "none", cursor: "pointer", "&:hover": { bgcolor: `${SA_PRIMARY}33` } }}
+          >
             <img src="/icons/commerce/home.svg" alt="" width={24} height={24} />
-          </button>
+          </Box>
 
           {/* Divider */}
-          <div className="w-6 h-px bg-gray-200 my-1.5" />
+          <Box sx={{ width: 24, height: 1, bgcolor: BORDER, my: 0.75 }} />
 
-          {/* ลูกค้า */}
-          <button onClick={() => router.push("/tenantlist")} className="w-11 h-11 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors" title={t("onboarding.customer")}>
+          {/* Customer */}
+          <Box
+            component="button" onClick={() => router.push("/tenantlist")} title={t("onboarding.customer")}
+            sx={{ width: 44, height: 44, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", border: "none", cursor: "pointer", bgcolor: "transparent", "&:hover": { bgcolor: "#f5f5f5" } }}
+          >
             <img src="/icons/data/user-id.svg" alt="" width={24} height={24} />
-          </button>
+          </Box>
 
-          {/* รายงาน */}
-          <button className="w-11 h-11 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors" title={locale === "en" ? "Reports" : "รายงาน"}>
+          {/* Reports */}
+          <Box
+            component="button" title={locale === "en" ? "Reports" : "รายงาน"}
+            sx={{ width: 44, height: 44, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", border: "none", cursor: "pointer", bgcolor: "transparent", "&:hover": { bgcolor: "#f5f5f5" } }}
+          >
             <img src="/icons/data/graph-up.svg" alt="" width={24} height={24} />
-          </button>
+          </Box>
 
           {/* Divider */}
-          <div className="w-6 h-px bg-gray-200 my-1.5" />
+          <Box sx={{ width: 24, height: 1, bgcolor: BORDER, my: 0.75 }} />
 
-          {/* ตั้งค่า */}
-          <button className="w-11 h-11 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors" title={t("nav.settings")}>
+          {/* Settings */}
+          <Box
+            component="button" title={t("nav.settings")}
+            sx={{ width: 44, height: 44, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", border: "none", cursor: "pointer", bgcolor: "transparent", "&:hover": { bgcolor: "#f5f5f5" } }}
+          >
             <img src="/icons/commerce/settings.svg" alt="" width={24} height={24} />
-          </button>
-        </div>
-      </div>
+          </Box>
+        </Box>
+      </Box>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-h-screen bg-erp-bg ml-[68px]">
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", minHeight: "100vh", bgcolor: BG, ml: "68px" }}>
         {/* TopBar */}
-        <div className="h-[52px] bg-sa-primary flex items-center px-4 gap-3 shrink-0">
-          <div className="w-5" />
-          <div className="text-xs text-white/70 flex-1">
-            <strong className="text-white">Server: Prod</strong> | Admin v.1.0.01
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-white text-sm">&#9993;</span>
-            <span className="text-white text-sm relative">
+        <Box sx={{ height: 52, bgcolor: SA_PRIMARY, display: "flex", alignItems: "center", px: 2, gap: 1.5, flexShrink: 0 }}>
+          <Box sx={{ width: 20 }} />
+          <Box sx={{ fontSize: 12, color: "rgba(255,255,255,0.7)", flex: 1 }}>
+            <Box component="strong" sx={{ color: "white" }}>Server: Prod</Box> | Admin v.1.0.01
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <Box component="span" sx={{ color: "white", fontSize: 14 }}>&#9993;</Box>
+            <Box component="span" sx={{ color: "white", fontSize: 14, position: "relative" }}>
               &#128276;
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-sa-primary" />
-            </span>
-            <div className="w-px h-5 bg-white/30" />
+              <Box component="span" sx={{ position: "absolute", top: -4, right: -4, width: 8, height: 8, bgcolor: "#E53935", borderRadius: "50%", border: `2px solid ${SA_PRIMARY}` }} />
+            </Box>
+            <Box sx={{ width: 1, height: 20, bgcolor: "rgba(255,255,255,0.3)" }} />
             {/* Language Switcher */}
-            <div className="relative">
-              <button
-                onClick={() => setLangOpen(prev => !prev)}
-                className="flex items-center gap-1 text-white text-xs font-medium px-2 py-1 rounded hover:bg-white/10 transition-colors"
+            <Box sx={{ position: "relative" }}>
+              <Box
+                component="button" onClick={() => setLangOpen(prev => !prev)}
+                sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "white", fontSize: 12, fontWeight: 500, px: 1, py: 0.5, borderRadius: 1, border: "none", cursor: "pointer", bgcolor: "transparent", "&:hover": { bgcolor: "rgba(255,255,255,0.1)" } }}
               >
-                {locale.toUpperCase()} <span className="text-[10px]">▼</span>
-              </button>
+                {locale.toUpperCase()} <Box component="span" sx={{ fontSize: 10 }}>▼</Box>
+              </Box>
               {langOpen && (
-                <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50 min-w-[100px]">
-                  <button onClick={() => { setLocale("th"); setLangOpen(false); }} className="w-full px-3 py-2 text-left text-xs hover:bg-gray-50" style={{ color: locale === "th" ? "#FF6B00" : "#333", fontWeight: locale === "th" ? 600 : 400 }}>TH Thai</button>
-                  <button onClick={() => { setLocale("en"); setLangOpen(false); }} className="w-full px-3 py-2 text-left text-xs hover:bg-gray-50 border-t border-gray-100" style={{ color: locale === "en" ? "#FF6B00" : "#333", fontWeight: locale === "en" ? 600 : 400 }}>EN English</button>
-                </div>
+                <Box sx={{ position: "absolute", right: 0, top: "100%", mt: 0.5, bgcolor: "white", borderRadius: 2, boxShadow: 4, border: `1px solid ${BORDER}`, overflow: "hidden", zIndex: 50, minWidth: 100 }}>
+                  <Box component="button" onClick={() => { setLocale("th"); setLangOpen(false); }}
+                    sx={{ width: "100%", px: 1.5, py: 1, textAlign: "left", fontSize: 12, border: "none", cursor: "pointer", bgcolor: "transparent", color: locale === "th" ? SA_PRIMARY : "#333", fontWeight: locale === "th" ? 600 : 400, "&:hover": { bgcolor: "#fafafa" } }}>TH Thai</Box>
+                  <Box component="button" onClick={() => { setLocale("en"); setLangOpen(false); }}
+                    sx={{ width: "100%", px: 1.5, py: 1, textAlign: "left", fontSize: 12, border: "none", cursor: "pointer", bgcolor: "transparent", color: locale === "en" ? SA_PRIMARY : "#333", fontWeight: locale === "en" ? 600 : 400, borderTop: "1px solid #f5f5f5", "&:hover": { bgcolor: "#fafafa" } }}>EN English</Box>
+                </Box>
               )}
-            </div>
-            <div className="w-px h-5 bg-white/30" />
-            <span className="text-white text-xs font-medium">{userName}</span>
-            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs font-bold text-sa-primary border-2 border-white/40">
+            </Box>
+            <Box sx={{ width: 1, height: 20, bgcolor: "rgba(255,255,255,0.3)" }} />
+            <Box component="span" sx={{ color: "white", fontSize: 12, fontWeight: 500 }}>{userName}</Box>
+            <Box sx={{ width: 32, height: 32, borderRadius: "50%", bgcolor: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: SA_PRIMARY, border: "2px solid rgba(255,255,255,0.4)" }}>
               {user?.avatar || "สจ"}
-            </div>
-          </div>
-        </div>
+            </Box>
+          </Box>
+        </Box>
 
         {/* Breadcrumb */}
-        <div className="px-5 py-2.5 text-xs text-gray-500">
+        <Box sx={{ px: 2.5, py: 1.25, fontSize: 12, color: "#999" }}>
           {t("nav.home")}
-        </div>
+        </Box>
 
         {/* Title */}
-        <div className="px-5 pb-2">
+        <Box sx={{ px: 2.5, pb: 1 }}>
           <Typography variant="h5" sx={{ fontWeight: 700, color: "#333" }}>
             {t("nav.home")}
           </Typography>
-        </div>
+        </Box>
 
         {/* Welcome Card */}
         <Box sx={{ flex: 1, px: 3, pb: 3 }}>
           <Paper sx={{ borderRadius: 2.5, boxShadow: "0px 2px 10px rgba(76,78,100,0.12)", p: 6, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 400 }}>
-            {/* Illustration */}
             <Image
               src="/images/welcome-illustration.png"
               alt="Welcome"
               width={240}
               height={200}
-              className="mb-4"
+              style={{ marginBottom: 16 }}
               priority
             />
-            {/* Greeting */}
             <Typography variant="h6" sx={{ fontWeight: 400, color: "#333" }}>
-              {locale === "en" ? "Hello" : "สวัสดีคุณ"} , <span style={{ color: "#FF6B00", fontWeight: 600 }}>{userName}</span>
+              {locale === "en" ? "Hello" : "สวัสดีคุณ"} , <Box component="span" sx={{ color: SA_PRIMARY, fontWeight: 600 }}>{userName}</Box>
             </Typography>
           </Paper>
         </Box>
@@ -127,7 +143,7 @@ export default function HomePage() {
         <Box sx={{ px: 3, py: 2, fontSize: 14, color: "rgba(76,78,100,0.68)" }}>
           {t("onboarding.footer")}
         </Box>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

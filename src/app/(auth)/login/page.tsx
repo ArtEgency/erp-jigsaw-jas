@@ -11,6 +11,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { useAuth } from "@/lib/auth";
 import { useLocale } from "@/lib/locale";
+import { SA_PRIMARY } from "@/lib/theme";
 
 export default function JASLoginPage() {
   const router = useRouter();
@@ -35,24 +36,32 @@ export default function JASLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <Box sx={{ minHeight: "100vh", display: "flex" }}>
       {/* Left: Hero Image */}
-      <div className="hidden lg:flex lg:w-[55%] relative bg-gradient-to-br from-[#0a1628] via-[#0f2847] to-[#1a3a5c] items-center justify-center overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full border border-[#FF6B00]/20" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full border border-[#FF6B00]/15" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] rounded-full border border-[#FF6B00]/10" />
-          <div className="absolute top-1/4 right-1/4 w-40 h-40 bg-[#FF6B00]/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/3 left-1/4 w-32 h-32 bg-cyan-500/15 rounded-full blur-3xl" />
-        </div>
-        <div className="relative z-10 text-center">
-          <div className="text-8xl font-bold text-white/10 tracking-widest mb-4">ERP</div>
-          <p className="text-[#FF6B00]/60 text-sm tracking-[0.3em] uppercase">Enterprise Resource Planning</p>
-        </div>
-      </div>
+      <Box
+        sx={{
+          display: { xs: "none", lg: "flex" },
+          width: "55%",
+          position: "relative",
+          background: "linear-gradient(135deg, #0a1628 0%, #0f2847 50%, #1a3a5c 100%)",
+          alignItems: "center", justifyContent: "center", overflow: "hidden",
+        }}
+      >
+        <Box sx={{ position: "absolute", inset: 0 }}>
+          <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 500, height: 500, borderRadius: "50%", border: `1px solid ${SA_PRIMARY}33` }} />
+          <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 350, height: 350, borderRadius: "50%", border: `1px solid ${SA_PRIMARY}26` }} />
+          <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 200, height: 200, borderRadius: "50%", border: `1px solid ${SA_PRIMARY}1A` }} />
+          <Box sx={{ position: "absolute", top: "25%", right: "25%", width: 160, height: 160, bgcolor: `${SA_PRIMARY}33`, borderRadius: "50%", filter: "blur(48px)" }} />
+          <Box sx={{ position: "absolute", bottom: "33%", left: "25%", width: 128, height: 128, bgcolor: "rgba(6,182,212,0.15)", borderRadius: "50%", filter: "blur(48px)" }} />
+        </Box>
+        <Box sx={{ position: "relative", zIndex: 10, textAlign: "center" }}>
+          <Box sx={{ fontSize: 96, fontWeight: 700, color: "rgba(255,255,255,0.1)", letterSpacing: "0.1em", mb: 2 }}>ERP</Box>
+          <Box component="p" sx={{ color: `${SA_PRIMARY}99`, fontSize: 14, letterSpacing: "0.3em", textTransform: "uppercase" }}>Enterprise Resource Planning</Box>
+        </Box>
+      </Box>
 
       {/* Right: Login Form */}
-      <Box className="flex-1 flex flex-col items-center justify-center bg-white px-8">
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", bgcolor: "white", px: 4 }}>
         <Box sx={{ width: "100%", maxWidth: 380 }}>
           {/* Logo */}
           <Box sx={{ textAlign: "center", mb: 4 }}>
@@ -61,13 +70,13 @@ export default function JASLoginPage() {
               alt="JIGSAW"
               width={220}
               height={50}
-              className="mx-auto mb-4"
+              style={{ margin: "0 auto 16px" }}
               priority
             />
-            <Typography variant="body2" sx={{ color: "#FF6B00", fontWeight: 500 }}>
+            <Typography variant="body2" sx={{ color: SA_PRIMARY, fontWeight: 500 }}>
               {t("auth.welcome")}
             </Typography>
-            <Typography variant="body2" sx={{ color: "#FF6B00", opacity: 0.7 }}>
+            <Typography variant="body2" sx={{ color: SA_PRIMARY, opacity: 0.7 }}>
               JIGSAW Backoffice
             </Typography>
           </Box>
@@ -121,12 +130,12 @@ export default function JASLoginPage() {
                   checked={remember}
                   onChange={(e) => setRemember(e.target.checked)}
                   size="small"
-                  sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }}
+                  sx={{ color: SA_PRIMARY, "&.Mui-checked": { color: SA_PRIMARY } }}
                 />
               }
               label={<Typography variant="body2" sx={{ color: "#777" }}>{t("auth.remember")}</Typography>}
             />
-            <Button variant="text" size="small" sx={{ color: "#FF6B00", textTransform: "none", fontSize: 13 }}>
+            <Button variant="text" size="small" sx={{ color: SA_PRIMARY, textTransform: "none", fontSize: 13 }}>
               {t("auth.forgot")}
             </Button>
           </Box>
@@ -137,7 +146,7 @@ export default function JASLoginPage() {
             variant="contained"
             onClick={handleLogin}
             sx={{
-              bgcolor: "#FF6B00", "&:hover": { bgcolor: "#E65C00" },
+              bgcolor: SA_PRIMARY, "&:hover": { bgcolor: "#E65C00" },
               py: 1.2, fontWeight: 600, fontSize: 14, textTransform: "none",
             }}
           >
@@ -147,12 +156,12 @@ export default function JASLoginPage() {
           {/* Footer */}
           <Typography variant="caption" sx={{ display: "block", textAlign: "center", mt: 3, color: "#999" }}>
             {t("auth.helpText")}{" "}
-            <Button variant="text" size="small" sx={{ color: "#FF6B00", textTransform: "none", fontSize: 11, p: 0, minWidth: 0 }}>
+            <Button variant="text" size="small" sx={{ color: SA_PRIMARY, textTransform: "none", fontSize: 11, p: 0, minWidth: 0 }}>
               {t("auth.contactAdmin")}
             </Button>
           </Typography>
         </Box>
       </Box>
-    </div>
+    </Box>
   );
 }

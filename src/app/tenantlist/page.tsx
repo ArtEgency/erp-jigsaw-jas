@@ -11,6 +11,7 @@ import FormDialog from "@/components/ui/FormDialog";
 import { masterAccounts, MasterAccount, sampleTenantDetail } from "@/data/mock";
 import { useLocale } from "@/lib/locale";
 import { useAuth } from "@/lib/auth";
+import { SA_PRIMARY, SA_HOVER, BORDER, MUTED, TEXT, BG } from "@/lib/theme";
 import { TextField, MenuItem, Button, Stack, Chip, IconButton, LinearProgress, Typography, Box, Tabs, Tab, Radio, RadioGroup, FormControlLabel, ToggleButtonGroup, ToggleButton, Paper, Menu, Dialog, DialogContent, DialogActions, Tooltip } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -32,11 +33,11 @@ const MODAL_FIELD_SX = {
     height: 48, fontSize: 15, fontWeight: 400, color: "#1A1A1A", borderRadius: "8px",
     "& .MuiOutlinedInput-notchedOutline": { borderWidth: "1.5px", borderColor: "#E5E7EB" },
     "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#E5E7EB" },
-    "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderWidth: "1.5px", borderColor: "#FF6B00" },
+    "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderWidth: "1.5px", borderColor: SA_PRIMARY },
   },
   "& .MuiInputLabel-root": {
     fontSize: 15, fontWeight: 400, color: "#6B7280",
-    "&.Mui-focused": { fontSize: 12, fontWeight: 400, color: "#FF6B00" },
+    "&.Mui-focused": { fontSize: 12, fontWeight: 400, color: SA_PRIMARY },
     "&.MuiInputLabel-shrink": { fontSize: 12 },
   },
   "& .MuiOutlinedInput-input": {
@@ -222,126 +223,131 @@ export default function OnboardingPage() {
 
   // ─── TOPBAR SA ───
   const renderTopBarSA = () => (
-    <div className="h-[52px] bg-sa-primary flex items-center px-4 gap-3 shrink-0 relative z-50 overflow-visible">
-      <button onClick={() => setSidebarExpanded(prev => !prev)} className="text-white hover:bg-white/20 rounded-lg p-1.5 transition-colors cursor-pointer">
+    <Box sx={{ height: 52, bgcolor: SA_PRIMARY, display: "flex", alignItems: "center", px: 2, gap: 1.5, flexShrink: 0, position: "relative", zIndex: 50, overflow: "visible" }}>
+      <Box component="button" onClick={() => setSidebarExpanded(prev => !prev)} sx={{ color: "white", "&:hover": { bgcolor: "rgba(255,255,255,0.2)" }, borderRadius: 2, p: 0.75, transition: "background 200ms", cursor: "pointer", border: "none", background: "none" }}>
         <svg width={20} height={20} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6} fill="none"><path d="M3 6h18M3 12h18M3 18h18" strokeLinecap="round" /></svg>
-      </button>
-      <div className="text-xs text-white/70 flex-1">
-        <strong className="text-white">Server: Prod</strong> | Jigsaw Admin
-      </div>
-      <div className="flex items-center gap-3">
-        <span className="text-white text-sm">&#9993;</span>
-        <span className="text-white text-sm relative">
+      </Box>
+      <Box sx={{ fontSize: 12, color: "rgba(255,255,255,0.7)", flex: 1 }}>
+        <strong style={{ color: "white" }}>Server: Prod</strong> | Jigsaw Admin
+      </Box>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+        <Box component="span" sx={{ color: "white", fontSize: 14 }}>&#9993;</Box>
+        <Box component="span" sx={{ color: "white", fontSize: 14, position: "relative" }}>
           &#128276;
-          <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-sa-primary" />
-        </span>
-        <div className="w-px h-5 bg-white/30" />
+          <Box component="span" sx={{ position: "absolute", top: -4, right: -4, width: 8, height: 8, bgcolor: "#EF4444", borderRadius: "50%", border: `1px solid ${SA_PRIMARY}` }} />
+        </Box>
+        <Box sx={{ width: "1px", height: 20, bgcolor: "rgba(255,255,255,0.3)" }} />
         {/* Language Switcher */}
-        <div className="relative">
-          <button
+        <Box sx={{ position: "relative" }}>
+          <Box
+            component="button"
             onClick={() => setLangOpen(prev => !prev)}
-            className="flex items-center gap-1 text-white text-xs font-medium px-2 py-1 rounded hover:bg-white/10 transition-colors"
+            sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "white", fontSize: 12, fontWeight: 500, px: 1, py: 0.5, borderRadius: 1, "&:hover": { bgcolor: "rgba(255,255,255,0.1)" }, transition: "background 200ms", border: "none", background: "none", cursor: "pointer" }}
           >
-            {locale.toUpperCase()} <span className="text-[10px]">▼</span>
-          </button>
+            {locale.toUpperCase()} <Box component="span" sx={{ fontSize: 10 }}>▼</Box>
+          </Box>
           {langOpen && (
-            <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50 min-w-[100px]">
-              <button
+            <Box sx={{ position: "absolute", right: 0, top: "100%", mt: 0.5, bgcolor: "white", borderRadius: 2, boxShadow: 6, border: `1px solid ${BORDER}`, overflow: "hidden", zIndex: 50, minWidth: 100 }}>
+              <Box
+                component="button"
                 onClick={() => { setLocale("th"); setLangOpen(false); }}
-                className="w-full px-3 py-2 text-left text-xs hover:bg-gray-50 transition-colors"
-                style={{ color: locale === "th" ? "#FF6B00" : "#333", fontWeight: locale === "th" ? 600 : 400 }}
+                sx={{ width: "100%", px: 1.5, py: 1, textAlign: "left", fontSize: 12, "&:hover": { bgcolor: "#F9FAFB" }, transition: "background 200ms", border: "none", background: "none", cursor: "pointer" }}
+                style={{ color: locale === "th" ? SA_PRIMARY : TEXT, fontWeight: locale === "th" ? 600 : 400 }}
               >
                 TH Thai
-              </button>
-              <button
+              </Box>
+              <Box
+                component="button"
                 onClick={() => { setLocale("en"); setLangOpen(false); }}
-                className="w-full px-3 py-2 text-left text-xs hover:bg-gray-50 transition-colors border-t border-gray-100"
-                style={{ color: locale === "en" ? "#FF6B00" : "#333", fontWeight: locale === "en" ? 600 : 400 }}
+                sx={{ width: "100%", px: 1.5, py: 1, textAlign: "left", fontSize: 12, "&:hover": { bgcolor: "#F9FAFB" }, transition: "background 200ms", borderTop: "1px solid #F3F4F6", border: "none", borderTopStyle: "solid", borderTopWidth: 1, borderTopColor: "#F3F4F6", background: "none", cursor: "pointer" }}
+                style={{ color: locale === "en" ? SA_PRIMARY : TEXT, fontWeight: locale === "en" ? 600 : 400 }}
               >
                 EN English
-              </button>
-            </div>
+              </Box>
+            </Box>
           )}
-        </div>
-        <div className="w-px h-5 bg-white/30" />
+        </Box>
+        <Box sx={{ width: "1px", height: 20, bgcolor: "rgba(255,255,255,0.3)" }} />
         {/* Profile + Sign Out dropdown */}
-        <div className="relative">
-          <button
+        <Box sx={{ position: "relative" }}>
+          <Box
+            component="button"
             onClick={() => setProfileOpen(prev => !prev)}
-            className="flex items-center gap-2 hover:bg-white/10 rounded-lg px-2 py-1 transition-colors"
+            sx={{ display: "flex", alignItems: "center", gap: 1, "&:hover": { bgcolor: "rgba(255,255,255,0.1)" }, borderRadius: 2, px: 1, py: 0.5, transition: "background 200ms", border: "none", background: "none", cursor: "pointer" }}
           >
-            <span className="text-white text-xs font-medium">{user?.name || t("onboarding.adminName")}</span>
-            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs font-bold text-sa-primary border-2 border-white/40">
+            <Box component="span" sx={{ color: "white", fontSize: 12, fontWeight: 500 }}>{user?.name || t("onboarding.adminName")}</Box>
+            <Box sx={{ width: 32, height: 32, borderRadius: "50%", bgcolor: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: SA_PRIMARY, border: "2px solid rgba(255,255,255,0.4)" }}>
               {user?.avatar || "สจ"}
-            </div>
+            </Box>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><polyline points={profileOpen ? "18 15 12 9 6 15" : "6 9 12 15 18 9"}/></svg>
-          </button>
+          </Box>
           {profileOpen && (
-            <div className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50 min-w-[240px]" style={{ fontFamily: "'Sarabun', sans-serif" }}>
+            <Box sx={{ position: "absolute", right: 0, top: "100%", mt: 0.5, bgcolor: "white", borderRadius: 3, boxShadow: 6, border: `1px solid ${BORDER}`, overflow: "hidden", zIndex: 50, minWidth: 240 }} style={{ fontFamily: "'Sarabun', sans-serif" }}>
               {/* User info */}
-              <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
-                <div className="w-12 h-12 rounded-full bg-[#565DFF]/10 border-2 border-[#565DFF]/30 flex items-center justify-center text-sm font-bold text-[#565DFF]">
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, px: 2, py: 1.5, borderBottom: "1px solid #F3F4F6" }}>
+                <Box sx={{ width: 48, height: 48, borderRadius: "50%", bgcolor: "rgba(86,93,255,0.1)", border: "2px solid rgba(86,93,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, color: "#565DFF" }}>
                   {user?.avatar || "สจ"}
-                </div>
-                <div>
-                  <div className="text-sm font-semibold text-gray-800">{user?.name || t("onboarding.adminName")}</div>
-                  <div className="text-xs text-gray-500">{locale === "en" ? "Administrator" : "ผู้ดูแลระบบ"}</div>
-                </div>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#565DFF" strokeWidth="2" className="ml-auto"><polyline points="20 6 9 17 4 12"/></svg>
-              </div>
+                </Box>
+                <Box>
+                  <Box sx={{ fontSize: 14, fontWeight: 600, color: "#1F2937" }}>{user?.name || t("onboarding.adminName")}</Box>
+                  <Box sx={{ fontSize: 12, color: "#6B7280" }}>{locale === "en" ? "Administrator" : "ผู้ดูแลระบบ"}</Box>
+                </Box>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#565DFF" strokeWidth="2" style={{ marginLeft: "auto" }}><polyline points="20 6 9 17 4 12"/></svg>
+              </Box>
               {/* Profile link */}
-              <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors border-b border-gray-100">
+              <Box component="button" sx={{ width: "100%", display: "flex", alignItems: "center", gap: 1.5, px: 2, py: 1.25, fontSize: 14, color: "#374151", "&:hover": { bgcolor: "#F9FAFB" }, transition: "background 200ms", borderBottom: "1px solid #F3F4F6", border: "none", borderBottomStyle: "solid", borderBottomWidth: 1, borderBottomColor: "#F3F4F6", background: "none", cursor: "pointer" }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#777" strokeWidth="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 Profile
-              </button>
+              </Box>
               {/* Sign Out */}
-              <button
+              <Box
+                component="button"
                 onClick={() => { setProfileOpen(false); logout(); router.push("/login"); }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
+                sx={{ width: "100%", display: "flex", alignItems: "center", gap: 1.5, px: 2, py: 1.25, fontSize: 14, color: "#EF4444", "&:hover": { bgcolor: "#FEF2F2" }, transition: "background 200ms", border: "none", background: "none", cursor: "pointer" }}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="1.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                 Sign Out
-              </button>
-            </div>
+              </Box>
+            </Box>
           )}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 
   // ─── TOPBAR TA (for email/verify screens) ───
   const TopBarTA = ({ info }: { info: string }) => (
-    <div className="h-[52px] bg-brand-primary flex items-center px-4 gap-3 shrink-0">
-      <button onClick={() => setSidebarExpanded(prev => !prev)} className="text-white hover:bg-white/20 rounded-lg p-1.5 transition-colors cursor-pointer">
+    <Box sx={{ height: 52, bgcolor: "var(--brand-primary, #565DFF)", display: "flex", alignItems: "center", px: 2, gap: 1.5, flexShrink: 0 }}>
+      <Box component="button" onClick={() => setSidebarExpanded(prev => !prev)} sx={{ color: "white", "&:hover": { bgcolor: "rgba(255,255,255,0.2)" }, borderRadius: 2, p: 0.75, transition: "background 200ms", cursor: "pointer", border: "none", background: "none" }}>
         <svg width={20} height={20} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6} fill="none"><path d="M3 6h18M3 12h18M3 18h18" strokeLinecap="round" /></svg>
-      </button>
-      <div className="text-xs text-white/70 flex-1">
-        <strong className="text-white">{info}</strong>
-      </div>
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs font-bold text-brand-primary border-2 border-white/40">
+      </Box>
+      <Box sx={{ fontSize: 12, color: "rgba(255,255,255,0.7)", flex: 1 }}>
+        <strong style={{ color: "white" }}>{info}</strong>
+      </Box>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+        <Box sx={{ width: 32, height: 32, borderRadius: "50%", bgcolor: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "var(--brand-primary, #565DFF)", border: "2px solid rgba(255,255,255,0.4)" }}>
           สม
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 
   // ─── BREADCRUMB ───
   const Breadcrumb = ({ items }: { items: { label: string; onClick?: () => void }[] }) => (
-    <div className="px-5 py-2.5 text-xs text-erp-muted flex items-center gap-1.5 bg-white border-b border-erp-border">
+    <Box sx={{ px: 2.5, py: 1.25, fontSize: 12, color: MUTED, display: "flex", alignItems: "center", gap: 0.75, bgcolor: "white", borderBottom: `1px solid ${BORDER}` }}>
       {items.map((item, i) => (
-        <span key={i} className="flex items-center gap-1.5">
-          {i > 0 && <span className="text-gray-300">&#8250;</span>}
+        <Box component="span" key={i} sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+          {i > 0 && <Box component="span" sx={{ color: "#D1D5DB" }}>&#8250;</Box>}
           {item.onClick ? (
-            <button onClick={item.onClick} className="text-sa-primary hover:underline">
+            <Box component="button" onClick={item.onClick} sx={{ color: SA_PRIMARY, "&:hover": { textDecoration: "underline" }, border: "none", background: "none", cursor: "pointer", fontSize: 12 }}>
               {item.label}
-            </button>
+            </Box>
           ) : (
-            <span>{item.label}</span>
+            <Box component="span">{item.label}</Box>
           )}
-        </span>
+        </Box>
       ))}
-    </div>
+    </Box>
   );
 
   // ─── SCREEN META ───
@@ -349,7 +355,7 @@ export default function OnboardingPage() {
 
   // ═══════════════════ S1: MASTER ACCOUNT LIST ═══════════════════
   const renderS1 = () => (
-    <div className="flex flex-col flex-1">
+    <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
       {renderTopBarSA()}
       <Breadcrumb items={[{ label: t("onboarding.customer") }, { label: t("onboarding.masterAccountList") }]} />
       {/* TPL-DATALIST-STANDARD */}
@@ -372,7 +378,7 @@ export default function OnboardingPage() {
               minHeight: 38, borderRadius: "8px", mr: 0.5, px: 2,
             },
             "& .Mui-selected": {
-              bgcolor: "#FF6B00", color: "#fff !important", fontWeight: 600,
+              bgcolor: SA_PRIMARY, color: "#fff !important", fontWeight: 600,
             },
             "& .MuiTabs-indicator": { display: "none" },
           }}
@@ -391,7 +397,7 @@ export default function OnboardingPage() {
             <Button
               variant="outlined"
               startIcon={<FileUploadOutlinedIcon />}
-              sx={{ color: "#FF6B00", borderColor: "#FF6B00", "&:hover": { borderColor: "#E65C00", bgcolor: "rgba(255,107,0,0.04)" }, textTransform: "none", whiteSpace: "nowrap", fontSize: 13, fontWeight: 600, height: 36 }}
+              sx={{ color: SA_PRIMARY, borderColor: SA_PRIMARY, "&:hover": { borderColor: SA_HOVER, bgcolor: "rgba(255,107,0,0.04)" }, textTransform: "none", whiteSpace: "nowrap", fontSize: 13, fontWeight: 600, height: 36 }}
             >
               {t("common.export")}
             </Button>
@@ -427,7 +433,7 @@ export default function OnboardingPage() {
               variant="contained"
               startIcon={<span style={{ fontSize: 18 }}>+</span>}
               onClick={handleOpenAddAccount}
-              sx={{ bgcolor: "#FF6B00", "&:hover": { bgcolor: "#E65C00" }, textTransform: "none", whiteSpace: "nowrap", fontSize: 13, fontWeight: 600, height: 36 }}
+              sx={{ bgcolor: SA_PRIMARY, "&:hover": { bgcolor: SA_HOVER }, textTransform: "none", whiteSpace: "nowrap", fontSize: 13, fontWeight: 600, height: 36 }}
             >
               {t("onboarding.addCustomerShort")}
             </Button>
@@ -444,7 +450,7 @@ export default function OnboardingPage() {
                   renderCell: (params: GridRenderCellParams) => (
                     <Typography
                       onClick={(e) => { e.stopPropagation(); router.push(`/tenantlist/${params.value}`); }}
-                      sx={{ fontSize: 14, fontWeight: 500, color: "#FF6B00", cursor: "pointer", "&:hover": { textDecoration: "underline" } }}
+                      sx={{ fontSize: 14, fontWeight: 500, color: SA_PRIMARY, cursor: "pointer", "&:hover": { textDecoration: "underline" } }}
                     >{params.value}</Typography>
                   ),
                 },
@@ -455,7 +461,7 @@ export default function OnboardingPage() {
                   valueGetter: (_value: unknown, row: MasterAccount) => `${row.firstName} ${row.lastName}`,
                   renderCell: (params: GridRenderCellParams) => (
                     <Stack direction="row" alignItems="center" spacing={1.5} sx={{ height: "100%" }}>
-                      <Box sx={{ width: 36, height: 36, borderRadius: "50%", bgcolor: "#FF6B00", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 14, fontWeight: 600, flexShrink: 0 }}>
+                      <Box sx={{ width: 36, height: 36, borderRadius: "50%", bgcolor: SA_PRIMARY, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 14, fontWeight: 600, flexShrink: 0 }}>
                         {(params.value as string)?.charAt(0)}
                       </Box>
                       <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "2px", py: 1 }}>
@@ -486,7 +492,7 @@ export default function OnboardingPage() {
                     const row = params.row as MasterAccount;
                     return (
                       <Typography sx={{ fontSize: 14 }}>
-                        <span style={{ color: "#FF6B00", fontWeight: 600 }}>{row.tenantUsed}</span>
+                        <span style={{ color: SA_PRIMARY, fontWeight: 600 }}>{row.tenantUsed}</span>
                         <span style={{ color: "#1A1A1A" }}>/{row.tenantQuota}</span>
                       </Typography>
                     );
@@ -584,7 +590,7 @@ export default function OnboardingPage() {
               },
               "& .MuiCheckbox-root": {
                 color: "#ccc",
-                "&.Mui-checked": { color: "#FF6B00" },
+                "&.Mui-checked": { color: SA_PRIMARY },
               },
             }}
           />
@@ -609,8 +615,8 @@ export default function OnboardingPage() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             {t("onboarding.editData")}
           </MenuItem>
-          <MenuItem onClick={() => { setMeatballAnchor(null); }} sx={{ gap: 1.5, py: 1.5, fontSize: "0.875rem", color: "#FF6B00" }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF6B00" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <MenuItem onClick={() => { setMeatballAnchor(null); }} sx={{ gap: 1.5, py: 1.5, fontSize: "0.875rem", color: SA_PRIMARY }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={SA_PRIMARY} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             {t("onboarding.suspendAccount")}
           </MenuItem>
         </Menu>
@@ -641,7 +647,7 @@ export default function OnboardingPage() {
         <Box
           onMouseDown={handleModalDragDown}
           sx={{
-            bgcolor: "#FF6B00", px: 3, height: 52, display: "flex", alignItems: "center", justifyContent: "space-between",
+            bgcolor: SA_PRIMARY, px: 3, height: 52, display: "flex", alignItems: "center", justifyContent: "space-between",
             ...(!isFullscreen ? { cursor: "move", userSelect: "none" } : { userSelect: "none" }),
           }}
         >
@@ -745,26 +751,26 @@ export default function OnboardingPage() {
         </DialogContent>
         {/* Footer */}
         <DialogActions sx={{ px: "28px", py: 2, borderTop: "1px solid #F0F0F0" }}>
-          <Button variant="outlined" onClick={handleModalClose} sx={{ textTransform: "none", fontSize: 14, fontWeight: 600, height: 40, color: "#FF6B00", borderColor: "#FF6B00", "&:hover": { borderColor: "#CC5500", color: "#CC5500", bgcolor: "rgba(255,107,0,0.04)" } }}>
+          <Button variant="outlined" onClick={handleModalClose} sx={{ textTransform: "none", fontSize: 14, fontWeight: 600, height: 40, color: SA_PRIMARY, borderColor: SA_PRIMARY, "&:hover": { borderColor: SA_HOVER, color: SA_HOVER, bgcolor: "rgba(255,107,0,0.04)" } }}>
             {t("common.cancel")}
           </Button>
-          <Button variant="contained" onClick={() => { setAddAccountOpen(false); setIsDirty(false); go("s3"); }} sx={{ bgcolor: "#FF6B00", "&:hover": { bgcolor: "#CC5500" }, textTransform: "none", fontSize: 14, fontWeight: 600, height: 40 }}>
+          <Button variant="contained" onClick={() => { setAddAccountOpen(false); setIsDirty(false); go("s3"); }} sx={{ bgcolor: SA_PRIMARY, "&:hover": { bgcolor: SA_HOVER }, textTransform: "none", fontSize: 14, fontWeight: 600, height: 40 }}>
             {t("common.save")}
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </Box>
   );
 
   // ═══════════════════ S2: CREATE ACCOUNT PANEL ═══════════════════
   const renderS2 = () => (
-    <div className="flex flex-col flex-1">
+    <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
       {renderTopBarSA()}
       <Breadcrumb items={[{ label: "Master Accounts", onClick: () => go("s1") }, { label: t("onboarding.createNew") }]} />
-      <div className="px-5 pt-3 pb-2">
-        <h1 className="text-xl font-bold text-erp-text">Master Accounts</h1>
-      </div>
-      <div className="flex-1 relative">
+      <Box sx={{ px: 2.5, pt: 1.5, pb: 1 }}>
+        <Box component="h1" sx={{ fontSize: 20, fontWeight: 700, color: TEXT }}>Master Accounts</Box>
+      </Box>
+      <Box sx={{ flex: 1, position: "relative" }}>
         <SlidePanel
           open={true}
           title={t("onboarding.createAccount")}
@@ -772,23 +778,23 @@ export default function OnboardingPage() {
           headerColor="sa"
           footer={
             <>
-              <button onClick={() => go("s1")} className="px-4 py-2 border border-erp-border rounded-lg text-sm hover:bg-gray-50 transition-colors">
+              <Box component="button" onClick={() => go("s1")} sx={{ px: 2, py: 1, border: `1px solid ${BORDER}`, borderRadius: 2, fontSize: 14, "&:hover": { bgcolor: "#F9FAFB" }, transition: "background 200ms", background: "none", cursor: "pointer" }}>
                 {t("common.cancel")}
-              </button>
-              <button onClick={() => go("s3")} className="px-4 py-2 bg-sa-primary hover:bg-sa-hover text-white text-sm rounded-lg font-medium transition-colors">
+              </Box>
+              <Box component="button" onClick={() => go("s3")} sx={{ px: 2, py: 1, bgcolor: SA_PRIMARY, "&:hover": { bgcolor: SA_HOVER }, color: "white", fontSize: 14, borderRadius: 2, fontWeight: 500, transition: "background 200ms", border: "none", cursor: "pointer" }}>
                 {t("common.save")}
-              </button>
+              </Box>
             </>
           }
         >
-          <div className="space-y-4">
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <FloatingField label={t("onboarding.companyName")} value={accountForm.company} onChange={(v) => setAccountForm({ ...accountForm, company: v })} variant="sa" />
-            <div className="grid grid-cols-2 gap-3">
+            <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1.5 }}>
               <FloatingField label={t("onboarding.firstName")} value={accountForm.firstName} onChange={(v) => setAccountForm({ ...accountForm, firstName: v })} variant="sa" required />
               <FloatingField label={t("onboarding.lastName")} value={accountForm.lastName} onChange={(v) => setAccountForm({ ...accountForm, lastName: v })} variant="sa" required />
-            </div>
+            </Box>
             <FloatingField label={t("onboarding.position")} value={accountForm.position} onChange={(v) => setAccountForm({ ...accountForm, position: v })} variant="sa" required />
-            <div className="field-group sa">
+            <Box sx={{ position: "relative", "& select, & input": { width: "100%", height: 48, px: 1.75, py: 1.5, fontSize: 15, borderRadius: 1, border: `1.5px solid ${BORDER}`, color: TEXT, outline: "none", bgcolor: "white", "&:focus": { borderColor: SA_PRIMARY } }, "& label": { position: "absolute", top: -8, left: 12, px: 0.5, fontSize: 12, color: MUTED, bgcolor: "white" } }}>
               <select
                 value={accountForm.customerGroup}
                 onChange={(e) => setAccountForm({ ...accountForm, customerGroup: e.target.value })}
@@ -799,47 +805,47 @@ export default function OnboardingPage() {
                 <option value="VIP">VIP</option>
                 <option value="Founding Partner">Founding Partner</option>
               </select>
-              <label>{t("onboarding.customerGroup")} <span className="text-erp-error">*</span></label>
-            </div>
-            <div>
+              <label>{t("onboarding.customerGroup")} <Box component="span" sx={{ color: "#E53935" }}>*</Box></label>
+            </Box>
+            <Box>
               <FloatingField label={t("onboarding.masterEmail")} value={accountForm.email} onChange={(v) => setAccountForm({ ...accountForm, email: v })} variant="sa" required />
               {accountForm.email && !emailError && (
-                <p className="text-[10px] text-green-600 mt-1 pl-0.5">&#10003; {t("onboarding.emailNotInSystem")}</p>
+                <Box component="p" sx={{ fontSize: 10, color: "#16A34A", mt: 0.5, pl: 0.25 }}>&#10003; {t("onboarding.emailNotInSystem")}</Box>
               )}
-            </div>
-            <div>
-              <p className="text-[11px] text-erp-muted mb-1.5 font-medium">{t("onboarding.phone")} <span className="text-erp-error">*</span></p>
-              <div className="flex border-[1.5px] border-erp-border rounded-md overflow-hidden focus-within:border-sa-primary transition-colors">
-                <div className="px-2.5 py-2 bg-gray-50 border-r border-erp-border flex items-center gap-1 text-xs text-erp-muted whitespace-nowrap">
+            </Box>
+            <Box>
+              <Box component="p" sx={{ fontSize: 11, color: MUTED, mb: 0.75, fontWeight: 500 }}>{t("onboarding.phone")} <Box component="span" sx={{ color: "#E53935" }}>*</Box></Box>
+              <Box sx={{ display: "flex", border: `1.5px solid ${BORDER}`, borderRadius: 1, overflow: "hidden", "&:focus-within": { borderColor: SA_PRIMARY }, transition: "border-color 200ms" }}>
+                <Box sx={{ px: 1.25, py: 1, bgcolor: "#F9FAFB", borderRight: `1px solid ${BORDER}`, display: "flex", alignItems: "center", gap: 0.5, fontSize: 12, color: MUTED, whiteSpace: "nowrap" }}>
                   &#127481;&#127469; +66 &#9662;
-                </div>
+                </Box>
                 <input
-                  className="flex-1 px-3 py-2 text-sm outline-none"
+                  style={{ flex: 1, padding: "8px 12px", fontSize: 14, outline: "none", border: "none" }}
                   value={accountForm.phone}
                   onChange={(e) => setAccountForm({ ...accountForm, phone: e.target.value })}
                 />
-              </div>
-            </div>
+              </Box>
+            </Box>
             <FloatingField label={t("onboarding.tenantQuota")} value={accountForm.tenantQuota} onChange={(v) => setAccountForm({ ...accountForm, tenantQuota: v })} variant="sa" required type="number" />
-            <p className="text-[11px] text-erp-muted -mt-2 pl-0.5">{t("onboarding.tenantQuotaHelp")}</p>
-            <div className="p-2.5 bg-[#FF6B00]/10 rounded-md border border-[#FF6B00]/20 text-xs text-sa-primary">
+            <Box component="p" sx={{ fontSize: 11, color: MUTED, mt: -1, pl: 0.25 }}>{t("onboarding.tenantQuotaHelp")}</Box>
+            <Box sx={{ p: 1.25, bgcolor: "rgba(255,107,0,0.1)", borderRadius: 1, border: "1px solid rgba(255,107,0,0.2)", fontSize: 12, color: SA_PRIMARY }}>
               {t("onboarding.emailNotice")}
-            </div>
-          </div>
+            </Box>
+          </Box>
         </SlidePanel>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 
   // ═══════════════════ S2e: ERROR STATE ═══════════════════
   const renderS2e = () => (
-    <div className="flex flex-col flex-1">
+    <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
       {renderTopBarSA()}
       <Breadcrumb items={[{ label: "Master Accounts", onClick: () => go("s1") }, { label: t("onboarding.createNew") }]} />
-      <div className="px-5 pt-3 pb-2">
-        <h1 className="text-xl font-bold text-erp-text">Master Accounts</h1>
-      </div>
-      <div className="flex-1 relative">
+      <Box sx={{ px: 2.5, pt: 1.5, pb: 1 }}>
+        <Box component="h1" sx={{ fontSize: 20, fontWeight: 700, color: TEXT }}>Master Accounts</Box>
+      </Box>
+      <Box sx={{ flex: 1, position: "relative" }}>
         <SlidePanel
           open={true}
           title={t("onboarding.createAccount")}
@@ -847,113 +853,114 @@ export default function OnboardingPage() {
           headerColor="sa"
           footer={
             <>
-              <button onClick={() => go("s1")} className="px-4 py-2 border border-erp-border rounded-lg text-sm hover:bg-gray-50 transition-colors">
+              <Box component="button" onClick={() => go("s1")} sx={{ px: 2, py: 1, border: `1px solid ${BORDER}`, borderRadius: 2, fontSize: 14, "&:hover": { bgcolor: "#F9FAFB" }, transition: "background 200ms", background: "none", cursor: "pointer" }}>
                 {t("common.cancel")}
-              </button>
-              <button disabled className="px-4 py-2 bg-sa-primary text-white text-sm rounded-lg font-medium opacity-40 cursor-not-allowed">
+              </Box>
+              <Box component="button" sx={{ px: 2, py: 1, bgcolor: SA_PRIMARY, color: "white", fontSize: 14, borderRadius: 2, fontWeight: 500, opacity: 0.4, cursor: "not-allowed", border: "none" }} disabled>
                 {t("common.save")}
-              </button>
+              </Box>
             </>
           }
         >
-          <div className="space-y-4">
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <FloatingField label={t("onboarding.name")} value="วิภา รัตนพันธ์" onChange={() => {}} variant="sa" required />
             <FloatingField label={t("onboarding.position")} value="CEO" onChange={() => {}} variant="sa" required />
-            <div>
-              <div className="field-group sa required">
-                <input value="wipa@thaimart.co.th" readOnly className="!border-erp-error" />
-                <label>{t("onboarding.masterEmail")} <span className="text-erp-error">*</span></label>
-              </div>
-              <p className="text-[10px] text-erp-error mt-1 pl-0.5">&#10005; {t("onboarding.emailAlreadyExists")}</p>
-            </div>
-            <div>
-              <p className="text-[11px] text-erp-muted mb-1.5 font-medium">{t("onboarding.phone")} <span className="text-erp-error">*</span></p>
-              <div className="flex border-[1.5px] border-erp-border rounded-md overflow-hidden">
-                <div className="px-2.5 py-2 bg-gray-50 border-r border-erp-border flex items-center gap-1 text-xs text-erp-muted">
+            <Box>
+              <Box sx={{ position: "relative", "& input": { width: "100%", height: 48, px: 1.75, py: 1.5, fontSize: 15, borderRadius: 1, border: `1.5px solid #E53935`, color: TEXT, outline: "none", bgcolor: "white" }, "& label": { position: "absolute", top: -8, left: 12, px: 0.5, fontSize: 12, color: "#E53935", bgcolor: "white" } }}>
+                <input value="wipa@thaimart.co.th" readOnly style={{ borderColor: "#E53935" }} />
+                <label>{t("onboarding.masterEmail")} <Box component="span" sx={{ color: "#E53935" }}>*</Box></label>
+              </Box>
+              <Box component="p" sx={{ fontSize: 10, color: "#E53935", mt: 0.5, pl: 0.25 }}>&#10005; {t("onboarding.emailAlreadyExists")}</Box>
+            </Box>
+            <Box>
+              <Box component="p" sx={{ fontSize: 11, color: MUTED, mb: 0.75, fontWeight: 500 }}>{t("onboarding.phone")} <Box component="span" sx={{ color: "#E53935" }}>*</Box></Box>
+              <Box sx={{ display: "flex", border: `1.5px solid ${BORDER}`, borderRadius: 1, overflow: "hidden" }}>
+                <Box sx={{ px: 1.25, py: 1, bgcolor: "#F9FAFB", borderRight: `1px solid ${BORDER}`, display: "flex", alignItems: "center", gap: 0.5, fontSize: 12, color: MUTED }}>
                   &#127481;&#127469; +66 &#9662;
-                </div>
-                <input className="flex-1 px-3 py-2 text-sm outline-none" value="0894567890" readOnly />
-              </div>
-            </div>
+                </Box>
+                <input style={{ flex: 1, padding: "8px 12px", fontSize: 14, outline: "none", border: "none" }} value="0894567890" readOnly />
+              </Box>
+            </Box>
             <FloatingField label="Tenant Quota" value="5" onChange={() => {}} variant="sa" required type="number" />
-            <div className="p-2.5 bg-red-50 rounded-md border border-red-200 text-xs text-erp-error">
+            <Box sx={{ p: 1.25, bgcolor: "#FEF2F2", borderRadius: 1, border: "1px solid #FECACA", fontSize: 12, color: "#E53935" }}>
               &#9888; {t("onboarding.fixBeforeSave")}
-            </div>
-          </div>
+            </Box>
+          </Box>
         </SlidePanel>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 
   // ═══════════════════ S3: VERIFY EMAIL ═══════════════════
   const renderS3 = () => (
-    <div className="flex flex-col flex-1">
+    <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
       <TopBarTA info="Email Client — somchai@siamgroup.co.th" />
-      <div className="flex-1 pt-4 bg-[#f0ede6]">
-        <div className="flex items-start justify-center p-5">
-          <div className="w-full max-w-[560px]">
+      <Box sx={{ flex: 1, pt: 2, bgcolor: "#f0ede6" }}>
+        <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "center", p: 2.5 }}>
+          <Box sx={{ width: "100%", maxWidth: 560 }}>
             {/* Email client bar */}
-            <div className="bg-brand-primary px-3.5 py-2 rounded-t-lg text-[11px] text-white/70">
+            <Box sx={{ bgcolor: "var(--brand-primary, #565DFF)", px: 1.75, py: 1, borderTopLeftRadius: 8, borderTopRightRadius: 8, fontSize: 11, color: "rgba(255,255,255,0.7)" }}>
               &#128231; somchai@siamgroup.co.th &middot; จาก: no-reply@jigsawerp.com
-            </div>
+            </Box>
             {/* Email card */}
-            <div className="bg-white border border-gray-300 rounded-b-lg overflow-hidden">
-              <div className="bg-brand-primary px-6 py-5 text-center">
-                <div className="text-base font-extrabold text-white tracking-wide">&#129513; ERP JIGSAW</div>
-                <div className="text-[11px] text-white/70 mt-0.5">ยืนยันอีเมลของคุณ</div>
-              </div>
-              <div className="px-6 py-5">
-                <div className="text-[11px] text-gray-400 mb-3.5 pb-2.5 border-b border-erp-border">
+            <Box sx={{ bgcolor: "white", border: "1px solid #D1D5DB", borderBottomLeftRadius: 8, borderBottomRightRadius: 8, overflow: "hidden" }}>
+              <Box sx={{ bgcolor: "var(--brand-primary, #565DFF)", px: 3, py: 2.5, textAlign: "center" }}>
+                <Box sx={{ fontSize: 16, fontWeight: 800, color: "white", letterSpacing: 1 }}>&#129513; ERP JIGSAW</Box>
+                <Box sx={{ fontSize: 11, color: "rgba(255,255,255,0.7)", mt: 0.25 }}>ยืนยันอีเมลของคุณ</Box>
+              </Box>
+              <Box sx={{ px: 3, py: 2.5 }}>
+                <Box sx={{ fontSize: 11, color: "#9CA3AF", mb: 1.75, pb: 1.25, borderBottom: `1px solid ${BORDER}` }}>
                   จาก: no-reply@jigsawerp.com &nbsp;&middot;&nbsp; ถึง: somchai@siamgroup.co.th
-                </div>
-                <div className="text-sm font-semibold mb-2">สวัสดีคุณสมชาย,</div>
-                <div className="text-sm text-gray-600 leading-relaxed mb-3">
-                  ทีม Jigsaw ได้สร้าง <strong className="text-erp-text">Master Account</strong> สำหรับคุณเรียบร้อยแล้ว<br />
+                </Box>
+                <Box sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>สวัสดีคุณสมชาย,</Box>
+                <Box sx={{ fontSize: 14, color: "#4B5563", lineHeight: 1.7, mb: 1.5 }}>
+                  ทีม Jigsaw ได้สร้าง <strong style={{ color: TEXT }}>Master Account</strong> สำหรับคุณเรียบร้อยแล้ว<br />
                   กรุณากดปุ่มด้านล่างเพื่อยืนยันอีเมลและตั้งรหัสผ่าน
-                </div>
-                <div className="text-xs text-gray-400 mb-3">
-                  ลิงก์นี้หมดอายุภายใน <strong className="text-gray-600">48 ชั่วโมง</strong> และใช้ได้เพียงครั้งเดียว
-                </div>
-                <button
+                </Box>
+                <Box sx={{ fontSize: 12, color: "#9CA3AF", mb: 1.5 }}>
+                  ลิงก์นี้หมดอายุภายใน <strong style={{ color: "#4B5563" }}>48 ชั่วโมง</strong> และใช้ได้เพียงครั้งเดียว
+                </Box>
+                <Box
+                  component="button"
                   onClick={() => go("s4")}
-                  className="w-full py-3 bg-brand-primary hover:bg-brand-hover text-white rounded-md text-sm font-semibold transition-colors my-4"
+                  sx={{ width: "100%", py: 1.5, bgcolor: "var(--brand-primary, #565DFF)", "&:hover": { bgcolor: "var(--brand-hover, #4048CC)" }, color: "white", borderRadius: 1, fontSize: 14, fontWeight: 600, transition: "background 200ms", my: 2, border: "none", cursor: "pointer" }}
                 >
                   ยืนยันอีเมลและตั้งรหัสผ่าน
-                </button>
-                <div className="text-[11px] text-gray-400 text-center mb-2">หรือคัดลอกลิงก์นี้:</div>
-                <div className="bg-gray-50 rounded-md px-3 py-2 text-[11px] text-blue-700 font-mono border border-erp-border break-all">
+                </Box>
+                <Box sx={{ fontSize: 11, color: "#9CA3AF", textAlign: "center", mb: 1 }}>หรือคัดลอกลิงก์นี้:</Box>
+                <Box sx={{ bgcolor: "#F9FAFB", borderRadius: 1, px: 1.5, py: 1, fontSize: 11, color: "#1D4ED8", fontFamily: "monospace", border: `1px solid ${BORDER}`, wordBreak: "break-all" }}>
                   verify.jigsawerp.com/activate?token=eyJhbGciOiJIUzI1NiIsIn...
-                </div>
-              </div>
-              <div className="px-6 py-3 bg-gray-50 border-t border-erp-border text-[11px] text-gray-400 text-center leading-relaxed">
+                </Box>
+              </Box>
+              <Box sx={{ px: 3, py: 1.5, bgcolor: "#F9FAFB", borderTop: `1px solid ${BORDER}`, fontSize: 11, color: "#9CA3AF", textAlign: "center", lineHeight: 1.7 }}>
                 หากคุณไม่ได้ร้องขอ Account นี้ กรุณาเพิกเฉย<br />
                 มีปัญหา? ติดต่อ support@jigsawerp.com &middot; &copy; 2569 ERP Jigsaw
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 
   // ═══════════════════ S4: SET PASSWORD ═══════════════════
   const renderS4 = () => (
-    <div className="flex flex-col flex-1">
+    <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
       <TopBarTA info="verify.jigsawerp.com" />
-      <div className="flex-1 bg-erp-bg flex items-center justify-center p-6">
-        <div className="bg-white rounded-xl border border-erp-border p-7 w-full max-w-[400px] shadow-lg">
-          <div className="w-13 h-13 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-3.5 text-xl">
+      <Box sx={{ flex: 1, bgcolor: BG, display: "flex", alignItems: "center", justifyContent: "center", p: 3 }}>
+        <Box sx={{ bgcolor: "white", borderRadius: 3, border: `1px solid ${BORDER}`, p: 3.5, width: "100%", maxWidth: 400, boxShadow: 6 }}>
+          <Box sx={{ width: 52, height: 52, borderRadius: "50%", bgcolor: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", mx: "auto", mb: 1.75, fontSize: 20 }}>
             &#9989;
-          </div>
-          <h2 className="text-lg font-bold text-center mb-1">{t("onboarding.emailVerified")}</h2>
-          <p className="text-xs text-erp-muted text-center leading-relaxed mb-4">
+          </Box>
+          <Box component="h2" sx={{ fontSize: 18, fontWeight: 700, textAlign: "center", mb: 0.5 }}>{t("onboarding.emailVerified")}</Box>
+          <Box component="p" sx={{ fontSize: 12, color: MUTED, textAlign: "center", lineHeight: 1.7, mb: 2 }}>
             {t("onboarding.setPasswordDesc")}
-          </p>
-          <div className="text-center mb-5">
-            <span className="inline-block text-[11px] px-3.5 py-1 bg-gray-50 rounded-full text-erp-muted border border-erp-border">
+          </Box>
+          <Box sx={{ textAlign: "center", mb: 2.5 }}>
+            <Box component="span" sx={{ display: "inline-block", fontSize: 11, px: 1.75, py: 0.5, bgcolor: "#F9FAFB", borderRadius: "9999px", color: MUTED, border: `1px solid ${BORDER}` }}>
               somchai@siamgroup.co.th
-            </span>
-          </div>
+            </Box>
+          </Box>
 
           {/* Password field (MUI) */}
           <TextField
@@ -990,7 +997,7 @@ export default function OnboardingPage() {
           <Box sx={{ bgcolor: "#F9F9F9", borderRadius: 1, p: 1.5, mb: 2 }}>
             {pwChecks.map((r, i) => (
               <Box key={i} sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.3, color: r.ok ? "success.main" : "#999" }}>
-                {r.ok ? <CheckCircleIcon sx={{ fontSize: 14 }} /> : <Box sx={{ width: 14, height: 14, borderRadius: "50%", bgcolor: "#E0E0E0" }} />}
+                {r.ok ? <CheckCircleIcon sx={{ fontSize: 14 }} /> : <Box sx={{ width: 14, height: 14, borderRadius: "50%", bgcolor: BORDER }} />}
                 <Typography variant="caption">{r.label}</Typography>
               </Box>
             ))}
@@ -1026,54 +1033,54 @@ export default function OnboardingPage() {
           >
             {t("onboarding.setPasswordBtn")}
           </Button>
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 
   // ═══════════════════ S4e: TOKEN EXPIRED ═══════════════════
   const renderS4e = () => (
-    <div className="flex flex-col flex-1">
+    <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
       <TopBarTA info="verify.jigsawerp.com" />
-      <div className="flex-1 bg-red-50/50 flex items-center justify-center p-6">
-        <div className="bg-white rounded-xl border border-red-200 p-7 w-full max-w-[400px] shadow-lg">
-          <div className="w-13 h-13 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-3.5 text-xl">
+      <Box sx={{ flex: 1, bgcolor: "rgba(254,242,242,0.5)", display: "flex", alignItems: "center", justifyContent: "center", p: 3 }}>
+        <Box sx={{ bgcolor: "white", borderRadius: 3, border: "1px solid #FECACA", p: 3.5, width: "100%", maxWidth: 400, boxShadow: 6 }}>
+          <Box sx={{ width: 52, height: 52, borderRadius: "50%", bgcolor: "#FEF2F2", display: "flex", alignItems: "center", justifyContent: "center", mx: "auto", mb: 1.75, fontSize: 20 }}>
             &#9888;&#65039;
-          </div>
-          <h2 className="text-lg font-bold text-center mb-1 text-erp-error">{t("onboarding.linkExpiredTitle")}</h2>
-          <p className="text-xs text-erp-muted text-center leading-relaxed mb-4">
+          </Box>
+          <Box component="h2" sx={{ fontSize: 18, fontWeight: 700, textAlign: "center", mb: 0.5, color: "#E53935" }}>{t("onboarding.linkExpiredTitle")}</Box>
+          <Box component="p" sx={{ fontSize: 12, color: MUTED, textAlign: "center", lineHeight: 1.7, mb: 2 }}>
             {t("onboarding.linkExpiredDesc")}
-          </p>
-          <div className="text-xs text-erp-muted text-center mb-5 p-2.5 bg-gray-50 rounded-md">
+          </Box>
+          <Box sx={{ fontSize: 12, color: MUTED, textAlign: "center", mb: 2.5, p: 1.25, bgcolor: "#F9FAFB", borderRadius: 1 }}>
             {t("onboarding.contactForNewLink")}<br />
             <strong>support@jigsawerp.com</strong>
-          </div>
-          <button className="w-full py-3 bg-erp-error hover:bg-red-700 text-white rounded-md text-sm font-bold transition-colors">
+          </Box>
+          <Box component="button" sx={{ width: "100%", py: 1.5, bgcolor: "#E53935", "&:hover": { bgcolor: "#B91C1C" }, color: "white", borderRadius: 1, fontSize: 14, fontWeight: 700, transition: "background 200ms", border: "none", cursor: "pointer" }}>
             {t("onboarding.requestNewLink")}
-          </button>
-        </div>
-      </div>
-    </div>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 
   // ═══════════════════ S5: ACCOUNT DETAIL ═══════════════════
   const renderS5 = () => (
-    <div className="flex flex-col flex-1">
+    <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
       {renderTopBarSA()}
       <Breadcrumb items={[
         { label: "Master Accounts", onClick: () => go("s1") },
         { label: `${selectedAccount.firstName} ${selectedAccount.lastName}` },
       ]} />
       {/* Detail Header */}
-      <div className="px-5 bg-white border-b border-erp-border">
-        <h1 className="text-xl font-bold pt-3 pb-2.5">{t("onboarding.customerInfo")}</h1>
+      <Box sx={{ px: 2.5, bgcolor: "white", borderBottom: `1px solid ${BORDER}` }}>
+        <Box component="h1" sx={{ fontSize: 20, fontWeight: 700, pt: 1.5, pb: 1.25 }}>{t("onboarding.customerInfo")}</Box>
         <Tabs
           value={detailTab}
           onChange={(_, v) => setDetailTab(v)}
           sx={{
             "& .MuiTab-root": { textTransform: "none", fontSize: 13, fontWeight: 600, minHeight: 40 },
-            "& .Mui-selected": { color: "#FF6B00 !important" },
-            "& .MuiTabs-indicator": { bgcolor: "#FF6B00" },
+            "& .Mui-selected": { color: `${SA_PRIMARY} !important` },
+            "& .MuiTabs-indicator": { bgcolor: SA_PRIMARY },
           }}
         >
           <Tab label={t("onboarding.tabGeneral")} value="general" />
@@ -1081,164 +1088,167 @@ export default function OnboardingPage() {
           <Tab label={t("onboarding.tabContracts")} value="contracts" />
           <Tab label={t("onboarding.tabHistory")} value="history" />
         </Tabs>
-      </div>
+      </Box>
       {/* Detail Body */}
-      <div className="flex-1 p-5 overflow-y-auto">
+      <Box sx={{ flex: 1, p: 2.5, overflowY: "auto" }}>
         {detailTab === "general" && (
           <>
             {/* General Info Card */}
-            <div className="bg-white rounded-lg border border-erp-border p-5 mb-3.5">
-              <h3 className="text-sm font-bold text-sa-primary mb-3.5">{t("onboarding.tabGeneral")}</h3>
-              <div className="grid grid-cols-2 gap-3.5">
-                <div className="field-group sa">
-                  <input value={selectedAccount.id} readOnly className="!bg-gray-50 !text-blue-700 !font-mono !font-semibold" />
+            <Box sx={{ bgcolor: "white", borderRadius: 2, border: `1px solid ${BORDER}`, p: 2.5, mb: 1.75 }}>
+              <Box component="h3" sx={{ fontSize: 14, fontWeight: 700, color: SA_PRIMARY, mb: 1.75 }}>{t("onboarding.tabGeneral")}</Box>
+              <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1.75 }}>
+                <Box sx={{ position: "relative", "& select, & input": { width: "100%", height: 48, px: 1.75, py: 1.5, fontSize: 15, borderRadius: 1, border: `1.5px solid ${BORDER}`, color: TEXT, outline: "none", bgcolor: "white", "&:focus": { borderColor: SA_PRIMARY } }, "& label": { position: "absolute", top: -8, left: 12, px: 0.5, fontSize: 12, color: MUTED, bgcolor: "white" } }}>
+                  <input value={selectedAccount.id} readOnly style={{ backgroundColor: "#F9FAFB", color: "#1D4ED8", fontFamily: "monospace", fontWeight: 600 }} />
                   <label>{t("onboarding.accountCode")}</label>
-                </div>
-                <div className="field-group sa">
+                </Box>
+                <Box sx={{ position: "relative", "& select, & input": { width: "100%", height: 48, px: 1.75, py: 1.5, fontSize: 15, borderRadius: 1, border: `1.5px solid ${BORDER}`, color: TEXT, outline: "none", bgcolor: "white", "&:focus": { borderColor: SA_PRIMARY } }, "& label": { position: "absolute", top: -8, left: 12, px: 0.5, fontSize: 12, color: MUTED, bgcolor: "white" } }}>
                   <select defaultValue={selectedAccount.customerGroup}>
                     <option>ทั่วไป</option><option>ขายส่ง</option><option>ขายปลีก</option><option>VIP</option><option>Founding Partner</option>
                   </select>
-                  <label>{t("onboarding.customerGroup")} <span className="text-erp-error">*</span></label>
-                </div>
+                  <label>{t("onboarding.customerGroup")} <Box component="span" sx={{ color: "#E53935" }}>*</Box></label>
+                </Box>
                 <FloatingField label={t("onboarding.firstName")} value={selectedAccount.firstName} onChange={() => {}} variant="sa" required />
                 <FloatingField label={t("onboarding.lastName")} value={selectedAccount.lastName} onChange={() => {}} variant="sa" required />
-                <div className="field-group sa">
+                <Box sx={{ position: "relative", "& select, & input": { width: "100%", height: 48, px: 1.75, py: 1.5, fontSize: 15, borderRadius: 1, border: `1.5px solid ${BORDER}`, color: TEXT, outline: "none", bgcolor: "white", "&:focus": { borderColor: SA_PRIMARY } }, "& label": { position: "absolute", top: -8, left: 12, px: 0.5, fontSize: 12, color: MUTED, bgcolor: "white" } }}>
                   <select><option>นาย</option><option>นาง</option><option>นางสาว</option></select>
-                  <label>{t("onboarding.prefix")} <span className="text-erp-error">*</span></label>
-                </div>
+                  <label>{t("onboarding.prefix")} <Box component="span" sx={{ color: "#E53935" }}>*</Box></label>
+                </Box>
                 <FloatingField label={t("onboarding.position")} value={selectedAccount.position} onChange={() => {}} variant="sa" />
                 <FloatingField label={t("onboarding.companyName")} value={selectedAccount.company} onChange={() => {}} variant="sa" />
                 <FloatingField label={t("onboarding.emailLabel")} value={selectedAccount.email} onChange={() => {}} variant="sa" required />
-                <div>
-                  <p className="text-[11px] text-erp-muted mb-1 font-medium">{t("onboarding.phone")}</p>
-                  <div className="flex border-[1.5px] border-erp-border rounded-md overflow-hidden">
-                    <div className="px-2.5 py-2 bg-gray-50 border-r border-erp-border flex items-center gap-1 text-xs text-erp-muted">
+                <Box>
+                  <Box component="p" sx={{ fontSize: 11, color: MUTED, mb: 0.5, fontWeight: 500 }}>{t("onboarding.phone")}</Box>
+                  <Box sx={{ display: "flex", border: `1.5px solid ${BORDER}`, borderRadius: 1, overflow: "hidden" }}>
+                    <Box sx={{ px: 1.25, py: 1, bgcolor: "#F9FAFB", borderRight: `1px solid ${BORDER}`, display: "flex", alignItems: "center", gap: 0.5, fontSize: 12, color: MUTED }}>
                       &#127481;&#127469; +66 &#9662;
-                    </div>
-                    <input className="flex-1 px-3 py-2 text-sm outline-none" defaultValue={selectedAccount.phone} />
-                  </div>
-                </div>
-                <div className="field-group sa">
-                  <input value={selectedAccount.emailVerifiedAt || "—"} readOnly className="!bg-gray-50 !text-erp-muted" />
+                    </Box>
+                    <input style={{ flex: 1, padding: "8px 12px", fontSize: 14, outline: "none", border: "none" }} defaultValue={selectedAccount.phone} />
+                  </Box>
+                </Box>
+                <Box sx={{ position: "relative", "& select, & input": { width: "100%", height: 48, px: 1.75, py: 1.5, fontSize: 15, borderRadius: 1, border: `1.5px solid ${BORDER}`, color: TEXT, outline: "none", bgcolor: "white", "&:focus": { borderColor: SA_PRIMARY } }, "& label": { position: "absolute", top: -8, left: 12, px: 0.5, fontSize: 12, color: MUTED, bgcolor: "white" } }}>
+                  <input value={selectedAccount.emailVerifiedAt || "—"} readOnly style={{ backgroundColor: "#F9FAFB", color: MUTED }} />
                   <label>{t("onboarding.emailVerifiedAt")}</label>
-                </div>
-                <div className="col-span-2">
-                  <Typography variant="caption" sx={{ color: "#777", fontWeight: 500, mb: 0.5, display: "block" }}>{t("onboarding.status")}</Typography>
+                </Box>
+                <Box sx={{ gridColumn: "span 2" }}>
+                  <Typography variant="caption" sx={{ color: MUTED, fontWeight: 500, mb: 0.5, display: "block" }}>{t("onboarding.status")}</Typography>
                   <RadioGroup row value={selectedAccount.status}>
-                    <FormControlLabel value="กำลังใช้งาน" control={<Radio size="small" sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }} />} label={<Typography variant="body2">{locale === "en" ? "Active" : "กำลังใช้งาน"}</Typography>} />
-                    <FormControlLabel value="ระงับการใช้งาน" control={<Radio size="small" sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }} />} label={<Typography variant="body2">{locale === "en" ? "Suspended" : "ระงับการใช้งาน"}</Typography>} />
+                    <FormControlLabel value="กำลังใช้งาน" control={<Radio size="small" sx={{ color: SA_PRIMARY, "&.Mui-checked": { color: SA_PRIMARY } }} />} label={<Typography variant="body2">{locale === "en" ? "Active" : "กำลังใช้งาน"}</Typography>} />
+                    <FormControlLabel value="ระงับการใช้งาน" control={<Radio size="small" sx={{ color: SA_PRIMARY, "&.Mui-checked": { color: SA_PRIMARY } }} />} label={<Typography variant="body2">{locale === "en" ? "Suspended" : "ระงับการใช้งาน"}</Typography>} />
                   </RadioGroup>
-                </div>
-                <div className="field-group sa">
-                  <input value={`${selectedAccount.createdAt} — ${selectedAccount.createdBy}`} readOnly className="!bg-gray-50 !text-erp-muted" />
+                </Box>
+                <Box sx={{ position: "relative", "& select, & input": { width: "100%", height: 48, px: 1.75, py: 1.5, fontSize: 15, borderRadius: 1, border: `1.5px solid ${BORDER}`, color: TEXT, outline: "none", bgcolor: "white", "&:focus": { borderColor: SA_PRIMARY } }, "& label": { position: "absolute", top: -8, left: 12, px: 0.5, fontSize: 12, color: MUTED, bgcolor: "white" } }}>
+                  <input value={`${selectedAccount.createdAt} — ${selectedAccount.createdBy}`} readOnly style={{ backgroundColor: "#F9FAFB", color: MUTED }} />
                   <label>{t("onboarding.registeredAt")}</label>
-                </div>
-                <div className="field-group sa">
-                  <input value={`${selectedAccount.updatedAt} — ${selectedAccount.updatedBy}`} readOnly className="!bg-gray-50 !text-erp-muted" />
+                </Box>
+                <Box sx={{ position: "relative", "& select, & input": { width: "100%", height: 48, px: 1.75, py: 1.5, fontSize: 15, borderRadius: 1, border: `1.5px solid ${BORDER}`, color: TEXT, outline: "none", bgcolor: "white", "&:focus": { borderColor: SA_PRIMARY } }, "& label": { position: "absolute", top: -8, left: 12, px: 0.5, fontSize: 12, color: MUTED, bgcolor: "white" } }}>
+                  <input value={`${selectedAccount.updatedAt} — ${selectedAccount.updatedBy}`} readOnly style={{ backgroundColor: "#F9FAFB", color: MUTED }} />
                   <label>{t("onboarding.lastUpdatedAt")}</label>
-                </div>
-              </div>
+                </Box>
+              </Box>
 
               {/* SA Actions */}
-              <div className="mt-3.5 p-3 bg-[#FF6B00]/5 rounded-lg border border-[#FF6B00]/15">
-                <p className="text-[11px] font-semibold text-sa-primary mb-2">&#9881; {t("onboarding.saActions")}</p>
-                <div className="flex gap-2 flex-wrap">
-                  <button className="px-3 py-1.5 bg-white border border-erp-border rounded-md text-xs hover:bg-gray-50 flex items-center gap-1.5 transition-colors">
+              <Box sx={{ mt: 1.75, p: 1.5, bgcolor: "rgba(255,107,0,0.05)", borderRadius: 2, border: "1px solid rgba(255,107,0,0.15)" }}>
+                <Box component="p" sx={{ fontSize: 11, fontWeight: 600, color: SA_PRIMARY, mb: 1 }}>&#9881; {t("onboarding.saActions")}</Box>
+                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                  <Box component="button" sx={{ px: 1.5, py: 0.75, bgcolor: "white", border: `1px solid ${BORDER}`, borderRadius: 1, fontSize: 12, "&:hover": { bgcolor: "#F9FAFB" }, display: "flex", alignItems: "center", gap: 0.75, transition: "background 200ms", cursor: "pointer" }}>
                     &#128231; {t("onboarding.resetVerifyEmail")}
-                  </button>
-                  <button className="px-3 py-1.5 bg-white border border-erp-error rounded-md text-xs text-erp-error hover:bg-red-50 flex items-center gap-1.5 transition-colors">
+                  </Box>
+                  <Box component="button" sx={{ px: 1.5, py: 0.75, bgcolor: "white", border: "1px solid #E53935", borderRadius: 1, fontSize: 12, color: "#E53935", "&:hover": { bgcolor: "#FEF2F2" }, display: "flex", alignItems: "center", gap: 0.75, transition: "background 200ms", cursor: "pointer" }}>
                     &#128273; {t("onboarding.resetPassword")}
-                  </button>
-                </div>
-                <p className="text-[11px] text-erp-muted mt-1.5">{t("onboarding.contactWillReceiveEmail")}</p>
-              </div>
+                  </Box>
+                </Box>
+                <Box component="p" sx={{ fontSize: 11, color: MUTED, mt: 0.75 }}>{t("onboarding.contactWillReceiveEmail")}</Box>
+              </Box>
 
-              <div className="flex justify-end gap-2.5 mt-3.5">
-                <button className="px-4 py-2 border border-erp-border rounded-lg text-sm hover:bg-gray-50 transition-colors">{t("common.cancel")}</button>
-                <button className="px-4 py-2 bg-sa-primary hover:bg-sa-hover text-white text-sm rounded-lg font-medium transition-colors">{t("common.save")}</button>
-              </div>
-            </div>
+              <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1.25, mt: 1.75 }}>
+                <Box component="button" sx={{ px: 2, py: 1, border: `1px solid ${BORDER}`, borderRadius: 2, fontSize: 14, "&:hover": { bgcolor: "#F9FAFB" }, transition: "background 200ms", background: "none", cursor: "pointer" }}>{t("common.cancel")}</Box>
+                <Box component="button" sx={{ px: 2, py: 1, bgcolor: SA_PRIMARY, "&:hover": { bgcolor: SA_HOVER }, color: "white", fontSize: 14, borderRadius: 2, fontWeight: 500, transition: "background 200ms", border: "none", cursor: "pointer" }}>{t("common.save")}</Box>
+              </Box>
+            </Box>
 
             {/* Tenant Quota Card */}
-            <div className="bg-white rounded-lg border border-erp-border p-5">
-              <h3 className="text-sm font-bold text-sa-primary mb-3.5">{t("onboarding.tenantQuotaInfo")}</h3>
-              <div className="bg-[#FF6B00]/10 rounded-md px-3 py-2 text-xs text-sa-primary border border-[#FF6B00]/20">
+            <Box sx={{ bgcolor: "white", borderRadius: 2, border: `1px solid ${BORDER}`, p: 2.5 }}>
+              <Box component="h3" sx={{ fontSize: 14, fontWeight: 700, color: SA_PRIMARY, mb: 1.75 }}>{t("onboarding.tenantQuotaInfo")}</Box>
+              <Box sx={{ bgcolor: "rgba(255,107,0,0.1)", borderRadius: 1, px: 1.5, py: 1, fontSize: 12, color: SA_PRIMARY, border: "1px solid rgba(255,107,0,0.2)" }}>
                 Tenant Quota: <strong>{selectedAccount.tenantUsed} / {selectedAccount.tenantQuota} บริษัท</strong> &middot; เหลืออีก {selectedAccount.tenantQuota - selectedAccount.tenantUsed} บริษัทที่สามารถสร้างได้
-              </div>
+              </Box>
               {selectedAccount.tenantUsed === 0 ? (
-                <div className="mt-3 flex flex-col items-center justify-center p-6 bg-orange-50 rounded-lg border border-orange-200 gap-2">
-                  <p className="text-sm text-orange-600 font-medium">{t("onboarding.noTenantYet")}</p>
-                  <button
+                <Box sx={{ mt: 1.5, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", p: 3, bgcolor: "#FFF7ED", borderRadius: 2, border: "1px solid #FDBA74", gap: 1 }}>
+                  <Box component="p" sx={{ fontSize: 14, color: "#EA580C", fontWeight: 500 }}>{t("onboarding.noTenantYet")}</Box>
+                  <Box
+                    component="button"
                     onClick={() => go("s6")}
-                    className="mt-1 px-4 py-2 bg-sa-primary hover:bg-sa-hover text-white text-sm rounded-md font-medium transition-colors"
+                    sx={{ mt: 0.5, px: 2, py: 1, bgcolor: SA_PRIMARY, "&:hover": { bgcolor: SA_HOVER }, color: "white", fontSize: 14, borderRadius: 1, fontWeight: 500, transition: "background 200ms", border: "none", cursor: "pointer" }}
                   >
                     + {t("onboarding.createTenant")}
-                  </button>
-                </div>
+                  </Box>
+                </Box>
               ) : (
-                <div className="mt-3">
-                  <button
+                <Box sx={{ mt: 1.5 }}>
+                  <Box
+                    component="button"
                     onClick={() => go("s6")}
-                    className="w-full flex items-center justify-center gap-2 py-3 border-[1.5px] border-dashed border-sa-primary rounded-lg bg-white text-sm text-sa-primary hover:bg-[#FF6B00]/5 transition-colors"
+                    sx={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 1, py: 1.5, border: `1.5px dashed ${SA_PRIMARY}`, borderRadius: 2, bgcolor: "white", fontSize: 14, color: SA_PRIMARY, "&:hover": { bgcolor: "rgba(255,107,0,0.05)" }, transition: "background 200ms", cursor: "pointer" }}
                   >
                     + สร้าง Tenant ใหม่ภายใต้ Account นี้ (เหลือ {selectedAccount.tenantQuota - selectedAccount.tenantUsed} บริษัท)
-                  </button>
-                </div>
+                  </Box>
+                </Box>
               )}
-            </div>
+            </Box>
           </>
         )}
 
         {detailTab === "tenants" && (
-          <div className="bg-white rounded-lg border border-erp-border p-5">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-bold text-sa-primary">{t("onboarding.tenantsUnderAccount")}</h3>
-              <span className="text-xs text-erp-muted">{selectedAccount.tenantUsed} {t("onboarding.ofCompanies")} {selectedAccount.tenantQuota} {t("onboarding.company")}</span>
-            </div>
-            <div className="bg-[#FF6B00]/10 rounded-md px-3 py-2 text-xs text-sa-primary border border-[#FF6B00]/20 mb-3">
+          <Box sx={{ bgcolor: "white", borderRadius: 2, border: `1px solid ${BORDER}`, p: 2.5 }}>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.5 }}>
+              <Box component="h3" sx={{ fontSize: 14, fontWeight: 700, color: SA_PRIMARY }}>{t("onboarding.tenantsUnderAccount")}</Box>
+              <Box component="span" sx={{ fontSize: 12, color: MUTED }}>{selectedAccount.tenantUsed} {t("onboarding.ofCompanies")} {selectedAccount.tenantQuota} {t("onboarding.company")}</Box>
+            </Box>
+            <Box sx={{ bgcolor: "rgba(255,107,0,0.1)", borderRadius: 1, px: 1.5, py: 1, fontSize: 12, color: SA_PRIMARY, border: "1px solid rgba(255,107,0,0.2)", mb: 1.5 }}>
               จำนวนธุรกิจ (Tenant Quota): <strong>{selectedAccount.tenantUsed} / {selectedAccount.tenantQuota} บริษัท</strong> ใช้ไปแล้ว &middot; เหลืออีก {selectedAccount.tenantQuota - selectedAccount.tenantUsed} บริษัท
-            </div>
+            </Box>
             {selectedAccount.tenantUsed > 0 && (
-              <div className="border border-erp-border rounded-lg p-3.5 flex items-center gap-3 mb-2 hover:border-sa-primary hover:bg-[#FF6B00]/5 cursor-pointer transition-colors">
-                <div className="w-8 h-8 rounded-md bg-[#FF6B00]/10 flex items-center justify-center text-xs font-bold text-sa-primary shrink-0">ST</div>
-                <div className="flex-1">
-                  <div className="text-sm font-semibold">บริษัท สยามเทรด จำกัด</div>
-                  <div className="text-[11px] text-erp-muted mt-0.5">siamtrade.jigsawerp.com &middot; Cloud &middot; MD-1–11, MD-12</div>
-                </div>
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-orange-50 text-orange-600">
-                  <span className="w-1.5 h-1.5 rounded-full bg-current" />
+              <Box sx={{ border: `1px solid ${BORDER}`, borderRadius: 2, p: 1.75, display: "flex", alignItems: "center", gap: 1.5, mb: 1, "&:hover": { borderColor: SA_PRIMARY, bgcolor: "rgba(255,107,0,0.05)" }, cursor: "pointer", transition: "all 200ms" }}>
+                <Box sx={{ width: 32, height: 32, borderRadius: 1, bgcolor: "rgba(255,107,0,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: SA_PRIMARY, flexShrink: 0 }}>ST</Box>
+                <Box sx={{ flex: 1 }}>
+                  <Box sx={{ fontSize: 14, fontWeight: 600 }}>บริษัท สยามเทรด จำกัด</Box>
+                  <Box sx={{ fontSize: 11, color: MUTED, mt: 0.25 }}>siamtrade.jigsawerp.com &middot; Cloud &middot; MD-1–11, MD-12</Box>
+                </Box>
+                <Box component="span" sx={{ display: "inline-flex", alignItems: "center", gap: 0.5, px: 1.25, py: 0.5, borderRadius: "9999px", fontSize: 11, fontWeight: 600, bgcolor: "#FFF7ED", color: "#EA580C" }}>
+                  <Box component="span" sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: "currentColor" }} />
                   รอ Setup Wizard
-                </span>
-              </div>
+                </Box>
+              </Box>
             )}
-            <button
+            <Box
+              component="button"
               onClick={() => go("s6")}
-              className="w-full flex items-center justify-center gap-2 py-3 border-[1.5px] border-dashed border-sa-primary rounded-lg bg-white text-sm text-sa-primary hover:bg-[#FF6B00]/5 transition-colors mt-1"
+              sx={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 1, py: 1.5, border: `1.5px dashed ${SA_PRIMARY}`, borderRadius: 2, bgcolor: "white", fontSize: 14, color: SA_PRIMARY, "&:hover": { bgcolor: "rgba(255,107,0,0.05)" }, transition: "background 200ms", mt: 0.5, cursor: "pointer" }}
             >
               + สร้าง Tenant ใหม่ภายใต้ Account นี้ (เหลือ {selectedAccount.tenantQuota - selectedAccount.tenantUsed} บริษัท)
-            </button>
-          </div>
+            </Box>
+          </Box>
         )}
 
         {(detailTab === "contracts" || detailTab === "history") && (
-          <div className="bg-white rounded-lg border border-erp-border p-10 text-center">
-            <p className="text-erp-muted text-sm">{t("common.noData")}</p>
-          </div>
+          <Box sx={{ bgcolor: "white", borderRadius: 2, border: `1px solid ${BORDER}`, p: 5, textAlign: "center" }}>
+            <Box component="p" sx={{ color: MUTED, fontSize: 14 }}>{t("common.noData")}</Box>
+          </Box>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 
   // ═══════════════════ S6: CREATE TENANT FORM ═══════════════════
   const renderS6 = () => (
-    <div className="flex flex-col flex-1">
+    <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
       {renderTopBarSA()}
       <Breadcrumb items={[
         { label: "Master Accounts", onClick: () => go("s1") },
         { label: selectedAccount.firstName, onClick: () => go("s5") },
         { label: t("onboarding.createTenant") },
       ]} />
-      <div className="flex-1 relative">
+      <Box sx={{ flex: 1, position: "relative" }}>
         <SlidePanel
           open={true}
           title={`สร้าง Tenant ใหม่ — Tenant #${selectedAccount.tenantUsed + 1}`}
@@ -1247,65 +1257,65 @@ export default function OnboardingPage() {
           width={500}
           footer={
             <>
-              <button onClick={() => go("s5")} className="px-4 py-2 border border-erp-border rounded-lg text-sm hover:bg-gray-50 transition-colors">
+              <Box component="button" onClick={() => go("s5")} sx={{ px: 2, py: 1, border: `1px solid ${BORDER}`, borderRadius: 2, fontSize: 14, "&:hover": { bgcolor: "#F9FAFB" }, transition: "background 200ms", background: "none", cursor: "pointer" }}>
                 {t("common.cancel")}
-              </button>
-              <button onClick={() => go("s7")} className="px-4 py-2 bg-sa-primary hover:bg-sa-hover text-white text-sm rounded-lg font-medium transition-colors">
+              </Box>
+              <Box component="button" onClick={() => go("s7")} sx={{ px: 2, py: 1, bgcolor: SA_PRIMARY, "&:hover": { bgcolor: SA_HOVER }, color: "white", fontSize: 14, borderRadius: 2, fontWeight: 500, transition: "background 200ms", border: "none", cursor: "pointer" }}>
                 {t("common.save")}
-              </button>
+              </Box>
             </>
           }
         >
-          <div className="space-y-3">
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
             {/* Section: ข้อมูลนิติบุคคล */}
-            <div className="flex items-center gap-2.5 mb-1">
-              <span className="text-xs font-semibold text-erp-muted whitespace-nowrap">{t("onboarding.entityInfo")}</span>
-              <div className="flex-1 h-px bg-erp-border" />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, mb: 0.5 }}>
+              <Box component="span" sx={{ fontSize: 12, fontWeight: 600, color: MUTED, whiteSpace: "nowrap" }}>{t("onboarding.entityInfo")}</Box>
+              <Box sx={{ flex: 1, height: "1px", bgcolor: BORDER }} />
+            </Box>
+            <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1.5 }}>
               <FloatingField label={t("onboarding.companyNameTh")} value={tenantForm.nameTh} onChange={(v) => setTenantForm({ ...tenantForm, nameTh: v })} variant="sa" required />
               <FloatingField label={t("onboarding.companyNameEn")} value={tenantForm.nameEn} onChange={(v) => setTenantForm({ ...tenantForm, nameEn: v })} variant="sa" required />
-              <div className="field-group sa">
+              <Box sx={{ position: "relative", "& select, & input": { width: "100%", height: 48, px: 1.75, py: 1.5, fontSize: 15, borderRadius: 1, border: `1.5px solid ${BORDER}`, color: TEXT, outline: "none", bgcolor: "white", "&:focus": { borderColor: SA_PRIMARY } }, "& label": { position: "absolute", top: -8, left: 12, px: 0.5, fontSize: 12, color: MUTED, bgcolor: "white" } }}>
                 <select value={tenantForm.entityType} onChange={(e) => setTenantForm({ ...tenantForm, entityType: e.target.value })}>
                   <option>บริษัทจำกัด (บจ.)</option><option>ห้างหุ้นส่วนจำกัด (หจก.)</option><option>บริษัทมหาชน (บมจ.)</option>
                 </select>
-                <label>{t("onboarding.entityType")} <span className="text-erp-error">*</span></label>
-              </div>
-              <div className="field-group sa">
+                <label>{t("onboarding.entityType")} <Box component="span" sx={{ color: "#E53935" }}>*</Box></label>
+              </Box>
+              <Box sx={{ position: "relative", "& select, & input": { width: "100%", height: 48, px: 1.75, py: 1.5, fontSize: 15, borderRadius: 1, border: `1.5px solid ${BORDER}`, color: TEXT, outline: "none", bgcolor: "white", "&:focus": { borderColor: SA_PRIMARY } }, "& label": { position: "absolute", top: -8, left: 12, px: 0.5, fontSize: 12, color: MUTED, bgcolor: "white" } }}>
                 <select value={tenantForm.businessType} onChange={(e) => setTenantForm({ ...tenantForm, businessType: e.target.value })}>
                   <option>Trading — ซื้อมาขายไป</option><option>Manufacturing — ผลิต</option><option>Service — บริการ</option>
                 </select>
-                <label>{t("onboarding.businessType")} <span className="text-erp-error">*</span></label>
-              </div>
+                <label>{t("onboarding.businessType")} <Box component="span" sx={{ color: "#E53935" }}>*</Box></label>
+              </Box>
               <FloatingField label={t("onboarding.taxId")} value={tenantForm.taxId} onChange={(v) => setTenantForm({ ...tenantForm, taxId: v })} variant="sa" required />
-              <div>
-                <p className="text-[11px] text-erp-muted mb-1 font-medium">Subdomain <span className="text-erp-error">*</span></p>
-                <div className="flex border-[1.5px] border-green-500 rounded-md overflow-hidden">
+              <Box>
+                <Box component="p" sx={{ fontSize: 11, color: MUTED, mb: 0.5, fontWeight: 500 }}>Subdomain <Box component="span" sx={{ color: "#E53935" }}>*</Box></Box>
+                <Box sx={{ display: "flex", border: "1.5px solid #22C55E", borderRadius: 1, overflow: "hidden" }}>
                   <input
-                    className="flex-1 px-2.5 py-2 text-sm outline-none"
+                    style={{ flex: 1, padding: "8px 10px", fontSize: 14, outline: "none", border: "none" }}
                     value={tenantForm.subdomain}
                     onChange={(e) => setTenantForm({ ...tenantForm, subdomain: e.target.value })}
                   />
-                  <div className="px-2.5 py-2 bg-gray-50 border-l border-erp-border text-xs text-erp-muted whitespace-nowrap">
+                  <Box sx={{ px: 1.25, py: 1, bgcolor: "#F9FAFB", borderLeft: `1px solid ${BORDER}`, fontSize: 12, color: MUTED, whiteSpace: "nowrap" }}>
                     .jigsawerp.com
-                  </div>
-                </div>
-                <p className="text-[10px] text-erp-error mt-1 pl-0.5">&#128274; Lock ถาวรหลัง Save</p>
-              </div>
-            </div>
+                  </Box>
+                </Box>
+                <Box component="p" sx={{ fontSize: 10, color: "#E53935", mt: 0.5, pl: 0.25 }}>&#128274; Lock ถาวรหลัง Save</Box>
+              </Box>
+            </Box>
 
             {/* Section: Package & Quota */}
-            <div className="flex items-center gap-2.5 mt-4 mb-1">
-              <span className="text-xs font-semibold text-erp-muted whitespace-nowrap">Package & Quota</span>
-              <div className="flex-1 h-px bg-erp-border" />
-            </div>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, mt: 2, mb: 0.5 }}>
+              <Box component="span" sx={{ fontSize: 12, fontWeight: 600, color: MUTED, whiteSpace: "nowrap" }}>Package & Quota</Box>
+              <Box sx={{ flex: 1, height: "1px", bgcolor: BORDER }} />
+            </Box>
 
             {/* Deployment Tier */}
-            <div className="bg-gray-50 border border-erp-border rounded-md p-3">
-              <p className="text-[11px] font-bold text-erp-muted mb-2 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-sa-primary" />
+            <Box sx={{ bgcolor: "#F9FAFB", border: `1px solid ${BORDER}`, borderRadius: 1, p: 1.5 }}>
+              <Box component="p" sx={{ fontSize: 11, fontWeight: 700, color: MUTED, mb: 1, display: "flex", alignItems: "center", gap: 0.75 }}>
+                <Box component="span" sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: SA_PRIMARY }} />
                 Deployment Tier
-              </p>
+              </Box>
               <ToggleButtonGroup
                 value={tenantForm.tier}
                 exclusive
@@ -1315,22 +1325,22 @@ export default function OnboardingPage() {
                 {(["Cloud", "Dedicated", "On-premise"] as const).map((tier) => {
                   const subs = { Cloud: "Shared · Huawei", Dedicated: "Private · Huawei", "On-premise": "Server ลูกค้า" };
                   return (
-                    <ToggleButton key={tier} value={tier} sx={{ textTransform: "none", flexDirection: "column", alignItems: "flex-start", p: 1.5, "&.Mui-selected": { bgcolor: "#FF6B00/10", borderColor: "#FF6B00" } }}>
+                    <ToggleButton key={tier} value={tier} sx={{ textTransform: "none", flexDirection: "column", alignItems: "flex-start", p: 1.5, "&.Mui-selected": { bgcolor: "#FF6B00/10", borderColor: SA_PRIMARY } }}>
                       <Typography variant="caption" sx={{ fontWeight: 700 }}>{tier}</Typography>
                       <Typography variant="caption" sx={{ color: "#999", fontSize: 10 }}>{subs[tier]}</Typography>
                     </ToggleButton>
                   );
                 })}
               </ToggleButtonGroup>
-            </div>
+            </Box>
 
             {/* Resource Quota */}
-            <div className="bg-gray-50 border border-erp-border rounded-md p-3">
-              <p className="text-[11px] font-bold text-erp-muted mb-2 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-sa-primary" />
+            <Box sx={{ bgcolor: "#F9FAFB", border: `1px solid ${BORDER}`, borderRadius: 1, p: 1.5 }}>
+              <Box component="p" sx={{ fontSize: 11, fontWeight: 700, color: MUTED, mb: 1, display: "flex", alignItems: "center", gap: 0.75 }}>
+                <Box component="span" sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: SA_PRIMARY }} />
                 Resource Quota
-              </p>
-              <div className="grid grid-cols-3 gap-2">
+              </Box>
+              <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 1 }}>
                 {[
                   { key: "quotaUser", label: "User", unit: "คน" },
                   { key: "quotaBranch", label: "Branch", unit: "สาขา" },
@@ -1339,33 +1349,33 @@ export default function OnboardingPage() {
                   { key: "quotaAuditLog", label: "Audit Log", unit: "เดือน" },
                   { key: "quotaOnboarding", label: "Onboarding", unit: "ชม." },
                 ].map((q) => (
-                  <div key={q.key} className="border border-erp-border rounded-md p-2 bg-white">
-                    <div className="text-[10px] text-gray-400 mb-1">{q.label}</div>
-                    <div className="flex items-center gap-1">
+                  <Box key={q.key} sx={{ border: `1px solid ${BORDER}`, borderRadius: 1, p: 1, bgcolor: "white" }}>
+                    <Box sx={{ fontSize: 10, color: "#9CA3AF", mb: 0.5 }}>{q.label}</Box>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                       <input
-                        className="px-1.5 py-1 border border-erp-border rounded text-xs w-14 outline-none focus:border-sa-primary"
+                        style={{ padding: "4px 6px", border: `1px solid ${BORDER}`, borderRadius: 4, fontSize: 12, width: 56, outline: "none" }}
                         value={(tenantForm as unknown as Record<string, string>)[q.key]}
                         onChange={(e) => setTenantForm({ ...tenantForm, [q.key]: e.target.value })}
                       />
-                      <span className="text-[11px] text-erp-muted">{q.unit}</span>
-                    </div>
-                  </div>
+                      <Box component="span" sx={{ fontSize: 11, color: MUTED }}>{q.unit}</Box>
+                    </Box>
+                  </Box>
                 ))}
-              </div>
-              <div className="flex gap-1.5 p-2 bg-orange-50 rounded-md text-[11px] text-orange-600 mt-2 border border-orange-200">
+              </Box>
+              <Box sx={{ display: "flex", gap: 0.75, p: 1, bgcolor: "#FFF7ED", borderRadius: 1, fontSize: 11, color: "#EA580C", mt: 1, border: "1px solid #FDBA74" }}>
                 &#9888; แจ้งเตือนอัตโนมัติที่ 80% และ 100% — ไม่บล็อกการใช้งาน
-              </div>
-            </div>
+              </Box>
+            </Box>
 
             {/* Backup Frequency */}
-            <div className="bg-gray-50 border border-erp-border rounded-md p-3">
-              <p className="text-[11px] font-bold text-erp-muted mb-2 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-sa-primary" />
+            <Box sx={{ bgcolor: "#F9FAFB", border: `1px solid ${BORDER}`, borderRadius: 1, p: 1.5 }}>
+              <Box component="p" sx={{ fontSize: 11, fontWeight: 700, color: MUTED, mb: 1, display: "flex", alignItems: "center", gap: 0.75 }}>
+                <Box component="span" sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: SA_PRIMARY }} />
                 Backup Frequency
-              </p>
-              <div className="flex items-center gap-2">
+              </Box>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <input
-                  className="px-2 py-1.5 border border-erp-border rounded-md text-xs w-16 outline-none focus:border-sa-primary"
+                  style={{ padding: "6px 8px", border: `1px solid ${BORDER}`, borderRadius: 6, fontSize: 12, width: 64, outline: "none" }}
                   value={tenantForm.backupFreq}
                   onChange={(e) => setTenantForm({ ...tenantForm, backupFreq: e.target.value })}
                 />
@@ -1378,18 +1388,19 @@ export default function OnboardingPage() {
                   <ToggleButton value="ชั่วโมง" sx={{ textTransform: "none", fontSize: 11, px: 2 }}>ชั่วโมง</ToggleButton>
                   <ToggleButton value="วัน" sx={{ textTransform: "none", fontSize: 11, px: 2 }}>วัน</ToggleButton>
                 </ToggleButtonGroup>
-              </div>
-            </div>
+              </Box>
+            </Box>
 
             {/* Modules */}
-            <div className="bg-gray-50 border border-erp-border rounded-md p-3">
-              <p className="text-[11px] font-bold text-erp-muted mb-2 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-sa-primary" />
+            <Box sx={{ bgcolor: "#F9FAFB", border: `1px solid ${BORDER}`, borderRadius: 1, p: 1.5 }}>
+              <Box component="p" sx={{ fontSize: 11, fontWeight: 700, color: MUTED, mb: 1, display: "flex", alignItems: "center", gap: 0.75 }}>
+                <Box component="span" sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: SA_PRIMARY }} />
                 Modules (สัญญาที่ 1)
-              </p>
-              <div className="grid grid-cols-3 gap-1.5">
+              </Box>
+              <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 0.75 }}>
                 {moduleStates.map((m, i) => (
-                  <button
+                  <Box
+                    component="button"
                     key={m.id}
                     onClick={() => {
                       if (m.status === "locked") return;
@@ -1397,183 +1408,189 @@ export default function OnboardingPage() {
                       next[i] = { ...m, status: m.status === "on" ? "off" : "on" };
                       setModuleStates(next);
                     }}
-                    className={`flex items-center gap-1.5 px-2 py-1.5 border rounded-md text-[11px] transition-colors ${
-                      m.status === "locked"
-                        ? "bg-gray-100 text-erp-muted border-erp-border cursor-default"
+                    sx={{
+                      display: "flex", alignItems: "center", gap: 0.75, px: 1, py: 0.75, border: "1px solid", borderRadius: 1, fontSize: 11, transition: "all 200ms", cursor: m.status === "locked" ? "default" : "pointer", background: "none",
+                      ...(m.status === "locked"
+                        ? { bgcolor: "#F3F4F6", color: MUTED, borderColor: BORDER }
                         : m.status === "on"
-                        ? "bg-[#FF6B00]/10 border-[#FF6B00]/30 text-sa-primary"
-                        : "bg-white text-erp-muted border-erp-border hover:border-sa-primary"
-                    }`}
+                        ? { bgcolor: "rgba(255,107,0,0.1)", borderColor: "rgba(255,107,0,0.3)", color: SA_PRIMARY }
+                        : { bgcolor: "white", color: MUTED, borderColor: BORDER, "&:hover": { borderColor: SA_PRIMARY } }),
+                    }}
                   >
-                    <span className={`w-3 h-3 rounded-sm border-[1.5px] shrink-0 ${
-                      m.status === "locked"
-                        ? "bg-gray-300 border-gray-300"
+                    <Box component="span" sx={{
+                      width: 12, height: 12, borderRadius: "2px", border: "1.5px solid", flexShrink: 0,
+                      ...(m.status === "locked"
+                        ? { bgcolor: "#D1D5DB", borderColor: "#D1D5DB" }
                         : m.status === "on"
-                        ? "bg-sa-primary border-sa-primary"
-                        : "border-erp-border"
-                    }`} />
-                    <span className="flex-1 text-left">{m.id} {m.name}</span>
-                    <span className={`w-4 h-4 rounded-sm flex items-center justify-center text-[10px] ${
-                      m.status === "on" ? "bg-[#FF6B00]/20 text-sa-primary" : "bg-gray-100 text-erp-muted"
-                    } ${m.status === "off" ? "opacity-30" : ""}`}>
+                        ? { bgcolor: SA_PRIMARY, borderColor: SA_PRIMARY }
+                        : { borderColor: BORDER }),
+                    }} />
+                    <Box component="span" sx={{ flex: 1, textAlign: "left" }}>{m.id} {m.name}</Box>
+                    <Box component="span" sx={{
+                      width: 16, height: 16, borderRadius: "2px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10,
+                      ...(m.status === "on" ? { bgcolor: "rgba(255,107,0,0.2)", color: SA_PRIMARY } : { bgcolor: "#F3F4F6", color: MUTED }),
+                      ...(m.status === "off" ? { opacity: 0.3 } : {}),
+                    }}>
                       &#9881;
-                    </span>
-                  </button>
+                    </Box>
+                  </Box>
                 ))}
-              </div>
-            </div>
+              </Box>
+            </Box>
 
             {/* Contract */}
-            <div className="bg-gray-50 border border-erp-border rounded-md p-3">
-              <p className="text-[11px] font-bold text-erp-muted mb-2 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-sa-primary" />
+            <Box sx={{ bgcolor: "#F9FAFB", border: `1px solid ${BORDER}`, borderRadius: 1, p: 1.5 }}>
+              <Box component="p" sx={{ fontSize: 11, fontWeight: 700, color: MUTED, mb: 1, display: "flex", alignItems: "center", gap: 0.75 }}>
+                <Box component="span" sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: SA_PRIMARY }} />
                 {t("onboarding.tabContracts")}
-              </p>
-              <div className="grid grid-cols-2 gap-3">
+              </Box>
+              <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1.5 }}>
                 <FloatingField label={t("onboarding.contractStart")} value={tenantForm.contractStart} onChange={(v) => setTenantForm({ ...tenantForm, contractStart: v })} variant="sa" required />
                 <FloatingField label={t("onboarding.contractEnd")} value={tenantForm.contractEnd} onChange={(v) => setTenantForm({ ...tenantForm, contractEnd: v })} variant="sa" required />
-              </div>
+              </Box>
               <Box sx={{ mt: 2 }}>
-                <Typography variant="caption" sx={{ color: "#777", fontWeight: 500, mb: 0.5, display: "block" }}>Auto-renewal</Typography>
+                <Typography variant="caption" sx={{ color: MUTED, fontWeight: 500, mb: 0.5, display: "block" }}>Auto-renewal</Typography>
                 <RadioGroup
                   row
                   value={tenantForm.autoRenewal ? "yes" : "no"}
                   onChange={(e) => setTenantForm({ ...tenantForm, autoRenewal: e.target.value === "yes" })}
                 >
-                  <FormControlLabel value="yes" control={<Radio size="small" sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }} />} label={<Typography variant="body2">{t("onboarding.autoRenewalYes")}</Typography>} />
-                  <FormControlLabel value="no" control={<Radio size="small" sx={{ color: "#FF6B00", "&.Mui-checked": { color: "#FF6B00" } }} />} label={<Typography variant="body2">{t("onboarding.autoRenewalNo")}</Typography>} />
+                  <FormControlLabel value="yes" control={<Radio size="small" sx={{ color: SA_PRIMARY, "&.Mui-checked": { color: SA_PRIMARY } }} />} label={<Typography variant="body2">{t("onboarding.autoRenewalYes")}</Typography>} />
+                  <FormControlLabel value="no" control={<Radio size="small" sx={{ color: SA_PRIMARY, "&.Mui-checked": { color: SA_PRIMARY } }} />} label={<Typography variant="body2">{t("onboarding.autoRenewalNo")}</Typography>} />
                 </RadioGroup>
               </Box>
-              <div className="flex gap-1.5 p-2 bg-green-50 rounded-md text-[11px] text-green-700 mt-3 border border-green-200">
+              <Box sx={{ display: "flex", gap: 0.75, p: 1, bgcolor: "#F0FDF4", borderRadius: 1, fontSize: 11, color: "#15803D", mt: 1.5, border: "1px solid #BBF7D0" }}>
                 &#10003; เมื่อกดบันทึก ระบบจะสร้างสัญญาที่ 1 อัตโนมัติ และส่ง Welcome Email ให้ TA
-              </div>
-            </div>
-          </div>
+              </Box>
+            </Box>
+          </Box>
         </SlidePanel>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 
   // ═══════════════════ S7: WELCOME EMAIL ═══════════════════
   const renderS7 = () => (
-    <div className="flex flex-col flex-1">
+    <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
       <TopBarTA info="Email Client — somchai@siamgroup.co.th" />
-      <div className="flex-1 pt-4 bg-[#f0ede6]">
-        <div className="flex items-start justify-center p-5">
-          <div className="w-full max-w-[560px]">
-            <div className="bg-brand-primary px-3.5 py-2 rounded-t-lg text-[11px] text-white/70">
+      <Box sx={{ flex: 1, pt: 2, bgcolor: "#f0ede6" }}>
+        <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "center", p: 2.5 }}>
+          <Box sx={{ width: "100%", maxWidth: 560 }}>
+            <Box sx={{ bgcolor: "var(--brand-primary, #565DFF)", px: 1.75, py: 1, borderTopLeftRadius: 8, borderTopRightRadius: 8, fontSize: 11, color: "rgba(255,255,255,0.7)" }}>
               &#128231; somchai@siamgroup.co.th &middot; จาก: no-reply@jigsawerp.com
-            </div>
-            <div className="bg-white border border-gray-300 rounded-b-lg overflow-hidden">
-              <div className="bg-green-700 px-6 py-5 text-center">
-                <div className="text-base font-extrabold text-white tracking-wide">&#129513; ERP JIGSAW</div>
-                <div className="text-[11px] text-white/70 mt-0.5">ยินดีต้อนรับ! ระบบของคุณพร้อมแล้ว &#127881;</div>
-              </div>
-              <div className="px-6 py-5">
-                <div className="text-[11px] text-gray-400 mb-3.5 pb-2.5 border-b border-erp-border">
+            </Box>
+            <Box sx={{ bgcolor: "white", border: "1px solid #D1D5DB", borderBottomLeftRadius: 8, borderBottomRightRadius: 8, overflow: "hidden" }}>
+              <Box sx={{ bgcolor: "#15803D", px: 3, py: 2.5, textAlign: "center" }}>
+                <Box sx={{ fontSize: 16, fontWeight: 800, color: "white", letterSpacing: 1 }}>&#129513; ERP JIGSAW</Box>
+                <Box sx={{ fontSize: 11, color: "rgba(255,255,255,0.7)", mt: 0.25 }}>ยินดีต้อนรับ! ระบบของคุณพร้อมแล้ว &#127881;</Box>
+              </Box>
+              <Box sx={{ px: 3, py: 2.5 }}>
+                <Box sx={{ fontSize: 11, color: "#9CA3AF", mb: 1.75, pb: 1.25, borderBottom: `1px solid ${BORDER}` }}>
                   จาก: no-reply@jigsawerp.com &nbsp;&middot;&nbsp; ถึง: somchai@siamgroup.co.th
-                </div>
-                <div className="text-sm font-semibold mb-2">สวัสดีคุณสมชาย,</div>
-                <div className="text-sm text-gray-600 leading-relaxed mb-3">
-                  ยินดีต้อนรับสู่ <strong className="text-erp-text">ERP Jigsaw!</strong><br />
-                  บัญชีสำหรับ <strong className="text-erp-text">บริษัท สยามเทรด จำกัด</strong> ถูกสร้างเรียบร้อยแล้ว
-                </div>
-                <div className="bg-gray-50 rounded-md p-3 mb-3 border border-erp-border">
-                  <div className="text-[11px] text-gray-400 mb-1.5">ข้อมูล Tenant ของคุณ</div>
-                  <div className="text-sm font-bold">บริษัท สยามเทรด จำกัด</div>
-                  <div className="bg-gray-100 rounded-md px-3 py-2 text-[11px] text-blue-700 font-mono mt-2 mb-1 border border-erp-border">
+                </Box>
+                <Box sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>สวัสดีคุณสมชาย,</Box>
+                <Box sx={{ fontSize: 14, color: "#4B5563", lineHeight: 1.7, mb: 1.5 }}>
+                  ยินดีต้อนรับสู่ <strong style={{ color: TEXT }}>ERP Jigsaw!</strong><br />
+                  บัญชีสำหรับ <strong style={{ color: TEXT }}>บริษัท สยามเทรด จำกัด</strong> ถูกสร้างเรียบร้อยแล้ว
+                </Box>
+                <Box sx={{ bgcolor: "#F9FAFB", borderRadius: 1, p: 1.5, mb: 1.5, border: `1px solid ${BORDER}` }}>
+                  <Box sx={{ fontSize: 11, color: "#9CA3AF", mb: 0.75 }}>ข้อมูล Tenant ของคุณ</Box>
+                  <Box sx={{ fontSize: 14, fontWeight: 700 }}>บริษัท สยามเทรด จำกัด</Box>
+                  <Box sx={{ bgcolor: "#F3F4F6", borderRadius: 1, px: 1.5, py: 1, fontSize: 11, color: "#1D4ED8", fontFamily: "monospace", mt: 1, mb: 0.5, border: `1px solid ${BORDER}` }}>
                     siamtrade.jigsawerp.com
-                  </div>
-                  <div className="text-[11px] text-erp-muted">Cloud &middot; MD-1–11 + MD-12 Backoffice &middot; สัญญาที่ 1</div>
-                </div>
-                <div className="text-sm text-gray-600 leading-relaxed mb-1">
+                  </Box>
+                  <Box sx={{ fontSize: 11, color: MUTED }}>Cloud &middot; MD-1–11 + MD-12 Backoffice &middot; สัญญาที่ 1</Box>
+                </Box>
+                <Box sx={{ fontSize: 14, color: "#4B5563", lineHeight: 1.7, mb: 0.5 }}>
                   กรุณากดปุ่มด้านล่างเพื่อเข้าสู่ระบบและทำ Setup Wizard
-                </div>
-                <div className="text-xs text-gray-400 mb-3">(ใช้รหัสผ่านที่ตั้งไว้ในขั้นตอนก่อนหน้า)</div>
-                <button
+                </Box>
+                <Box sx={{ fontSize: 12, color: "#9CA3AF", mb: 1.5 }}>(ใช้รหัสผ่านที่ตั้งไว้ในขั้นตอนก่อนหน้า)</Box>
+                <Box
+                  component="button"
                   onClick={() => { setShowToast(true); go("s8"); }}
-                  className="w-full py-3 bg-green-700 hover:bg-green-800 text-white rounded-md text-sm font-semibold transition-colors"
+                  sx={{ width: "100%", py: 1.5, bgcolor: "#15803D", "&:hover": { bgcolor: "#166534" }, color: "white", borderRadius: 1, fontSize: 14, fontWeight: 600, transition: "background 200ms", border: "none", cursor: "pointer" }}
                 >
                   เข้าสู่ระบบและเริ่ม Setup Wizard &#8594;
-                </button>
-              </div>
-              <div className="px-6 py-3 bg-gray-50 border-t border-erp-border text-[11px] text-gray-400 text-center leading-relaxed">
+                </Box>
+              </Box>
+              <Box sx={{ px: 3, py: 1.5, bgcolor: "#F9FAFB", borderTop: `1px solid ${BORDER}`, fontSize: 11, color: "#9CA3AF", textAlign: "center", lineHeight: 1.7 }}>
                 มีปัญหา? ติดต่อ support@jigsawerp.com &middot; &copy; 2569 ERP Jigsaw
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 
   // ═══════════════════ S8: TENANT LIST (POST-CREATE) ═══════════════════
   const renderS8 = () => (
-    <div className="flex flex-col flex-1">
+    <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
       {renderTopBarSA()}
       {/* Success toast */}
       {showToast && (
-        <div className="bg-green-50 text-green-700 border-b border-green-200 px-4 py-2.5 text-xs flex items-center gap-2 shrink-0">
+        <Box sx={{ bgcolor: "#F0FDF4", color: "#15803D", borderBottom: "1px solid #BBF7D0", px: 2, py: 1.25, fontSize: 12, display: "flex", alignItems: "center", gap: 1, flexShrink: 0 }}>
           &#9989; <strong>สร้าง Tenant สำเร็จ!</strong> ส่ง Welcome Email ให้ somchai@siamgroup.co.th แล้ว
-        </div>
+        </Box>
       )}
       <Breadcrumb items={[
         { label: t("onboarding.masterAccountList"), onClick: () => go("s1") },
         { label: "สมชาย วงศ์ใหญ่" },
       ]} />
       {/* Detail Header */}
-      <div className="px-5 bg-white border-b border-erp-border">
-        <h1 className="text-xl font-bold pt-3 pb-2.5">{t("onboarding.customerInfo")}</h1>
-        <div className="flex gap-0">
-          <button className="px-4 py-2 text-sm font-medium text-erp-muted hover:text-erp-text rounded-t transition-colors">
+      <Box sx={{ px: 2.5, bgcolor: "white", borderBottom: `1px solid ${BORDER}` }}>
+        <Box component="h1" sx={{ fontSize: 20, fontWeight: 700, pt: 1.5, pb: 1.25 }}>{t("onboarding.customerInfo")}</Box>
+        <Box sx={{ display: "flex", gap: 0 }}>
+          <Box component="button" sx={{ px: 2, py: 1, fontSize: 14, fontWeight: 500, color: MUTED, "&:hover": { color: TEXT }, borderTopLeftRadius: 8, borderTopRightRadius: 8, transition: "color 200ms", border: "none", background: "none", cursor: "pointer" }}>
             {t("onboarding.tabGeneral")}
-          </button>
-          <button className="px-4 py-2 text-sm font-medium bg-sa-primary text-white rounded-t transition-colors">
+          </Box>
+          <Box component="button" sx={{ px: 2, py: 1, fontSize: 14, fontWeight: 500, bgcolor: SA_PRIMARY, color: "white", borderTopLeftRadius: 8, borderTopRightRadius: 8, transition: "background 200ms", border: "none", cursor: "pointer" }}>
             Tenants (1/3)
-          </button>
-          <button className="px-4 py-2 text-sm font-medium text-erp-muted hover:text-erp-text rounded-t transition-colors">
+          </Box>
+          <Box component="button" sx={{ px: 2, py: 1, fontSize: 14, fontWeight: 500, color: MUTED, "&:hover": { color: TEXT }, borderTopLeftRadius: 8, borderTopRightRadius: 8, transition: "color 200ms", border: "none", background: "none", cursor: "pointer" }}>
             {t("onboarding.tabContracts")}
-          </button>
-          <button className="px-4 py-2 text-sm font-medium text-erp-muted hover:text-erp-text rounded-t transition-colors">
+          </Box>
+          <Box component="button" sx={{ px: 2, py: 1, fontSize: 14, fontWeight: 500, color: MUTED, "&:hover": { color: TEXT }, borderTopLeftRadius: 8, borderTopRightRadius: 8, transition: "color 200ms", border: "none", background: "none", cursor: "pointer" }}>
             {t("onboarding.tabHistory")}
-          </button>
-        </div>
-      </div>
+          </Box>
+        </Box>
+      </Box>
       {/* Body */}
-      <div className="flex-1 p-5">
-        <div className="bg-white rounded-lg border border-erp-border p-5">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-bold text-sa-primary">{t("onboarding.tenantsUnderAccount")}</h3>
-            <span className="text-xs text-erp-muted">1 {t("onboarding.ofCompanies")} 3 {t("onboarding.company")}</span>
-          </div>
-          <div className="bg-[#FF6B00]/10 rounded-md px-3 py-2 text-xs text-sa-primary border border-[#FF6B00]/20 mb-3">
+      <Box sx={{ flex: 1, p: 2.5 }}>
+        <Box sx={{ bgcolor: "white", borderRadius: 2, border: `1px solid ${BORDER}`, p: 2.5 }}>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.5 }}>
+            <Box component="h3" sx={{ fontSize: 14, fontWeight: 700, color: SA_PRIMARY }}>{t("onboarding.tenantsUnderAccount")}</Box>
+            <Box component="span" sx={{ fontSize: 12, color: MUTED }}>1 {t("onboarding.ofCompanies")} 3 {t("onboarding.company")}</Box>
+          </Box>
+          <Box sx={{ bgcolor: "rgba(255,107,0,0.1)", borderRadius: 1, px: 1.5, py: 1, fontSize: 12, color: SA_PRIMARY, border: "1px solid rgba(255,107,0,0.2)", mb: 1.5 }}>
             จำนวนธุรกิจ (Tenant Quota): <strong>1 / 3 บริษัท</strong> ใช้ไปแล้ว &middot; เหลืออีก 2 บริษัท
-          </div>
+          </Box>
           {/* Tenant item */}
-          <div className="border border-erp-border rounded-lg p-3.5 flex items-center gap-3 mb-2 hover:border-sa-primary hover:bg-[#FF6B00]/5 cursor-pointer transition-colors">
-            <div className="w-8 h-8 rounded-md bg-[#FF6B00]/10 flex items-center justify-center text-xs font-bold text-sa-primary shrink-0">ST</div>
-            <div className="flex-1">
-              <div className="text-sm font-semibold">บริษัท สยามเทรด จำกัด</div>
-              <div className="text-[11px] text-erp-muted mt-0.5">siamtrade.jigsawerp.com &middot; Cloud &middot; MD-1–11, MD-12</div>
-            </div>
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-orange-50 text-orange-600">
-              <span className="w-1.5 h-1.5 rounded-full bg-current" />
+          <Box sx={{ border: `1px solid ${BORDER}`, borderRadius: 2, p: 1.75, display: "flex", alignItems: "center", gap: 1.5, mb: 1, "&:hover": { borderColor: SA_PRIMARY, bgcolor: "rgba(255,107,0,0.05)" }, cursor: "pointer", transition: "all 200ms" }}>
+            <Box sx={{ width: 32, height: 32, borderRadius: 1, bgcolor: "rgba(255,107,0,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: SA_PRIMARY, flexShrink: 0 }}>ST</Box>
+            <Box sx={{ flex: 1 }}>
+              <Box sx={{ fontSize: 14, fontWeight: 600 }}>บริษัท สยามเทรด จำกัด</Box>
+              <Box sx={{ fontSize: 11, color: MUTED, mt: 0.25 }}>siamtrade.jigsawerp.com &middot; Cloud &middot; MD-1–11, MD-12</Box>
+            </Box>
+            <Box component="span" sx={{ display: "inline-flex", alignItems: "center", gap: 0.5, px: 1.25, py: 0.5, borderRadius: "9999px", fontSize: 11, fontWeight: 600, bgcolor: "#FFF7ED", color: "#EA580C" }}>
+              <Box component="span" sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: "currentColor" }} />
               รอ Setup Wizard
-            </span>
-          </div>
-          <button
+            </Box>
+          </Box>
+          <Box
+            component="button"
             onClick={() => go("s6")}
-            className="w-full flex items-center justify-center gap-2 py-3 border-[1.5px] border-dashed border-sa-primary rounded-lg bg-white text-sm text-sa-primary hover:bg-[#FF6B00]/5 transition-colors mt-1"
+            sx={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 1, py: 1.5, border: `1.5px dashed ${SA_PRIMARY}`, borderRadius: 2, bgcolor: "white", fontSize: 14, color: SA_PRIMARY, "&:hover": { bgcolor: "rgba(255,107,0,0.05)" }, transition: "background 200ms", mt: 0.5, cursor: "pointer" }}
           >
             + สร้าง Tenant ใหม่ภายใต้ Account นี้ (เหลือ 2 บริษัท)
-          </button>
-        </div>
+          </Box>
+        </Box>
 
-        <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 bg-green-900/80 text-green-300 rounded-lg text-[11px]">
+        <Box sx={{ mt: 2, display: "inline-flex", alignItems: "center", gap: 1, px: 1.5, py: 0.75, bgcolor: "rgba(20,83,45,0.8)", color: "#86EFAC", borderRadius: 2, fontSize: 11 }}>
           &#10003; F-01 จบ &#8594; F-02 Setup Wizard
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 
   // ═══════════════════ RENDER ROUTER ═══════════════════
@@ -1598,166 +1615,170 @@ export default function OnboardingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-erp-bg flex">
+    <Box sx={{ minHeight: "100vh", bgcolor: BG, display: "flex" }}>
       {/* Sidebar — Figma Menu Drawer (expanded=260px, collapsed=68px icons only) */}
-      <div className={`fixed h-screen z-50 bg-white border-r border-gray-200 transition-all duration-300 ${sidebarExpanded ? "w-[260px]" : "w-[68px]"}`}>
+      <Box sx={{ position: "fixed", height: "100vh", zIndex: 50, bgcolor: "white", borderRight: `1px solid ${BORDER}`, transition: "all 300ms", width: sidebarExpanded ? 260 : 68 }}>
 
-        {/* ═══ Collapsed: Icon-only bar (68px) ═══ */}
+        {/* === Collapsed: Icon-only bar (68px) === */}
         {!sidebarExpanded && (
-          <div className="w-[68px] h-full flex flex-col items-center py-3 gap-1">
+          <Box sx={{ width: 68, height: "100%", display: "flex", flexDirection: "column", alignItems: "center", py: 1.5, gap: 0.5 }}>
             {/* Logo */}
-            <div className="w-10 h-10 rounded-xl bg-sa-primary flex items-center justify-center cursor-pointer mb-0.5" onClick={() => setSidebarExpanded(true)}>
-              <span className="text-[7px] font-extrabold text-white leading-tight text-center">JIG<br/>SAW</span>
-            </div>
-            <span className="text-[8px] font-bold text-sa-primary tracking-wider mb-2">JIGSAW</span>
+            <Box sx={{ width: 40, height: 40, borderRadius: 3, bgcolor: SA_PRIMARY, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", mb: 0.25 }} onClick={() => setSidebarExpanded(true)}>
+              <Box component="span" sx={{ fontSize: 7, fontWeight: 800, color: "white", lineHeight: 1.2, textAlign: "center" }}>JIG<br/>SAW</Box>
+            </Box>
+            <Box component="span" sx={{ fontSize: 8, fontWeight: 700, color: SA_PRIMARY, letterSpacing: 2, mb: 1 }}>JIGSAW</Box>
 
             {/* Home (active) */}
-            <button onClick={() => router.push("/home")} className="w-11 h-11 rounded-lg flex items-center justify-center bg-sa-primary/10 transition-colors" title={t("nav.home")}>
+            <Box component="button" onClick={() => router.push("/home")} sx={{ width: 44, height: 44, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", bgcolor: "rgba(255,107,0,0.1)", transition: "background 200ms", border: "none", cursor: "pointer" }} title={t("nav.home")}>
               <img src="/icons/commerce/home.svg" alt="" width={24} height={24} style={{ filter: "brightness(0) saturate(100%) invert(45%) sepia(96%) saturate(1500%) hue-rotate(360deg)" }} />
-            </button>
+            </Box>
 
             {/* Divider */}
-            <div className="w-6 h-px bg-gray-200 my-1.5" />
+            <Box sx={{ width: 24, height: "1px", bgcolor: BORDER, my: 0.75 }} />
 
             {/* ลูกค้า */}
-            <button onClick={() => { setSidebarExpanded(true); setMenuOpen(prev => ({ ...prev, customer: true })); }} className="w-11 h-11 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors" title={t("onboarding.customer")}>
+            <Box component="button" onClick={() => { setSidebarExpanded(true); setMenuOpen(prev => ({ ...prev, customer: true })); }} sx={{ width: 44, height: 44, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", "&:hover": { bgcolor: "#F3F4F6" }, transition: "background 200ms", border: "none", cursor: "pointer", background: "none" }} title={t("onboarding.customer")}>
               <img src="/icons/data/user-id.svg" alt="" width={24} height={24} />
-            </button>
+            </Box>
 
             {/* รายงาน */}
-            <button onClick={() => { setSidebarExpanded(true); setMenuOpen(prev => ({ ...prev, reports: true })); }} className="w-11 h-11 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors" title={locale === "en" ? "Reports" : "รายงาน"}>
+            <Box component="button" onClick={() => { setSidebarExpanded(true); setMenuOpen(prev => ({ ...prev, reports: true })); }} sx={{ width: 44, height: 44, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", "&:hover": { bgcolor: "#F3F4F6" }, transition: "background 200ms", border: "none", cursor: "pointer", background: "none" }} title={locale === "en" ? "Reports" : "รายงาน"}>
               <img src="/icons/data/graph-up.svg" alt="" width={24} height={24} />
-            </button>
+            </Box>
 
             {/* Divider */}
-            <div className="w-6 h-px bg-gray-200 my-1.5" />
+            <Box sx={{ width: 24, height: "1px", bgcolor: BORDER, my: 0.75 }} />
 
             {/* ตั้งค่า */}
-            <button onClick={() => { setSidebarExpanded(true); setMenuOpen(prev => ({ ...prev, settings: true })); }} className="w-11 h-11 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors" title={t("nav.settings")}>
+            <Box component="button" onClick={() => { setSidebarExpanded(true); setMenuOpen(prev => ({ ...prev, settings: true })); }} sx={{ width: 44, height: 44, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", "&:hover": { bgcolor: "#F3F4F6" }, transition: "background 200ms", border: "none", cursor: "pointer", background: "none" }} title={t("nav.settings")}>
               <img src="/icons/commerce/settings.svg" alt="" width={24} height={24} />
-            </button>
-          </div>
+            </Box>
+          </Box>
         )}
 
-        {/* ═══ Expanded: Full menu (260px) ═══ */}
+        {/* === Expanded: Full menu (260px) === */}
         {sidebarExpanded && (
-        <div className="w-[260px] h-full flex flex-col">
+        <Box sx={{ width: 260, height: "100%", display: "flex", flexDirection: "column" }}>
           {/* Logo + Collapse */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-            <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push("/")}>
-              <div className="w-8 h-8 rounded-lg bg-sa-primary flex items-center justify-center">
-                <span className="text-[7px] font-extrabold text-white leading-tight text-center">JIG<br/>SAW</span>
-              </div>
-              <span className="text-lg font-extrabold tracking-wider text-sa-primary">JIGSAW</span>
-            </div>
-            <button onClick={() => setSidebarExpanded(false)} className="text-gray-400 hover:text-gray-600 text-sm">&laquo;</button>
-          </div>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", px: 2, py: 1.5, borderBottom: "1px solid #F3F4F6" }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, cursor: "pointer" }} onClick={() => router.push("/")}>
+              <Box sx={{ width: 32, height: 32, borderRadius: 2, bgcolor: SA_PRIMARY, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Box component="span" sx={{ fontSize: 7, fontWeight: 800, color: "white", lineHeight: 1.2, textAlign: "center" }}>JIG<br/>SAW</Box>
+              </Box>
+              <Box component="span" sx={{ fontSize: 18, fontWeight: 800, letterSpacing: 2, color: SA_PRIMARY }}>JIGSAW</Box>
+            </Box>
+            <Box component="button" onClick={() => setSidebarExpanded(false)} sx={{ color: "#9CA3AF", "&:hover": { color: "#4B5563" }, fontSize: 14, border: "none", background: "none", cursor: "pointer" }}>&laquo;</Box>
+          </Box>
 
           {/* Menu Items — Sarabun Regular 16px */}
-          <div className="flex-1 overflow-y-auto py-2 px-3" style={{ fontFamily: "'Sarabun', sans-serif" }}>
-            {/* ภาพรวม — icon: home.svg → ไป /home (ไม่ highlight เพราะอยู่หน้า onboarding) */}
-            <button
+          <Box sx={{ flex: 1, overflowY: "auto", py: 1, px: 1.5 }} style={{ fontFamily: "'Sarabun', sans-serif" }}>
+            {/* ภาพรวม — icon: home.svg */}
+            <Box
+              component="button"
               onClick={() => router.push("/home")}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-colors text-gray-700 hover:bg-gray-50"
+              sx={{ width: "100%", display: "flex", alignItems: "center", gap: 1.5, px: 1.5, py: 1.25, borderRadius: 2, mb: 0.5, transition: "background 200ms", color: "#374151", "&:hover": { bgcolor: "#F9FAFB" }, border: "none", background: "none", cursor: "pointer" }}
               style={{ fontSize: 16, fontWeight: 400 }}
             >
               <img src="/icons/commerce/home.svg" alt="" width={24} height={24} />
-              <span className="flex-1 text-left">{t("nav.home")}</span>
-              <span className="text-[10px] bg-red-500 text-white px-1.5 py-0.5 rounded-full font-bold">New</span>
-            </button>
+              <Box component="span" sx={{ flex: 1, textAlign: "left" }}>{t("nav.home")}</Box>
+              <Box component="span" sx={{ fontSize: 10, bgcolor: "#EF4444", color: "white", px: 0.75, py: 0.25, borderRadius: "9999px", fontWeight: 700 }}>New</Box>
+            </Box>
 
             {/* Section: เมนู */}
-            <div className="text-xs text-gray-400 font-normal px-3 mt-3 mb-1.5" style={{ fontSize: 12 }}>
+            <Box sx={{ fontSize: 12, color: "#9CA3AF", fontWeight: 400, px: 1.5, mt: 1.5, mb: 0.75 }}>
               {locale === "en" ? "Menu" : "เมนู"}
-            </div>
+            </Box>
 
             {/* ลูกค้า — icon: user-id.svg */}
-            <div className="mb-1">
-              <button
+            <Box sx={{ mb: 0.5 }}>
+              <Box
+                component="button"
                 onClick={() => setMenuOpen(prev => ({ ...prev, customer: !prev.customer }))}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                sx={{ width: "100%", display: "flex", alignItems: "center", gap: 1.5, px: 1.5, py: 1.25, borderRadius: 2, color: "#374151", "&:hover": { bgcolor: "#F9FAFB" }, transition: "background 200ms", border: "none", background: "none", cursor: "pointer" }}
                 style={{ fontSize: 16, fontWeight: 400 }}
               >
                 <img src="/icons/data/user-id.svg" alt="" width={24} height={24} />
-                <span className="flex-1 text-left">{t("onboarding.customer")}</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`transition-transform ${menuOpen.customer ? "rotate-180" : ""}`}><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
+                <Box component="span" sx={{ flex: 1, textAlign: "left" }}>{t("onboarding.customer")}</Box>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transition: "transform 200ms", transform: menuOpen.customer ? "rotate(180deg)" : "none" }}><polyline points="6 9 12 15 18 9"/></svg>
+              </Box>
               {menuOpen.customer && (
-                <div className="ml-10 mt-0.5 space-y-0.5">
-                  <button onClick={() => go("s1")} className={`w-full text-left px-3 py-1.5 rounded transition-colors ${screen === "s1" ? "text-sa-primary" : "text-gray-500 hover:text-gray-700"}`} style={{ fontSize: 16, fontWeight: 400 }}>
+                <Box sx={{ ml: 5, mt: 0.25, display: "flex", flexDirection: "column", gap: 0.25 }}>
+                  <Box component="button" onClick={() => go("s1")} sx={{ width: "100%", textAlign: "left", px: 1.5, py: 0.75, borderRadius: 1, transition: "color 200ms", color: screen === "s1" ? SA_PRIMARY : "#6B7280", "&:hover": { color: "#374151" }, border: "none", background: "none", cursor: "pointer" }} style={{ fontSize: 16, fontWeight: 400 }}>
                     • {t("onboarding.masterAccountList")}
-                  </button>
-                  <button onClick={() => go("s5")} className={`w-full text-left px-3 py-1.5 rounded transition-colors ${screen === "s5" ? "text-sa-primary" : "text-gray-500 hover:text-gray-700"}`} style={{ fontSize: 16, fontWeight: 400 }}>
+                  </Box>
+                  <Box component="button" onClick={() => go("s5")} sx={{ width: "100%", textAlign: "left", px: 1.5, py: 0.75, borderRadius: 1, transition: "color 200ms", color: screen === "s5" ? SA_PRIMARY : "#6B7280", "&:hover": { color: "#374151" }, border: "none", background: "none", cursor: "pointer" }} style={{ fontSize: 16, fontWeight: 400 }}>
                     • {locale === "en" ? "All Contracts" : "สัญญาทั้งหมด"}
-                  </button>
-                </div>
+                  </Box>
+                </Box>
               )}
-            </div>
+            </Box>
 
             {/* รายงาน — icon: graph-up.svg — collapsible */}
-            <div className="mb-1">
-              <button
+            <Box sx={{ mb: 0.5 }}>
+              <Box
+                component="button"
                 onClick={() => setMenuOpen(prev => ({ ...prev, reports: !prev.reports }))}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                sx={{ width: "100%", display: "flex", alignItems: "center", gap: 1.5, px: 1.5, py: 1.25, borderRadius: 2, color: "#374151", "&:hover": { bgcolor: "#F9FAFB" }, transition: "background 200ms", border: "none", background: "none", cursor: "pointer" }}
                 style={{ fontSize: 16, fontWeight: 400 }}
               >
                 <img src="/icons/data/graph-up.svg" alt="" width={24} height={24} />
-                <span className="flex-1 text-left">{locale === "en" ? "Reports" : "รายงาน"}</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`transition-transform ${menuOpen.reports ? "rotate-180" : ""}`}><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
+                <Box component="span" sx={{ flex: 1, textAlign: "left" }}>{locale === "en" ? "Reports" : "รายงาน"}</Box>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transition: "transform 200ms", transform: menuOpen.reports ? "rotate(180deg)" : "none" }}><polyline points="6 9 12 15 18 9"/></svg>
+              </Box>
               {menuOpen.reports && (
-                <div className="ml-10 mt-0.5 space-y-0.5">
-                  <button onClick={() => alert(locale === "en" ? "Reports page coming soon" : "หน้ารายงาน กำลังพัฒนา")} className="w-full text-left px-3 py-1.5 rounded text-gray-500 hover:text-gray-700 transition-colors" style={{ fontSize: 16, fontWeight: 400 }}>
+                <Box sx={{ ml: 5, mt: 0.25, display: "flex", flexDirection: "column", gap: 0.25 }}>
+                  <Box component="button" onClick={() => alert(locale === "en" ? "Reports page coming soon" : "หน้ารายงาน กำลังพัฒนา")} sx={{ width: "100%", textAlign: "left", px: 1.5, py: 0.75, borderRadius: 1, color: "#6B7280", "&:hover": { color: "#374151" }, transition: "color 200ms", border: "none", background: "none", cursor: "pointer" }} style={{ fontSize: 16, fontWeight: 400 }}>
                     • {locale === "en" ? "All Reports" : "รายงานทั้งหมด"}
-                  </button>
-                </div>
+                  </Box>
+                </Box>
               )}
-            </div>
+            </Box>
 
             {/* Section: ตั้งค่า */}
-            <div className="text-xs text-gray-400 font-normal px-3 mt-3 mb-1.5" style={{ fontSize: 12 }}>
+            <Box sx={{ fontSize: 12, color: "#9CA3AF", fontWeight: 400, px: 1.5, mt: 1.5, mb: 0.75 }}>
               {t("nav.settings")}
-            </div>
+            </Box>
 
             {/* ตั้งค่า — icon: settings.svg — collapsible */}
-            <div className="mb-1">
-              <button
+            <Box sx={{ mb: 0.5 }}>
+              <Box
+                component="button"
                 onClick={() => setMenuOpen(prev => ({ ...prev, settings: !prev.settings }))}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                sx={{ width: "100%", display: "flex", alignItems: "center", gap: 1.5, px: 1.5, py: 1.25, borderRadius: 2, color: "#374151", "&:hover": { bgcolor: "#F9FAFB" }, transition: "background 200ms", border: "none", background: "none", cursor: "pointer" }}
                 style={{ fontSize: 16, fontWeight: 400 }}
               >
                 <img src="/icons/commerce/settings.svg" alt="" width={24} height={24} />
-                <span className="flex-1 text-left">{t("nav.settings")}</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`transition-transform ${menuOpen.settings ? "rotate-180" : ""}`}><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
+                <Box component="span" sx={{ flex: 1, textAlign: "left" }}>{t("nav.settings")}</Box>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transition: "transform 200ms", transform: menuOpen.settings ? "rotate(180deg)" : "none" }}><polyline points="6 9 12 15 18 9"/></svg>
+              </Box>
               {menuOpen.settings && (
-                <div className="ml-10 mt-0.5 space-y-0.5">
-                  <button onClick={() => alert(locale === "en" ? "User Management coming soon" : "จัดการผู้ใช้งาน กำลังพัฒนา")} className="w-full text-left px-3 py-1.5 rounded text-gray-500 hover:text-gray-700 transition-colors" style={{ fontSize: 16, fontWeight: 400 }}>
+                <Box sx={{ ml: 5, mt: 0.25, display: "flex", flexDirection: "column", gap: 0.25 }}>
+                  <Box component="button" onClick={() => alert(locale === "en" ? "User Management coming soon" : "จัดการผู้ใช้งาน กำลังพัฒนา")} sx={{ width: "100%", textAlign: "left", px: 1.5, py: 0.75, borderRadius: 1, color: "#6B7280", "&:hover": { color: "#374151" }, transition: "color 200ms", border: "none", background: "none", cursor: "pointer" }} style={{ fontSize: 16, fontWeight: 400 }}>
                     • {locale === "en" ? "User Management" : "จัดการผู้ใช้งาน"}
-                  </button>
-                  <button onClick={() => alert(locale === "en" ? "Customer Groups coming soon" : "กลุ่มลูกค้า กำลังพัฒนา")} className="w-full text-left px-3 py-1.5 rounded text-gray-500 hover:text-gray-700 transition-colors" style={{ fontSize: 16, fontWeight: 400 }}>
+                  </Box>
+                  <Box component="button" onClick={() => alert(locale === "en" ? "Customer Groups coming soon" : "กลุ่มลูกค้า กำลังพัฒนา")} sx={{ width: "100%", textAlign: "left", px: 1.5, py: 0.75, borderRadius: 1, color: "#6B7280", "&:hover": { color: "#374151" }, transition: "color 200ms", border: "none", background: "none", cursor: "pointer" }} style={{ fontSize: 16, fontWeight: 400 }}>
                     • {locale === "en" ? "Customer Groups" : "กลุ่มลูกค้า"}
-                  </button>
-                </div>
+                  </Box>
+                </Box>
               )}
-            </div>
+            </Box>
 
             {/* Component Showcase ย้ายไป erp-jigsaw-design แล้ว */}
-          </div>
-        </div>
+          </Box>
+        </Box>
         )}
-      </div>
+      </Box>
 
       {/* Main content */}
       {/* Hamburger is now inside TopBar */}
 
-      <div className={`flex-1 flex flex-col min-h-screen bg-erp-bg transition-all duration-300 ${sidebarExpanded ? "ml-[260px]" : "ml-[68px]"}`}>
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", minHeight: "100vh", bgcolor: BG, transition: "all 300ms", ml: sidebarExpanded ? "260px" : "68px" }}>
         {/* Outside click overlay — กดข้างนอก sidebar จะหุบ */}
         {sidebarExpanded && (
-          <div className="fixed inset-0 z-[45]" onClick={() => setSidebarExpanded(false)} />
+          <Box sx={{ position: "fixed", inset: 0, zIndex: 45 }} onClick={() => setSidebarExpanded(false)} />
         )}
         {screens[screen]()}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

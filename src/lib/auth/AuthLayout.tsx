@@ -2,6 +2,7 @@
 
 import { useEffect, type ReactNode } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { Box } from "@mui/material";
 import { useAuth } from "./AuthProvider";
 import { hasPermission } from "./permission";
 
@@ -40,9 +41,9 @@ export default function AuthLayout({
   // Show nothing while checking auth
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-sm text-gray-400">กำลังตรวจสอบสิทธิ์...</div>
-      </div>
+      <Box sx={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <Box sx={{ fontSize: 14, color: "#bbb" }}>กำลังตรวจสอบสิทธิ์...</Box>
+      </Box>
     );
   }
 

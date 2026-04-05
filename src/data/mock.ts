@@ -442,6 +442,189 @@ export const sampleTenantDetail: TenantDetail = {
   status: "รอ Setup Wizard",
 };
 
+/* ── Account Tenants — tenants linked to each master account ── */
+export interface AccountTenant {
+  id: string;
+  accountId: string;
+  nameTh: string;
+  nameEn: string;
+  subdomain: string;
+  deploymentTier: "Cloud" | "Dedicated" | "On-premise";
+  entityType: string;
+  businessType: string;
+  taxId: string;
+  logoText: string;
+  quotas: { user: number; branch: number; warehouse: number; storage: number; auditLog: number; onboarding: number };
+  cores: string[];
+  contractStart: string;
+  contractEnd: string;
+  autoRenewal: boolean;
+  status: "เปิดใช้งาน" | "รอ Setup Wizard" | "ระงับ";
+}
+
+export const accountTenants: AccountTenant[] = [
+  // MA-69-03-0001 สมชาย — กำลังใช้งาน, quota 3, used 1
+  {
+    id: "TNT-0001-01", accountId: "MA-69-03-0001",
+    nameTh: "กลุ่มสยาม สำนักงานใหญ่", nameEn: "Siam Group HQ",
+    subdomain: "siamgroup", deploymentTier: "Cloud",
+    entityType: "บริษัทจำกัด (บจ.)", businessType: "Trading - ซื้อมาขายไป",
+    taxId: "0105565012345", logoText: "กลุ่ม\nสยาม",
+    quotas: { user: 20, branch: 5, warehouse: 3, storage: 10, auditLog: 12, onboarding: 10 },
+    cores: ["Jigsaw Core Allder Now", "Allder Cafe"],
+    contractStart: "01/01/2569", contractEnd: "31/12/2569", autoRenewal: true,
+    status: "เปิดใช้งาน",
+  },
+  // MA-69-03-0003 ประกิต — กำลังใช้งาน, quota 2, used 2 (เต็ม!)
+  {
+    id: "TNT-0003-01", accountId: "MA-69-03-0003",
+    nameTh: "เอ็นเตอร์ไพรส์ โซลูชั่น สาขา 1", nameEn: "Enterprise Solution Branch 1",
+    subdomain: "enterprise1", deploymentTier: "Cloud",
+    entityType: "บริษัทจำกัด (บจ.)", businessType: "Service - บริการ",
+    taxId: "0105567890001", logoText: "ENT\nSOL",
+    quotas: { user: 10, branch: 2, warehouse: 1, storage: 5, auditLog: 6, onboarding: 5 },
+    cores: ["Jigsaw Core Allder Now"],
+    contractStart: "01/03/2569", contractEnd: "28/02/2570", autoRenewal: false,
+    status: "เปิดใช้งาน",
+  },
+  {
+    id: "TNT-0003-02", accountId: "MA-69-03-0003",
+    nameTh: "เอ็นเตอร์ไพรส์ โซลูชั่น สาขา 2", nameEn: "Enterprise Solution Branch 2",
+    subdomain: "enterprise2", deploymentTier: "Cloud",
+    entityType: "บริษัทจำกัด (บจ.)", businessType: "Service - บริการ",
+    taxId: "0105567890002", logoText: "ENT\nSOL",
+    quotas: { user: 5, branch: 1, warehouse: 1, storage: 3, auditLog: 6, onboarding: 5 },
+    cores: ["Jigsaw Core Allder Now"],
+    contractStart: "15/03/2569", contractEnd: "14/03/2570", autoRenewal: false,
+    status: "รอ Setup Wizard",
+  },
+  // MA-69-03-0004 ชัยชนะ — ระงับการใช้งาน, quota 3, used 1
+  {
+    id: "TNT-0004-01", accountId: "MA-69-03-0004",
+    nameTh: "มงคล เทรดดิ้ง สำนักงานใหญ่", nameEn: "Mongkol Trading HQ",
+    subdomain: "mongkol", deploymentTier: "Dedicated",
+    entityType: "ห้างหุ้นส่วนจำกัด (หจก.)", businessType: "Trading - ซื้อมาขายไป",
+    taxId: "0105566001234", logoText: "มงคล\nTRD",
+    quotas: { user: 15, branch: 3, warehouse: 2, storage: 8, auditLog: 12, onboarding: 8 },
+    cores: ["Jigsaw Core Allder Now", "CarDeler"],
+    contractStart: "01/06/2568", contractEnd: "31/05/2569", autoRenewal: true,
+    status: "ระงับ",
+  },
+  // MA-69-03-0006 ธนวัฒน์ — กำลังใช้งาน, quota 10, used 3
+  {
+    id: "TNT-0006-01", accountId: "MA-69-03-0006",
+    nameTh: "สิริกุล กรุ๊ป สำนักงานใหญ่", nameEn: "Sirikul Group HQ",
+    subdomain: "sirikul", deploymentTier: "Dedicated",
+    entityType: "บริษัทมหาชนจำกัด (บมจ.)", businessType: "Manufacturing - ผลิต",
+    taxId: "0107558000123", logoText: "สิริกุล\nGRP",
+    quotas: { user: 50, branch: 10, warehouse: 5, storage: 50, auditLog: 24, onboarding: 20 },
+    cores: ["Jigsaw Core Allder Now", "Manufacturing", "Extension"],
+    contractStart: "01/01/2569", contractEnd: "31/12/2570", autoRenewal: true,
+    status: "เปิดใช้งาน",
+  },
+  {
+    id: "TNT-0006-02", accountId: "MA-69-03-0006",
+    nameTh: "สิริกุล โลจิสติกส์", nameEn: "Sirikul Logistics",
+    subdomain: "sirikul-log", deploymentTier: "Cloud",
+    entityType: "บริษัทจำกัด (บจ.)", businessType: "Logistics - ขนส่ง",
+    taxId: "0105569000456", logoText: "สิริกุล\nLOG",
+    quotas: { user: 15, branch: 5, warehouse: 3, storage: 10, auditLog: 12, onboarding: 10 },
+    cores: ["Jigsaw Core Allder Now"],
+    contractStart: "01/03/2569", contractEnd: "28/02/2570", autoRenewal: false,
+    status: "เปิดใช้งาน",
+  },
+  {
+    id: "TNT-0006-03", accountId: "MA-69-03-0006",
+    nameTh: "สิริกุล ฟู้ด", nameEn: "Sirikul Food",
+    subdomain: "sirikul-food", deploymentTier: "Cloud",
+    entityType: "บริษัทจำกัด (บจ.)", businessType: "Food & Beverage - อาหารและเครื่องดื่ม",
+    taxId: "0105569000789", logoText: "สิริกุล\nFOOD",
+    quotas: { user: 10, branch: 3, warehouse: 2, storage: 5, auditLog: 6, onboarding: 5 },
+    cores: ["Jigsaw Core Allder Now", "Allder Cafe"],
+    contractStart: "15/03/2569", contractEnd: "14/03/2570", autoRenewal: false,
+    status: "รอ Setup Wizard",
+  },
+  // MA-69-03-0008 อนุชา — หมดอายุ, quota 8, used 5
+  {
+    id: "TNT-0008-01", accountId: "MA-69-03-0008",
+    nameTh: "เจริญสุข ออโต้", nameEn: "Charoensuk Auto",
+    subdomain: "csauto", deploymentTier: "On-premise",
+    entityType: "บริษัทจำกัด (บจ.)", businessType: "Trading - ซื้อมาขายไป",
+    taxId: "0105562000111", logoText: "เจริญ\nสุข",
+    quotas: { user: 30, branch: 8, warehouse: 5, storage: 20, auditLog: 12, onboarding: 10 },
+    cores: ["Jigsaw Core Allder Now", "CarDeler"],
+    contractStart: "01/01/2568", contractEnd: "31/12/2568", autoRenewal: false,
+    status: "เปิดใช้งาน",
+  },
+  {
+    id: "TNT-0008-02", accountId: "MA-69-03-0008",
+    nameTh: "เจริญสุข พาร์ท", nameEn: "Charoensuk Parts",
+    subdomain: "csparts", deploymentTier: "Cloud",
+    entityType: "บริษัทจำกัด (บจ.)", businessType: "Trading - ซื้อมาขายไป",
+    taxId: "0105562000222", logoText: "CS\nPARTS",
+    quotas: { user: 10, branch: 3, warehouse: 2, storage: 5, auditLog: 6, onboarding: 5 },
+    cores: ["Jigsaw Core Allder Now"],
+    contractStart: "01/04/2568", contractEnd: "31/03/2569", autoRenewal: false,
+    status: "เปิดใช้งาน",
+  },
+  {
+    id: "TNT-0008-03", accountId: "MA-69-03-0008",
+    nameTh: "เจริญสุข เซอร์วิส", nameEn: "Charoensuk Service",
+    subdomain: "csservice", deploymentTier: "Cloud",
+    entityType: "ห้างหุ้นส่วนจำกัด (หจก.)", businessType: "Service - บริการ",
+    taxId: "0105562000333", logoText: "CS\nSVC",
+    quotas: { user: 8, branch: 2, warehouse: 1, storage: 3, auditLog: 6, onboarding: 5 },
+    cores: ["Jigsaw Core Allder Now"],
+    contractStart: "01/06/2568", contractEnd: "31/05/2569", autoRenewal: false,
+    status: "เปิดใช้งาน",
+  },
+  {
+    id: "TNT-0008-04", accountId: "MA-69-03-0008",
+    nameTh: "เจริญสุข ดิจิตอล", nameEn: "Charoensuk Digital",
+    subdomain: "csdigital", deploymentTier: "Cloud",
+    entityType: "บริษัทจำกัด (บจ.)", businessType: "Tech - เทคโนโลยี",
+    taxId: "0105562000444", logoText: "CS\nDIGI",
+    quotas: { user: 5, branch: 1, warehouse: 1, storage: 2, auditLog: 6, onboarding: 3 },
+    cores: ["Jigsaw Core Allder Now", "Extension"],
+    contractStart: "01/09/2568", contractEnd: "31/08/2569", autoRenewal: false,
+    status: "รอ Setup Wizard",
+  },
+  {
+    id: "TNT-0008-05", accountId: "MA-69-03-0008",
+    nameTh: "เจริญสุข ฟาร์ม", nameEn: "Charoensuk Farm",
+    subdomain: "csfarm", deploymentTier: "Cloud",
+    entityType: "บริษัทจำกัด (บจ.)", businessType: "Agriculture - เกษตรกรรม",
+    taxId: "0105562000555", logoText: "CS\nFARM",
+    quotas: { user: 5, branch: 1, warehouse: 1, storage: 2, auditLog: 6, onboarding: 3 },
+    cores: ["Jigsaw Core Allder Now"],
+    contractStart: "01/11/2568", contractEnd: "31/10/2569", autoRenewal: false,
+    status: "เปิดใช้งาน",
+  },
+  // MA-69-03-0010 ภูริทัต — หมดอายุ, quota 5, used 2
+  {
+    id: "TNT-0010-01", accountId: "MA-69-03-0010",
+    nameTh: "เทคไทย โซลูชั่น", nameEn: "TechThai Solution",
+    subdomain: "techthai", deploymentTier: "Cloud",
+    entityType: "บริษัทจำกัด (บจ.)", businessType: "Tech - เทคโนโลยี",
+    taxId: "0105568000111", logoText: "TECH\nTHAI",
+    quotas: { user: 15, branch: 3, warehouse: 2, storage: 10, auditLog: 12, onboarding: 8 },
+    cores: ["Jigsaw Core Allder Now", "Extension"],
+    contractStart: "01/12/2567", contractEnd: "30/11/2568", autoRenewal: false,
+    status: "เปิดใช้งาน",
+  },
+  {
+    id: "TNT-0010-02", accountId: "MA-69-03-0010",
+    nameTh: "เทคไทย คลาวด์", nameEn: "TechThai Cloud",
+    subdomain: "techthai-cloud", deploymentTier: "Cloud",
+    entityType: "บริษัทจำกัด (บจ.)", businessType: "Tech - เทคโนโลยี",
+    taxId: "0105568000222", logoText: "TT\nCLOUD",
+    quotas: { user: 10, branch: 2, warehouse: 1, storage: 5, auditLog: 6, onboarding: 5 },
+    cores: ["Jigsaw Core Allder Now"],
+    contractStart: "01/03/2568", contractEnd: "28/02/2569", autoRenewal: false,
+    status: "รอ Setup Wizard",
+  },
+];
+
 export const recentActivities = [
   { time: "10:32", action: "สร้างใบขอซื้อ PR-2567-003", user: "อภิชาติ มั่นคง", type: "create" as const },
   { time: "10:15", action: "อนุมัติใบขอซื้อ PR-2567-001", user: "ผู้จัดการฝ่ายจัดซื้อ", type: "approve" as const },
