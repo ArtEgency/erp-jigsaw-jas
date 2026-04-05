@@ -13,7 +13,7 @@ const theme = createTheme({
     background: { default: "#F7F7F9", paper: "#FFFFFF" },
   },
   typography: {
-    fontFamily: "'Sarabun', sans-serif",
+    fontFamily: "var(--font-sarabun), 'Sarabun', sans-serif",
   },
   shape: { borderRadius: 8 },
   components: {

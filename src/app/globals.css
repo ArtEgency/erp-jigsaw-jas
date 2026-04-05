@@ -2,11 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
-
 html, body {
   background: #2c2c3a;
-  font-family: 'Sarabun', system-ui, sans-serif;
   color: #333333;
 }
 
